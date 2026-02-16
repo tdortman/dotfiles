@@ -120,7 +120,7 @@
 
       kcminputrc."Libinput/1133/16531/Logitech PRO X" = {
         PointerAccelerationProfile = 1;
-        PointerAcceleration = -0.500;
+        PointerAcceleration = 0.500;
         ScrollFactor = 1;
       };
 
