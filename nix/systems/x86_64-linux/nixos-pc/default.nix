@@ -421,11 +421,7 @@
     custom.fluxer
   ];
 
-  services.solaar = {
-    enable = true;
-    window = "hide";
-    extraArgs = "--restart-on-wake-up";
-  };
+  hardware.logitech.wireless.enable = true;
 
   xdg.portal = {
     enable = true;
