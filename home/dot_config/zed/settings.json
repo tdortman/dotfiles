@@ -1,4 +1,15 @@
 {
+    "active_pane_modifiers": {
+        
+    },
+    "ui_font_weight": 200.0,
+    "agent_ui_font_size": 20.0,
+    "agent_buffer_font_size": 18.0,
+    "agent_servers": {
+        "opencode": {
+            "type": "registry"
+        }
+    },
     "file_finder": {
         "file_icons": true,
     },
@@ -13,6 +24,9 @@
         "toggle_relative_line_numbers": true,
     },
     "scrollbar": {
+        "selected_text": true,
+        "git_diff": true,
+        "selected_symbol": true,
         "show": "auto",
     },
     "gutter": {
@@ -98,6 +112,11 @@
         "diagnostics": false,
     },
     "agent": {
+        "default_profile": "write",
+        "default_model": {
+            "provider": "copilot_chat",
+            "model": "gpt-5.3-codex"
+        },
         "button": true,
     },
     "theme": "One Dark Pro Max",
@@ -111,9 +130,8 @@
         },
     },
     "ui_font_family": "Mozilla Text",
-    "ui_font_weight": 300.0,
     "buffer_font_family": "ComicCodeLigatures Nerd Font Mono",
-    "buffer_font_weight": 200,
+    "buffer_font_weight": 200.0,
     "terminal": {
         "button": true,
         "minimum_contrast": 0,
