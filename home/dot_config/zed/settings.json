@@ -1,4 +1,35 @@
 {
+    "file_finder": {
+        "file_icons": true,
+    },
+    "search": {
+        "include_ignored": true,
+    },
+    "message_editor": {
+        "auto_replace_emoji_shortcode": true,
+    },
+    "preferred_line_length": 100,
+    "vim": {
+        "toggle_relative_line_numbers": true,
+    },
+    "scrollbar": {
+        "show": "auto",
+    },
+    "gutter": {
+        "folds": true,
+        "line_numbers": true,
+    },
+    "double_click_in_multibuffer": "open",
+    "show_wrap_guides": true,
+    "ui_font_size": 20.0,
+    "auto_update": false,
+    "restore_on_startup": "last_session",
+    "text_rendering_mode": "platform_default",
+    "buffer_line_height": "standard",
+    "use_system_path_prompts": true,
+    "edit_predictions": {
+        "provider": "supermaven",
+    },
     "colorize_brackets": true,
     "collaboration_panel": {
         "button": true,
@@ -17,7 +48,7 @@
         "git_status": false,
     },
     "title_bar": {
-        "show_menus": false,
+        "show_user_menu": true,
         "show_sign_in": true,
         "show_branch_name": true,
         "show_branch_icon": true,
@@ -29,7 +60,11 @@
     },
     "middle_click_paste": false,
     "inlay_hints": {
-        "enabled": false,
+        "show_background": false,
+        "show_other_hints": false,
+        "show_parameter_hints": false,
+        "show_type_hints": false,
+        "enabled": true,
     },
     "soft_wrap": "editor_width",
     "toolbar": {
@@ -57,7 +92,7 @@
         "button": true,
         "auto_reveal_entries": false,
     },
-    "icon_theme": "VSCode Icons for Zed (Dark Official Icons)",
+    "icon_theme": "Material Icon Theme",
     "telemetry": {
         "metrics": false,
         "diagnostics": false,
@@ -66,25 +101,21 @@
         "button": true,
     },
     "theme": "One Dark Pro Max",
-    "ui_font_size": 18,
-    "buffer_font_size": 18,
+    "buffer_font_size": 18.0,
     "buffer_font_features": {
         "calt": true,
-    },
-    "features": {
-        "edit_prediction_provider": "supermaven",
     },
     "autosave": {
         "after_delay": {
             "milliseconds": 200,
         },
     },
-    "preferred_line_length": 100,
-    "ui_font_family": "{{ .monospace_font }}",
-    "ui_font_weight": 200,
-    "buffer_font_family": "{{ .monospace_font }}",
+    "ui_font_family": "Mozilla Text",
+    "ui_font_weight": 300.0,
+    "buffer_font_family": "ComicCodeLigatures Nerd Font Mono",
     "buffer_font_weight": 200,
     "terminal": {
+        "button": true,
         "minimum_contrast": 0,
         "toolbar": {
             "breadcrumbs": false,
@@ -92,9 +123,9 @@
         "dock": "right",
         "shell": {
             "with_arguments": {
+                "title_override": "HostShell",
                 "program": "antigravity-shell",
                 "args": [],
-                "title_override": "HostShell",
             },
         },
         "detect_venv": {
@@ -110,9 +141,10 @@
             "calt": true,
             "liga": true,
         },
-        "font_family": "{{ .monospace_font }}",
+        "font_family": "ComicCodeLigatures Nerd Font Mono",
     },
     "indent_guides": {
+        "line_width": 1,
         "coloring": "fixed",
         "background_coloring": "disabled",
         "enabled": true,
@@ -157,10 +189,10 @@
                 },
                 "options": {
                     "nixos": {
-                        "expr": "(builtins.getFlake \"{{ .chezmoi.homeDir }}/dotfiles\").nixosConfigurations.nixos-pc.options",
+                        "expr": "(builtins.getFlake \"/home/tim/dotfiles\").nixosConfigurations.nixos-pc.options",
                     },
                     "home-manager": {
-                        "expr": "(builtins.getFlake \"{{ .chezmoi.homeDir }}/dotfiles\").nixosConfigurations.nixos-pc.options.home-manager.users.type.getSubOptions []",
+                        "expr": "(builtins.getFlake \"/home/tim/dotfiles\").nixosConfigurations.nixos-pc.options.home-manager.users.type.getSubOptions []",
                     },
                 },
             },
@@ -252,5 +284,30 @@
         "source.removeUnusedImports": true,
         "source.organizeImports.biome": true,
         "source.addMissingImports": true,
+    },
+    "auto_install_extensions": {
+        "html": true,
+        "catppuccin": true,
+        "tombi": true,
+        "material-icon-theme": true,
+        "latex": true,
+        "nix": true,
+        "one-dark-pro-max": true,
+        "meson": true,
+        "git-firefly": true,
+        "dockerfile": true,
+        "make": true,
+        "zig": true,
+        "log": true,
+        "rainbow-csv": true,
+        "ini": true,
+        "neocmake": true,
+        "python-requirements": true
+    },
+    "file_types": {
+        "ini": ["wrap", "Doxyfile"],
+        "YAML": [".clang-tidy"],
+        "Meson": ["meson.build", "meson.options", "meson_options.txt"],
+        "JSON": ["spack.lock"],
     },
 }
