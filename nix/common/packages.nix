@@ -8,6 +8,7 @@
       cachix
       file
       shellcheck
+      sqlitebrowser
       gcc
       moor
       dust
