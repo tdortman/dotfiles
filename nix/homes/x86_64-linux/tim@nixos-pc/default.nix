@@ -9,6 +9,11 @@
   home.stateVersion = "25.11";
 
   onepassword.enable = true;
+  
+  services.wl-clip-persist = {
+    enable = true;
+    clipboardType = "regular";
+  };
 
   programs.plasma = {
     enable = true;

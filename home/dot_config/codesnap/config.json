@@ -1,0 +1,37 @@
+{
+    "print_eggs": false,
+    "snapshot_config": {
+        "themes_folders": ["/home/tim/.config/bat/themes"],
+        "theme": "OneDark",
+        "window": {
+            "mac_window_bar": false,
+            "shadow": {
+                "radius": 0,
+                "color": "#00000040"
+            },
+            "margin": {
+                "x": 0,
+                "y": 0
+            },
+            "border": {
+                "width": 0,
+                "color": "#ffffff30"
+            },
+            "title_config": {
+                "color": "#ffffff",
+                "font_family": "Pacifico"
+            },
+            "radius": 3
+        },
+        "code_config": {
+            "font_family": "ComicCodeLigatures Nerd Font Mono",
+            "breadcrumbs": {
+                "enable": false,
+                "separator": "/",
+                "color": "#80848b",
+                "font_family": "ComicCodeLigatures Nerd Font Mono"
+            }
+        },
+        "background": "#FFFFFF00"
+    }
+}

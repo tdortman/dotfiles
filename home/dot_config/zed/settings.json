@@ -1,14 +1,12 @@
 {
-    "active_pane_modifiers": {
-        
-    },
+    "active_pane_modifiers": {},
     "ui_font_weight": 200.0,
     "agent_ui_font_size": 20.0,
     "agent_buffer_font_size": 18.0,
     "agent_servers": {
         "opencode": {
-            "type": "registry"
-        }
+            "type": "registry",
+        },
     },
     "file_finder": {
         "file_icons": true,
@@ -42,7 +40,7 @@
     "buffer_line_height": "standard",
     "use_system_path_prompts": true,
     "edit_predictions": {
-        "provider": "supermaven",
+        "provider": "zed",
     },
     "colorize_brackets": true,
     "collaboration_panel": {
@@ -115,7 +113,7 @@
         "default_profile": "write",
         "default_model": {
             "provider": "copilot_chat",
-            "model": "gpt-5.3-codex"
+            "model": "gpt-5.3-codex",
         },
         "button": true,
     },
@@ -178,6 +176,12 @@
                 "!basedpyright",
                 "...",
             ],
+            "formatter": {
+                "external": {
+                    "command": "ruff",
+                    "arguments": ["format", "-"],
+                },
+            },
         },
         "TypeScript": {
             "code_actions_on_format": {
@@ -320,7 +324,7 @@
         "rainbow-csv": true,
         "ini": true,
         "neocmake": true,
-        "python-requirements": true
+        "python-requirements": true,
     },
     "file_types": {
         "ini": ["wrap", "Doxyfile"],

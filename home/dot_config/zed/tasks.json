@@ -1,0 +1,13 @@
+[
+    {
+        "label": "Codesnap",
+        "command": "codesnap-zed",
+        "args": [],
+        "use_new_terminal": false,
+        "allow_concurrent_runs": false,
+        "reveal": "never",
+        "reveal_target": "dock",
+        "hide": "on_success",
+        "shell": "system",
+    },
+]

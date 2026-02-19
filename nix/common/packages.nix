@@ -4,6 +4,8 @@
   environment.systemPackages =
     with pkgs;
     [
+      ruff
+      codesnap
       neovim
       cachix
       file
