@@ -301,6 +301,7 @@
     packages = [
       "com.surfshark.Surfshark"
       "com.gitbutler.gitbutler"
+      "tv.plex.PlexDesktop"
     ];
     update.auto = {
       enable = true;
