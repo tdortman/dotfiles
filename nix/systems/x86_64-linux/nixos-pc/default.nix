@@ -20,6 +20,12 @@
   disableWakeFromHibernate.enable = true;
   spicetify.enable = true;
 
+  backups = {
+    enable = true;
+    librewolfProfile = "f9ugjznf.default";
+    flatpakApps = [ "com.core447.StreamController" ];
+  };
+
   onepassword = {
     enable = true;
     user = currentUsername;
@@ -123,85 +129,6 @@
   };
 
   programs.virt-manager.enable = true;
-
-  fileSystems."/mnt/gdrive" = {
-    device = "gdrive:";
-    fsType = "rclone";
-    options = [
-      "nodev"
-      "nofail"
-      "allow_other"
-      "args2env"
-      "vfs-cache-mode=full"
-      "config=/home/${currentUsername}/.config/rclone/rclone.conf"
-      "x-systemd.automount"
-      "x-systemd.idle-timeout=600"
-      "x-systemd.mount-timeout=30s"
-      "_netdev"
-    ];
-  };
-
-  services.restic.backups.gdrive = {
-    repository = "rclone:gdrive:backups/desktop";
-    passwordFile = config.age.secrets.restic-password.path;
-
-    paths = [
-      "/home/${currentUsername}/Documents"
-      "/home/${currentUsername}/Pictures"
-      "/home/${currentUsername}/Videos"
-      "/home/${currentUsername}/Music"
-      "/home/${currentUsername}/.librewolf/f9ugjznf.default/user.js"
-      "/home/${currentUsername}/.librewolf/f9ugjznf.default/cookies.sqlite"
-      "/home/${currentUsername}/.librewolf/f9ugjznf.default/cookies.sqlite-wal"
-      "/home/${currentUsername}/.librewolf/f9ugjznf.default/places.sqlite"
-      "/home/${currentUsername}/.librewolf/f9ugjznf.default/chrome"
-      "/var/lib/sonarr/.config/NzbDrone/Backups"
-      "/var/lib/private/prowlarr/Backups"
-      "/home/${currentUsername}/.var/app/com.core447.StreamController"
-    ];
-    exclude = [
-      "*.tmp"
-      ".cache"
-      "*.log"
-      "node_modules"
-      "/home/${currentUsername}/Documents/NVIDIA Nsight Compute"
-      "/home/${currentUsername}/Documents/NVIDIA Nsight Systems"
-    ];
-
-    environmentFile = toString (
-      pkgs.writeText "gdrive-rclone-env" ''
-        RCLONE_CONFIG=/home/${currentUsername}/.config/rclone/rclone.conf
-      ''
-    );
-
-    timerConfig = {
-      OnCalendar = "daily";
-      Persistent = true;
-    };
-
-    pruneOpts = [
-      "--keep-daily 4"
-      "--keep-weekly 3"
-      "--keep-monthly 2"
-    ];
-
-    initialize = true;
-
-    rcloneOptions = {
-      drive-use-trash = false;
-    };
-
-    createWrapper = true;
-
-    backupPrepareCommand = ''
-      echo "Starting Google Drive backup at $(date)"
-      echo "Backing up paths: ${pkgs.lib.concatStringsSep ", " config.services.restic.backups.gdrive.paths}"
-    '';
-
-    backupCleanupCommand = ''
-      echo "Google Drive backup completed at $(date)"
-    '';
-  };
 
   services.avahi = {
     enable = true;
