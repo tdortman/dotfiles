@@ -40,7 +40,7 @@
     "buffer_line_height": "standard",
     "use_system_path_prompts": true,
     "edit_predictions": {
-        "provider": "zed",
+        "provider": "copilot",
     },
     "colorize_brackets": true,
     "collaboration_panel": {
