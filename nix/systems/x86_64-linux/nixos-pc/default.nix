@@ -228,7 +228,6 @@
     packages = [
       "com.surfshark.Surfshark"
       "com.gitbutler.gitbutler"
-      "tv.plex.PlexDesktop"
     ];
     update.auto = {
       enable = true;
@@ -317,6 +316,7 @@
     gvfs
     samba
     glib
+    plex-desktop
 
     inputs.agenix.packages."${system}".default
 
@@ -351,10 +351,7 @@
 
   hardware.logitech.wireless.enable = true;
 
-  xdg.portal = {
-    enable = true;
-    extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
-  };
+  xdg.portal.xdgOpenUsePortal = true;
 
   environment.shellAliases = {
     agy = "(pkill -f -9 antigravity || true) && ${pkgs.temp.antigravity-fhs}/bin/antigravity";
