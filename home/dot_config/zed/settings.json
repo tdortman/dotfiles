@@ -118,6 +118,14 @@
             {
                 "provider": "copilot_chat",
                 "model": "claude-opus-4.6"
+            },
+            {
+                "provider": "copilot_chat",
+                "model": "gemini-3.1-pro-preview"
+            },
+            {
+                "provider": "copilot_chat",
+                "model": "claude-sonnet-4.6"
             }
         ],
         "default_profile": "write",
