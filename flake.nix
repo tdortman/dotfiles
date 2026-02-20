@@ -54,7 +54,8 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    nixpkgs-temp.url = "github:NixOS/nixpkgs/451e0185d87933e9122063b829ce37577d6a0df6";
+    # antigravity 1.18.3
+    nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/492099/head";
 
     snowfall-lib = {
       url = "github:anntnzrb/snowfall-lib";

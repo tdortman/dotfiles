@@ -384,7 +384,7 @@
     btrfs-progs
     mpv
     librewolf
-    antigravity-fhs
+    temp.antigravity-fhs
     google-chrome # Used by antigravity
 
     gvfs
@@ -430,7 +430,7 @@
   };
 
   environment.shellAliases = {
-    agy = "(pkill -f -9 antigravity || true) && ${pkgs.antigravity-fhs}/bin/antigravity";
+    agy = "(pkill -f -9 antigravity || true) && ${pkgs.temp.antigravity-fhs}/bin/antigravity";
   };
 
   environment.variables = {
