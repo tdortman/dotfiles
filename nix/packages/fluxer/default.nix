@@ -3,7 +3,11 @@
   stdenv,
   appimageTools,
   fetchurl,
+  makeWrapper,
+
+  middleClickScroll ? true,
 }:
+
 let
   pname = "fluxer";
   version = "0.0.8";
@@ -21,31 +25,46 @@ let
 
   artifact =
     appImageArtifacts.${stdenv.hostPlatform.system}
-      or (throw "Unsupported system for ${pname}: ${stdenv.hostPlatform.system}");
+      or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
 
   src = fetchurl artifact;
 
   appimageContents = appimageTools.extractType2 {
     inherit pname version src;
   };
+
+  wrapperArgs = [
+    "--add-flags"
+    "--no-sandbox"
+  ]
+  ++ lib.optionals middleClickScroll [
+    "--add-flags"
+    "--enable-blink-features=MiddleClickAutoscroll"
+  ];
+
 in
 appimageTools.wrapType2 {
   inherit pname version src;
 
+  nativeBuildInputs = [ makeWrapper ];
+
   extraInstallCommands = ''
-    install -Dm444 ${appimageContents}/fluxer.desktop $out/share/applications/fluxer.desktop
+    install -Dm444 ${appimageContents}/*.desktop \
+      $out/share/applications/fluxer.desktop
 
     substituteInPlace $out/share/applications/fluxer.desktop \
-      --replace-fail "Exec=AppRun --no-sandbox %U" "Exec=fluxer --no-sandbox --enable-blink-features=MiddleClickAutoscroll %U"
+      --replace-fail "Exec=AppRun --no-sandbox %U" \
+                     "Exec=$out/bin/${pname} %U"
 
-    mkdir -p $out/share/icons
-    cp -r ${appimageContents}/usr/share/icons/hicolor $out/share/icons/
+    cp -r ${appimageContents}/usr/share/icons $out/share/
+
+    wrapProgram $out/bin/${pname} ${lib.escapeShellArgs wrapperArgs}
   '';
 
   meta = with lib; {
     description = "A free and open source instant messaging and VoIP platform built for friends, groups, and communities.";
     homepage = "https://fluxer.app";
-    license = licenses.unfree;
+    license = licenses.agpl3Only;
     mainProgram = "fluxer";
     platforms = builtins.attrNames appImageArtifacts;
     sourceProvenance = with sourceTypes; [ binaryNativeCode ];
