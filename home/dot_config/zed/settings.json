@@ -74,7 +74,7 @@
         "button": true,
     },
     "debugger": {
-        "dock": "left",
+        "dock": "right",
     },
     "outline_panel": {
         "file_icons": true,
@@ -99,11 +99,12 @@
     },
     "middle_click_paste": false,
     "inlay_hints": {
+        "show_value_hints": false,
         "show_background": false,
         "show_other_hints": false,
         "show_parameter_hints": false,
         "show_type_hints": false,
-        "enabled": true,
+        "enabled": false,
     },
     "soft_wrap": "editor_width",
     "toolbar": {
