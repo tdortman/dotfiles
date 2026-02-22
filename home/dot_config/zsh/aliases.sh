@@ -2,6 +2,7 @@
 
 alias ls=eza
 alias l='eza -laah --colour=always --icons=always --group-directories-first -s name --time-style "+%d %b %y %X"'
+alias t='eza --tree -lah --colour=always --icons=always --group-directories-first -s name --time-style "+%d %b %y %X"'
 alias s='source $HOME/.zshrc'
 alias c=clear
 alias gst='git status'
