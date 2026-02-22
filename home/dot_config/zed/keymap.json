@@ -37,7 +37,7 @@
         },
     },
     {
-        "context": "Editor && !in_snippet && !showing_completions",
+        "context": "Editor && !in_snippet && !showing_completions && !edit_prediction",
         "bindings": {
             "tab": "editor::MoveToEndOfLargerSyntaxNode",
             "shift-tab": "editor::Tab",
