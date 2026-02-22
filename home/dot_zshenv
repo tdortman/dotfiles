@@ -19,7 +19,7 @@ if [[ -f /etc/os-release ]]; then
     fi
 fi
 
-export EDITOR='code --wait'
+export EDITOR='zeditor --wait'
 export PATH="$HOME/.local/bin:$PATH"
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export PATH="$HOME/go/bin:$PATH"
