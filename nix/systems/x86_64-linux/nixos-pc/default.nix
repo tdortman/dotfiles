@@ -316,7 +316,6 @@
     gvfs
     samba
     glib
-    plex-desktop
 
     inputs.agenix.packages."${system}".default
 
