@@ -26,6 +26,7 @@
         "github-actions": true,
         "ghostty": true,
         "basher": true,
+        "env": true
     },
     "active_pane_modifiers": {},
     "ui_font_weight": 200.0,
@@ -360,5 +361,6 @@
         "Meson": ["meson.build", "meson.options", "meson_options.txt"],
         "JSON": ["spack.lock"],
         "Ghostty": ["**/ghostty/config*"],
+        "env": [".env.*", ".env"]
     },
 }
