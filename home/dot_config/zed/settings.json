@@ -26,7 +26,8 @@
         "github-actions": true,
         "ghostty": true,
         "basher": true,
-        "env": true
+        "env": true,
+        "java": true,
     },
     "active_pane_modifiers": {},
     "ui_font_weight": 200.0,
@@ -161,7 +162,7 @@
         "default_profile": "write",
         "default_model": {
             "provider": "copilot_chat",
-            "model": "gpt-5.3-codex",
+            "model": "claude-sonnet-4.6",
         },
         "button": true,
     },
@@ -361,6 +362,7 @@
         "Meson": ["meson.build", "meson.options", "meson_options.txt"],
         "JSON": ["spack.lock"],
         "Ghostty": ["**/ghostty/config*"],
-        "env": [".env.*", ".env"]
+        "env": [".env.*", ".env"],
+        "GitHub Actions": ["**/.github/**/*.yml"]
     },
 }
