@@ -77,7 +77,7 @@ encryption = "age"
     command = "bash"
     args = [
         "-c",
-        {{ printf "%q" "cp {{ .Target }} {{ .Target }}.base && code --new-window --wait --merge {{ .Destination }} {{ .Target }} {{ .Target }}.base {{ .Source }}" }},
+        {{ printf "%q" "cp {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} && code --new-window --wait --merge {{ .Destination | quote }} {{ .Target | quote }} {{ printf \"%s.base\" .Target | quote }} {{ .Source | quote }}" }},
     ]
 
 [data]
