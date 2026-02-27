@@ -363,6 +363,7 @@
         "JSON": ["spack.lock"],
         "Ghostty": ["**/ghostty/config*"],
         "env": [".env.*", ".env"],
-        "GitHub Actions": ["**/.github/**/*.yml"]
+        "GitHub Actions": ["**/.github/**/*.yml"],
+        "JSONC": ["**/User/settings.json", "**/User/keybindings.json", "**/User/mcp.json"],
     },
 }

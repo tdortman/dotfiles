@@ -2,132 +2,137 @@
 [
     {
         "key": "ctrl+n",
-        "command": "explorer.newFile"
+        "command": "explorer.newFile",
     },
     {
         "key": "ctrl+shift+n",
-        "command": "explorer.newFolder"
+        "command": "explorer.newFolder",
     },
     {
         "key": "ctrl+enter",
-        "command": "editor.action.insertLineAfter"
+        "command": "editor.action.insertLineAfter",
     },
     {
         "key": "alt+enter alt+enter",
         "command": "github.copilot.generate",
-        "when": "editorTextFocus && github.copilot.activated"
+        "when": "editorTextFocus && github.copilot.activated",
     },
     {
         "key": "ctrl+enter",
         "command": "-github.copilot.generate",
-        "when": "editorTextFocus && github.copilot.activated"
+        "when": "editorTextFocus && github.copilot.activated",
     },
     {
         "key": "ctrl+shift+f5",
         "command": "workbench.action.debug.restart",
-        "when": "inDebugMode"
+        "when": "inDebugMode",
     },
     {
         "key": "ctrl+shift+f5",
         "command": "-workbench.action.debug.restart",
-        "when": "inDebugMode"
+        "when": "inDebugMode",
     },
     {
         "key": "alt+right",
         "command": "cursorEnd",
-        "when": "textInputFocus"
+        "when": "textInputFocus",
     },
     {
         "key": "end",
         "command": "-cursorEnd",
-        "when": "textInputFocus"
+        "when": "textInputFocus",
     },
     {
         "key": "alt+left",
-        "command": "cursorLineStart"
+        "command": "cursorLineStart",
     },
     {
         "key": "shift shift",
-        "command": "workbench.action.quickOpen"
+        "command": "workbench.action.quickOpen",
     },
     {
         "key": "ctrl+j",
         "command": "editor.action.revealDefinition",
-        "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor"
+        "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor",
     },
     {
         "key": "ctrl+k",
         "command": "editor.action.showHover",
-        "when": "editorTextFocus"
+        "when": "editorTextFocus",
     },
     {
-        "key": "ctrl+n",
+        "key": "ctrl+shift+n",
         "command": "workbench.action.terminal.new",
-        "when": "terminalFocus"
+        "when": "terminalFocus",
     },
     {
-        "key": "ctrl+w",
+        "key": "ctrl+shift+w",
         "command": "workbench.action.terminal.kill",
-        "when": "terminalFocus"
+        "when": "terminalFocus",
+    },
+    {
+        "key": "ctrl+shift+t",
+        "command": "workbench.action.terminal.new",
+        "when": "terminalFocus",
     },
     {
         "key": "shift+alt+f",
         "command": "-notebook.formatCell",
-        "when": "editorHasDocumentFormattingProvider && editorTextFocus && inCompositeEditor && notebookEditable && !editorReadonly && activeEditor == 'workbench.editor.notebook'"
+        "when": "editorHasDocumentFormattingProvider && editorTextFocus && inCompositeEditor && notebookEditable && !editorReadonly && activeEditor == 'workbench.editor.notebook'",
     },
     {
         "key": "ctrl+b",
         "command": "notebook.format",
-        "when": "notebookEditable && !editorTextFocus && activeEditor == 'workbench.editor.notebook'"
+        "when": "notebookEditable && !editorTextFocus && activeEditor == 'workbench.editor.notebook'",
     },
     {
         "key": "shift+alt+f",
         "command": "-notebook.format",
-        "when": "notebookEditable && !editorTextFocus && activeEditor == 'workbench.editor.notebook'"
+        "when": "notebookEditable && !editorTextFocus && activeEditor == 'workbench.editor.notebook'",
     },
     {
         "key": "ctrl+b",
-        "command": "notebook.formatCell"
+        "command": "notebook.formatCell",
     },
     {
         "key": "ctrl+b",
         "command": "editor.action.formatDocument",
-        "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor"
+        "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor",
     },
     {
         "key": "shift+alt+f",
         "command": "-editor.action.formatDocument",
-        "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor"
+        "when": "editorHasDocumentFormattingProvider && editorTextFocus && !editorReadonly && !inCompositeEditor",
     },
     {
         "key": "ctrl+e",
-        "command": "github.copilot.interactiveEditor.explain"
+        "command": "github.copilot.interactiveEditor.explain",
     },
     {
         "key": "alt+l",
         "command": "cursorEnd",
-        "when": "editorTextFocus"
+        "when": "editorTextFocus",
     },
     {
         "key": "ctrl+shift+r",
-        "command": "-workbench.view.extension.thunder-client"
+        "command": "-workbench.view.extension.thunder-client",
     },
     {
         "key": "ctrl+t",
         "command": "workbench.action.terminal.new",
-        "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
+        "when": "terminalProcessSupported || terminalWebExtensionContributedProfile",
     },
     {
         "key": "ctrl+shift+oem_3",
         "command": "-workbench.action.terminal.new",
-        "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
+        "when": "terminalProcessSupported || terminalWebExtensionContributedProfile",
     },
     {
         "key": "ctrl+shift+i",
-        "command": "-supermaven.addToChat"
+        "command": "-supermaven.addToChat",
     },
     {
         "key": "ctrl+i",
-        "command": "-supermaven.editWithSupermaven"
-    }
+        "command": "-supermaven.editWithSupermaven",
+    },
 ]
