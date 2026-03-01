@@ -43,7 +43,7 @@
 {{- end -}}
 
 {{- $ageKeyPath := joinPath .chezmoi.homeDir ".config" "age" "key" -}}
-{{- if not .use_secrets -}}
+{{- if not $useSecrets -}}
     {{- if not (stat $ageKeyPath) -}}
         {{- writeToStdout "\033[1;31mError: Age key required but 1Password secrets disabled.\033[0m\n" -}}
         {{- writeToStdout "\n" -}}
