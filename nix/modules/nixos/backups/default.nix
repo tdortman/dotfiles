@@ -26,6 +26,11 @@ in
       default = "tim";
       description = "The username to backup files for";
     };
+    passwordFile = lib.mkOption {
+      type = lib.types.path;
+      example = lib.literalExpression "config.age.secrets.restic-password.path";
+      description = "Path to the Restic repository password file";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -48,7 +53,7 @@ in
 
     services.restic.backups.gdrive = {
       repository = "rclone:gdrive:backups/desktop";
-      passwordFile = config.age.secrets.restic-password.path;
+      passwordFile = cfg.passwordFile;
 
       paths =
         (map (p: "/home/${cfg.user}/${p}") [

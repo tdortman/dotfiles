@@ -24,6 +24,7 @@
     enable = true;
     librewolfProfile = "f9ugjznf.default";
     flatpakApps = [ "com.core447.StreamController" ];
+    passwordFile = config.age.secrets.restic-password.path;
   };
 
   onepassword = {

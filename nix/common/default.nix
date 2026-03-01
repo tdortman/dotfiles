@@ -2,6 +2,7 @@
   pkgs,
   currentUsername,
   lib,
+  config,
   ...
 }:
 
@@ -52,6 +53,10 @@
     ];
   };
 
+  age.secrets = {
+    "hashed-user-password".file = ../secrets/hashed-user-password.age;
+  };
+
   users.users.${currentUsername} = {
     isNormalUser = true;
     extraGroups = [
@@ -68,7 +73,7 @@
       "libvirtd"
       "plugdev"
     ];
-    initialPassword = "password";
+    hashedPasswordFile = config.age.secrets."hashed-user-password".path;
   };
 
   programs.wireshark = {
