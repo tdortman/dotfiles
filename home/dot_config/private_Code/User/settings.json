@@ -737,4 +737,6 @@
     "chat.mcp.gallery.enabled": true,
     "antigravity.marketplaceGalleryItemURL": "https://marketplace.visualstudio.com/items",
     "antigravity.marketplaceExtensionGalleryServiceURL": "https://marketplace.visualstudio.com/_apis/public/gallery",
+    "windsurf.marketplaceGalleryItemURL": "https://marketplace.visualstudio.com/items",
+    "windsurf.marketplaceExtensionGalleryServiceURL": "https://marketplace.visualstudio.com/_apis/public/gallery",
 }
