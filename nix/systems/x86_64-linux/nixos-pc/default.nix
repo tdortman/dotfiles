@@ -320,6 +320,7 @@
 
     inputs.agenix.packages."${system}".default
     cuda.llama-cpp
+    dbeaver-bin
 
     libratbag
     piper
