@@ -233,6 +233,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-flox": {
+      "locked": {
+        "lastModified": 1772198003,
+        "narHash": "sha256-I45esRSssFtJ8p/gLHUZ1OUaaTaVLluNkABkk6arQwE=",
+        "owner": "flox",
+        "repo": "nixpkgs",
+        "rev": "dd9b079222d43e1943b6ebd802f04fd959dc8e61",
+        "type": "github"
+      },
+      "original": {
+        "owner": "flox",
+        "ref": "unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-temp": {
       "locked": {
         "lastModified": 1771508987,
@@ -281,6 +297,7 @@
         "nix-index-database": "nix-index-database",
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-flox": "nixpkgs-flox",
         "nixpkgs-temp": "nixpkgs-temp",
         "plasma-manager": "plasma-manager",
         "snowfall-lib": "snowfall-lib",

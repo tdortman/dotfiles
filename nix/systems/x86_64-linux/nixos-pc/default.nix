@@ -319,6 +319,7 @@
     glib
 
     inputs.agenix.packages."${system}".default
+    cuda.llama-cpp
 
     libratbag
     piper

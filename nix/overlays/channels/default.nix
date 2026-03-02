@@ -11,7 +11,7 @@ final: prev: {
     config.allowUnfree = true;
   };
 
-  cuda = import inputs.nixpkgs {
+  cuda = import inputs.nixpkgs-flox {
     system = final.stdenv.hostPlatform.system;
     config.allowUnfree = true;
     config.cudaSupport = true;

@@ -53,6 +53,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
 
     # antigravity 1.18.3
     nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/492099/head";
