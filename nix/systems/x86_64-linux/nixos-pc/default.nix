@@ -321,6 +321,8 @@
     inputs.agenix.packages."${system}".default
     cuda.llama-cpp
     dbeaver-bin
+    lsfg-vk-ui
+    lsfg-vk
 
     libratbag
     piper
