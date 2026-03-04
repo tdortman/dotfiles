@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-xdg-open-impl "$@" > /dev/null 2>&1
+xdg-open-impl "$@" >/dev/null 2>&1

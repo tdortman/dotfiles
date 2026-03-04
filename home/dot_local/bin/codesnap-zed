@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 printf '%s' "$ZED_SELECTED_TEXT" | codesnap -c \
     -o clipboard \
     --file-path "$ZED_FILE" \

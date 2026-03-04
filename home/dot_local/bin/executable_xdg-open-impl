@@ -8,8 +8,8 @@
 import logging
 import os
 import re
-import sys
 import subprocess
+import sys
 from typing import List, Tuple
 
 import click
@@ -74,7 +74,9 @@ def escape_for_cmd_exe(arg):
     """
 
     meta_chars = '()%!^"<>&|'
-    meta_re = re.compile("(" + "|".join(re.escape(char) for char in list(meta_chars)) + ")")
+    meta_re = re.compile(
+        "(" + "|".join(re.escape(char) for char in list(meta_chars)) + ")"
+    )
     meta_map = {char: "^%s" % char for char in meta_chars}
 
     def escape_meta_chars(m):
@@ -85,7 +87,9 @@ def escape_for_cmd_exe(arg):
 
 
 # DEPRECATED, to be removed soon. Replaced by much simpler wslpath version below
-def convert_filename_to_windows(fn: str, drive_lut: List[Tuple[str, str]], distro_name: str) -> str:
+def convert_filename_to_windows(
+    fn: str, drive_lut: List[Tuple[str, str]], distro_name: str
+) -> str:
     """Given a filename, convert to Windows-compatible double-backslashed `D:\\my\\path` path or to
     `$wsl\\\\distro\\path` WSL-locator.
     """
