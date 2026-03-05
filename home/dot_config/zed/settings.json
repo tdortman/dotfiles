@@ -177,7 +177,7 @@
             "milliseconds": 200,
         },
     },
-    "ui_font_family": "Mozilla Text",
+    "ui_font_family": "Google Sans Flex 9pt",
     "buffer_font_family": "ComicCodeLigatures Nerd Font Mono",
     "buffer_font_weight": 200.0,
     "terminal": {
