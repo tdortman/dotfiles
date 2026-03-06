@@ -64,15 +64,15 @@
         };
       in
       {
-        small = inter 10;
-        general = inter 12;
-        toolbar = inter 12;
-        menu = inter 12;
-        windowTitle = inter 12;
+        small = inter 9;
+        general = inter 11;
+        toolbar = inter 11;
+        menu = inter 11;
+        windowTitle = inter 11;
 
         fixedWidth = {
           family = "ComicCodeLigatures Nerd Font Mono";
-          pointSize = 12;
+          pointSize = 11;
         };
       };
 
