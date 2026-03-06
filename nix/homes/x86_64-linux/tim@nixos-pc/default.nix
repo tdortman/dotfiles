@@ -59,20 +59,20 @@
     fonts =
       let
         inter = size: {
-          family = "Inter";
+          family = "Mozilla Text";
           pointSize = size;
         };
       in
       {
-        small = inter 8;
-        general = inter 10;
-        toolbar = inter 10;
-        menu = inter 10;
-        windowTitle = inter 10;
+        small = inter 10;
+        general = inter 12;
+        toolbar = inter 12;
+        menu = inter 12;
+        windowTitle = inter 12;
 
         fixedWidth = {
           family = "ComicCodeLigatures Nerd Font Mono";
-          pointSize = 10;
+          pointSize = 12;
         };
       };
 
