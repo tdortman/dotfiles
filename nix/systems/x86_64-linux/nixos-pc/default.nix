@@ -124,10 +124,11 @@
     "airvpn-presharedkey".file = ../../../secrets/airvpn-presharedkey.age;
   };
 
-  virtualisation.libvirtd = {
-    enable = true;
-    qemu.vhostUserPackages = with pkgs; [ virtiofsd ];
-  };
+  # TODO: UNCOMMENT THIS WHEN #496839 IS IN UNSTABLE 
+  # virtualisation.libvirtd = {
+  #   enable = true;
+  #   qemu.vhostUserPackages = with pkgs; [ virtiofsd ];
+  # };
 
   programs.virt-manager.enable = true;
 

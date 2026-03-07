@@ -58,17 +58,17 @@
 
     fonts =
       let
-        inter = size: {
+        uiFont = size: {
           family = "Mozilla Text";
           pointSize = size;
         };
       in
       {
-        small = inter 9;
-        general = inter 11;
-        toolbar = inter 11;
-        menu = inter 11;
-        windowTitle = inter 11;
+        small = uiFont 9;
+        general = uiFont 11;
+        toolbar = uiFont 11;
+        menu = uiFont 11;
+        windowTitle = uiFont 11;
 
         fixedWidth = {
           family = "ComicCodeLigatures Nerd Font Mono";
