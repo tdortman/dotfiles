@@ -30,6 +30,7 @@ in
       protonup-qt
       lutris
       bottles
+      faugus-launcher
       # heroic
       winetricks
     ];
