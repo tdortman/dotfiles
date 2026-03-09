@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  pnpm,
+  pnpm_10,
   makeWrapper,
   nodejs,
   python3,
@@ -11,6 +11,8 @@
   fetchzip,
   autoPatchelfHook,
   electron,
+  pnpmConfigHook,
+  fetchPnpmDeps,
 
   pango,
   libx11,
@@ -34,17 +36,29 @@
   glib,
 }:
 
-stdenv.mkDerivation rec {
-  pname = "shiru";
-  version = "6.4.2";
+let
+  electronVersion = "39.2.7";
+  electronHeaders = fetchzip {
+    url = "https://www.electronjs.org/headers/v${electronVersion}/node-v${electronVersion}-headers.tar.gz";
+    hash = "sha256-Yrk7++Ttjm42J0TXTDxyUJC5nVSlNMDIt9/PrZaBsxA=";
+  };
 
-  electronVersion = "39.1.2";
+  electronDist = fetchzip {
+    url = "https://github.com/electron/electron/releases/download/v${electronVersion}/electron-v${electronVersion}-linux-x64.zip";
+    hash = "sha256-zeGTv504UUUZETelo5lZHAMUgSFloRRuUxpzP0IezuA=";
+    stripRoot = false;
+  };
+in
+
+stdenv.mkDerivation (finalAttrs: {
+  pname = "shiru";
+  version = "6.5.1";
 
   src = fetchFromGitHub {
     owner = "RockinChaos";
     repo = "Shiru";
-    rev = "v${version}";
-    hash = "sha256-pTXELNjAyJmDyqQGtakPMte+YzSlG7Erau5M8QbSgSA=";
+    rev = "v${finalAttrs.version}";
+    hash = "sha256-dqXpX4pLF3EjoTrjofOPTO39EGU/2JyfS3+slwCR4xU=";
   };
 
   buildInputs = [
@@ -72,11 +86,12 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [
     autoPatchelfHook
-    pnpm.configHook
+    pnpmConfigHook
     nodejs
     python3
     makeWrapper
     unzip
+    pnpm_10
   ];
 
   runtimeInputs = [
@@ -84,21 +99,11 @@ stdenv.mkDerivation rec {
     libGL
   ];
 
-  pnpmDeps = pnpm.fetchDeps {
-    inherit pname version src;
-    fetcherVersion = 1;
-    hash = "sha256-pO9zQqsp2xQjQ5X9Y+tSGkEMV8fKNvPn5/KQ8T4N8t0=";
-  };
-
-  electronHeaders = fetchzip {
-    url = "https://www.electronjs.org/headers/v${electronVersion}/node-v${electronVersion}-headers.tar.gz";
-    hash = "sha256-bpk3RdMsP7c4A/KqVWErIyBmInTBsx9H7mCe8i6rC+8=";
-  };
-
-  electronDist = fetchzip {
-    url = "https://github.com/electron/electron/releases/download/v${electronVersion}/electron-v${electronVersion}-linux-x64.zip";
-    hash = "sha256-UcOa3NxkymKwGH9fpfSYVt7dKv6tuSWAyKM3GX7G6uc=";
-    stripRoot = false;
+  pnpmDeps = fetchPnpmDeps {
+    inherit (finalAttrs) pname version src;
+    pnpm = pnpm_10;
+    fetcherVersion = 3;
+    hash = "sha256-38z1Lrs2e7wspwg7ftuisL5n4qhqfcidjash1l9XprY=";
   };
 
   buildPhase = ''
@@ -142,4 +147,4 @@ stdenv.mkDerivation rec {
     mainProgram = "shiru";
     platforms = [ "x86_64-linux" ];
   };
-}
+})
