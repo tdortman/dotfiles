@@ -22,12 +22,9 @@
         "context": "Editor",
         "bindings": {
             "ctrl-b": "editor::Format",
-        },
-    },
-    {
-        "context": "Editor",
-        "bindings": {
             "ctrl-t": "workspace::NewTerminal",
+            "ctrl-i": "assistant::InlineAssist",
+            "ctrl-enter": "editor::NewlineBelow",
         },
     },
     {

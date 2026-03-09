@@ -104,6 +104,7 @@
 
       ffmpeg-full
       nixd
+      nil
       docker
       turso-cli
       clinfo

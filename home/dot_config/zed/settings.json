@@ -142,6 +142,11 @@
         "diagnostics": false,
     },
     "agent": {
+        "inline_assistant_model": {
+            "provider": "copilot_chat",
+            "model": "gpt-5-mini",
+            "enable_thinking": false,
+        },
         "favorite_models": [
             {
                 "provider": "copilot_chat",
@@ -162,6 +167,11 @@
                 "provider": "copilot_chat",
                 "model": "gpt-5.4",
                 "enable_thinking": true,
+            },
+            {
+                "provider": "copilot_chat",
+                "model": "gpt-5-mini",
+                "enable_thinking": false,
             },
         ],
         "default_profile": "write",
@@ -254,10 +264,19 @@
         },
         "Nix": {
             "tab_size": 2,
-            "language_servers": ["nixd"],
+            "language_servers": ["nixd", "!nil"],
         },
     },
     "lsp": {
+        "nil": {
+            "settings": {
+                "nil": {
+                    "formatting": {
+                        "command": ["nixfmt"],
+                    },
+                },
+            },
+        },
         "nixd": {
             "settings": {
                 "formatting": {
