@@ -105,6 +105,8 @@ history_filter = [
     "HOSTNAME",
     "PRIVATE KEY",
     "TOKEN",
+    "CLIENT_ID",
+    "CLIENT_SECRET",
 ]
 
 ## prevent commands run with cwd matching any of these regexes from being written
