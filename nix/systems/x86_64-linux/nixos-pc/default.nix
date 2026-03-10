@@ -323,6 +323,7 @@
     dbeaver-bin
     lsfg-vk-ui
     lsfg-vk
+    winboat
 
     libratbag
     piper
