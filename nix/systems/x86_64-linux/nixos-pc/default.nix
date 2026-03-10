@@ -320,6 +320,7 @@
 
     inputs.agenix.packages."${system}".default
     cuda.llama-cpp
+    cuda.lmstudio
     dbeaver-bin
     lsfg-vk-ui
     lsfg-vk
