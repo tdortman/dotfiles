@@ -31,6 +31,8 @@
         "context": "Terminal",
         "bindings": {
             "ctrl-shift-t": "workspace::NewTerminal",
+            "ctrl-shift-c": "terminal::Copy",
+            "ctrl-shift-v": "terminal::Paste"
         },
     },
     {
