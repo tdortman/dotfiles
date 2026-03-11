@@ -63,7 +63,7 @@
     "workbench.auxiliaryActivityBar.location": "default",
     "terminal.integrated.enableMultiLinePasteWarning": "never",
     "redhat.telemetry.enabled": false,
-    "remote.SSH.configFile": "c:\\users\\tim\\.ssh\\config",
+    "remote.SSH.configFile": "/home/tim/.ssh/config",
     "remote.SSH.remotePlatform": {
         "hifumi": "linux",
         "mogon": "linux",
