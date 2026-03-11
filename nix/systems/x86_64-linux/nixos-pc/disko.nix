@@ -1,9 +1,7 @@
-{ ... }:
-
 {
   disko.devices.disk.primary = {
     type = "disk";
-    device = "/dev/disk/by-partlabel/disk-primary-root";
+    device = "/dev/disk/by-uuid/ea0f1e23-1f8c-4739-815a-025db4591419";
     content = {
       type = "gpt";
       partitions = {
