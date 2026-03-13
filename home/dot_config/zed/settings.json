@@ -177,7 +177,7 @@
         "default_profile": "write",
         "default_model": {
             "provider": "copilot_chat",
-            "model": "gpt-5.4",
+            "model": "gpt-5-mini",
         },
         "button": true,
     },

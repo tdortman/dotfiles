@@ -343,6 +343,8 @@
 
     (discord.override {
       withVencord = true;
+      withOpenASAR = true;
+      commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
     })
 
     opencode
