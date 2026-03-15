@@ -300,7 +300,6 @@
   services.gvfs.enable = true;
   services.udisks2.enable = true;
   programs.dconf.enable = true;
-  programs.fuse.enable = true;
 
   programs.thunderbird.enable = true;
   services.gnome.gnome-keyring.enable = true;

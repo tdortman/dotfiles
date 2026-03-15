@@ -151,28 +151,33 @@
             {
                 "provider": "copilot_chat",
                 "model": "claude-opus-4.6",
-                "enable_thinking": true,
+                "enable_thinking": true
             },
             {
                 "provider": "copilot_chat",
                 "model": "gemini-3.1-pro-preview",
-                "enable_thinking": true,
+                "enable_thinking": true
             },
             {
                 "provider": "copilot_chat",
                 "model": "claude-sonnet-4.6",
-                "enable_thinking": true,
+                "enable_thinking": true
             },
             {
                 "provider": "copilot_chat",
                 "model": "gpt-5.4",
-                "enable_thinking": true,
+                "enable_thinking": true
             },
             {
                 "provider": "copilot_chat",
                 "model": "gpt-5-mini",
-                "enable_thinking": false,
+                "enable_thinking": false
             },
+            {
+                "provider": "copilot_chat",
+                "model": "gpt-5.3-codex",
+                "enable_thinking": false
+            }
         ],
         "default_profile": "write",
         "default_model": {
