@@ -305,6 +305,7 @@
   services.gnome.gnome-keyring.enable = true;
 
   environment.systemPackages = with pkgs; [
+    ntfs3g
     ghostty
     vscode-fhs
     zed-editor-fhs
