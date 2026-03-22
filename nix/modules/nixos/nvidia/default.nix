@@ -92,11 +92,8 @@ in
       (lib.mkIf cfg.driver.enable {
         services.xserver.videoDrivers = [ "nvidia" ];
 
-        hardware.graphics.extraPackages = with pkgs; [
-          nvidia-vaapi-driver
-        ];
-
         hardware.nvidia = {
+          videoAcceleration = true;
           package = cfg.driver.package // {
             open = cfg.driver.package.open.overrideAttrs (old: {
               patches = (old.patches or [ ]) ++ [
@@ -108,9 +105,7 @@ in
               ];
             });
           };
-          modesetting.enable = cfg.driver.enable;
-          nvidiaSettings = cfg.driver.enable;
-          open = cfg.driver.enable;
+          open = true;
         };
       })
     ];
