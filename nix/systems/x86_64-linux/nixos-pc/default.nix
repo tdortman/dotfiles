@@ -325,7 +325,7 @@
     dbeaver-bin
     lsfg-vk-ui
     lsfg-vk
-    winboat
+    inputs.winboat.legacyPackages."${system}".winboat
 
     libratbag
     piper
