@@ -25,7 +25,7 @@ in
 
     programs.gamemode.enable = true;
     environment.systemPackages = with pkgs; [
-      wineWow64Packages.stable
+      wineWow64Packages.stableFull
       mangohud
       protonup-qt
       lutris
