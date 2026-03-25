@@ -54,12 +54,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
-    
-    # tries to build go for some reason and fails
-    winboat.url = "github:NixOS/nixpkgs/b40629efe5d6ec48dd1efba650c797ddbd39ace0";
-
-    # antigravity 1.18.3
-    nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/492099/head";
+    nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/503185/head";
 
     snowfall-lib = {
       url = "github:anntnzrb/snowfall-lib";

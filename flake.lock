@@ -251,16 +251,16 @@
     },
     "nixpkgs-temp": {
       "locked": {
-        "lastModified": 1771508987,
-        "narHash": "sha256-35LwTtNBGv4uqtL0O3NJTv4GkzpG9lS7O4GBu5vuQyE=",
+        "lastModified": 1774433266,
+        "narHash": "sha256-MRWyQuOUGOeafkIxizpL+P23G1O5ylKhEcYZrksjQOE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5c89feaf70ab3a5974e25b78caeaea456c7e0b15",
+        "rev": "c5b83a92d12e7f926c2033686d22b5955746f7d0",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "pull/492099/head",
+        "ref": "pull/503185/head",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -301,8 +301,7 @@
         "nixpkgs-temp": "nixpkgs-temp",
         "plasma-manager": "plasma-manager",
         "snowfall-lib": "snowfall-lib",
-        "spicetify-nix": "spicetify-nix",
-        "winboat": "winboat"
+        "spicetify-nix": "spicetify-nix"
       }
     },
     "snowfall-lib": {
@@ -412,22 +411,6 @@
         "owner": "numtide",
         "ref": "main",
         "repo": "treefmt-nix",
-        "type": "github"
-      }
-    },
-    "winboat": {
-      "locked": {
-        "lastModified": 1773821835,
-        "narHash": "sha256-TJ3lSQtW0E2JrznGVm8hOQGVpXjJyXY2guAxku2O9A4=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "b40629efe5d6ec48dd1efba650c797ddbd39ace0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "b40629efe5d6ec48dd1efba650c797ddbd39ace0",
         "type": "github"
       }
     }
