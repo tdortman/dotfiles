@@ -55,6 +55,7 @@ in
     lib.mkMerge [
       (lib.mkIf (cfg.cuda.enable || cfg.driver.enable) {
         hardware.graphics = {
+          enable32Bit = true;
           enable = true;
         };
       })

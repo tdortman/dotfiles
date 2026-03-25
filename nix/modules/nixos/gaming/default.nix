@@ -33,6 +33,8 @@ in
       faugus-launcher
       # heroic
       winetricks
+
+      gamescope-wsi
     ];
   };
 }
