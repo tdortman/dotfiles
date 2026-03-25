@@ -20,6 +20,7 @@
     "kvm-amd"
     "hid-logitech-dj"
     "zenpower"
+    "ntsync"
   ];
 
   boot.blacklistedKernelModules = [ "k10temp" ];
