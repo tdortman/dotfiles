@@ -37,6 +37,7 @@ in
       gamescope-wsi
     ];
 
+    # https://github.com/jp7677/dxvk-nvapi/wiki/Passing-driver-settings
     environment.sessionVariables = {
       PROTON_DLSS_UPGRADE = 1;
       # PROTON_DLSS_INDICATOR = 1;
