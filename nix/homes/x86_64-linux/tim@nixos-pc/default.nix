@@ -59,7 +59,7 @@
     fonts =
       let
         uiFont = size: {
-          family = "Mozilla Text";
+          family = "Inter";
           pointSize = size;
         };
       in

@@ -1,4 +1,5 @@
 {
+    "ui_font_weight": 300.0,
     "diff_view_style": "unified",
     "semantic_tokens": "combined",
     "auto_install_extensions": {
@@ -31,7 +32,6 @@
         "java": true,
     },
     "active_pane_modifiers": {},
-    "ui_font_weight": 200.0,
     "agent_ui_font_size": 20.0,
     "agent_buffer_font_size": 18.0,
     "agent_servers": {
@@ -196,7 +196,7 @@
             "milliseconds": 200,
         },
     },
-    "ui_font_family": "Mozilla Text",
+    "ui_font_family": "Inter",
     "buffer_font_family": "ComicCodeLigatures Nerd Font Mono",
     "buffer_font_weight": 200.0,
     "terminal": {
