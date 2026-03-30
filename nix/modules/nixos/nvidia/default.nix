@@ -48,9 +48,6 @@ in
       pocl-cuda = pkgs.callPackage ./packages/pocl-cuda.nix {
         cudaPkgs = cfg.cuda.packages;
       };
-      nsight_compute = pkgs.callPackage ./packages/nsight_compute.nix {
-        cudaPkgs = cfg.cuda.packages;
-      };
     in
     lib.mkMerge [
       (lib.mkIf (cfg.cuda.enable || cfg.driver.enable) {
@@ -83,10 +80,10 @@ in
         environment.variables.CUDA_PATH = "${cfg.cuda.packages.cudatoolkit}";
 
         environment.systemPackages = [
-          cfg.cuda.packages.cudatoolkit
           pkgs.cuda.nvtopPackages.nvidia
+          cfg.cuda.packages.cudatoolkit
           cfg.cuda.packages.nsight_systems
-          nsight_compute
+          cfg.cuda.packages.nsight_compute
         ];
       })
 
