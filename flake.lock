@@ -344,6 +344,7 @@
       "original": {
         "owner": "Gerg-L",
         "repo": "spicetify-nix",
+        "rev": "2e2234c2932a3aff5f845cda33cb1972a9e889aa",
         "type": "github"
       }
     },
