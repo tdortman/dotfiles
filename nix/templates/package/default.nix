@@ -5,14 +5,14 @@
   ...
 }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "package";
   version = "0.1.0";
 
   src = fetchFromGithub {
     owner = "tdortman";
     repo = "package";
-    rev = "v${version}";
+    rev = "v${finalAttrs.version}";
     hash = "";
   };
 
@@ -36,4 +36,4 @@ stdenv.mkDerivation rec {
     mainProgram = "package";
     platforms = [ "x86_64-linux" ];
   };
-}
+})
