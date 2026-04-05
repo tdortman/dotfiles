@@ -325,7 +325,7 @@
     dbeaver-bin
     lsfg-vk-ui
     lsfg-vk
-    temp.winboat
+    winboat
 
     libratbag
     piper
