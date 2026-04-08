@@ -9,7 +9,7 @@
   home.stateVersion = "25.11";
 
   onepassword.enable = true;
-  
+
   services.wl-clip-persist = {
     enable = true;
     clipboardType = "regular";
@@ -147,9 +147,17 @@
       kded5rc.Module-browserintegrationreminder.autoload = false;
       kded6rc.PlasmaBrowserIntegration.shownCount = 1;
 
-      kwinrulesrc."28f2a5bd-b708-4cde-b12e-cc2e3bc1def1" = {
-        desktopfile = "/run/current-system/sw/share/applications/StreamController.desktop";
-        desktopfilerule = 4;
+      kwinrulesrc = {
+        "28f2a5bd-b708-4cde-b12e-cc2e3bc1def1" = {
+          desktopfile = "/run/current-system/sw/share/applications/StreamController.desktop";
+          desktopfilerule = 4;
+        };
+
+        # GitButler
+        "9f92402d-ab4d-45b7-9660-516c5f837c7b" = {
+          maximizehoriz = true;
+          maximizevert = true;
+        };
       };
     };
 
