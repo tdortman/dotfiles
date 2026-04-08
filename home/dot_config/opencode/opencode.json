@@ -28,5 +28,6 @@
             "head *": "allow",
             "echo *": "allow"
         }
-    }
+    },
+    "autoupdate": false
 }
