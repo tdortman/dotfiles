@@ -38,9 +38,17 @@ in
       description = "no-rgb";
       serviceConfig = {
         ExecStart = "${no-rgb}/bin/no-rgb";
-        Type = "idle";
+        Type = "oneshot";
       };
-      wantedBy = [ "multi-user.target" ];
+    };
+
+    systemd.timers.no-rgb = {
+      description = "Run no-rgb every 2 hours";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "0";
+        OnUnitActiveSec = "2h";
+      };
     };
   };
 }

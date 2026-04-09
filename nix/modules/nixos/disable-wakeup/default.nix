@@ -7,9 +7,7 @@
 
 let
   cfg = config.disableWakeFromHibernate;
-  script = ''
-    #!${pkgs.bash}/bin/bash
-
+  script = pkgs.writeShellScript "disable_wakeup.sh" ''
     case "$1" in
       pre)
         # Disable the `power/wakeup` flag for devices where it exists.
@@ -37,9 +35,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.etc."systemd/system-sleep/disable_wakeup.sh" = {
-      text = script;
-      mode = "0755";
-    };
+    environment.etc."systemd/system-sleep/disable_wakeup.sh".source = script;
   };
 }
