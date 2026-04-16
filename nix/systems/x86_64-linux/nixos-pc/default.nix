@@ -350,6 +350,7 @@
     opencode
     github-copilot-cli
     codex
+    custom.droid
 
     custom.danbooru-rs
     custom.shiru

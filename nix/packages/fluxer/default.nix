@@ -6,13 +6,8 @@
   makeWrapper,
 
   middleClickScroll ? true,
-}:
-
-let
-  pname = "fluxer";
-  version = "0.0.8";
-
-  appImageArtifacts = {
+  version ? "0.0.8",
+  artifacts ? {
     x86_64-linux = {
       url = "https://api.fluxer.app/dl/desktop/stable/linux/x64/fluxer-stable-${version}-x86_64.AppImage";
       hash = "sha256-GdoBK+Z/d2quEIY8INM4IQy5tzzIBBM+3CgJXQn0qAw=";
@@ -21,11 +16,14 @@ let
       url = "https://api.fluxer.app/dl/desktop/stable/linux/arm64/fluxer-stable-${version}-arm64.AppImage";
       hash = "sha256-wxLNekbw3E0YPcC27COWtp8VphKmBB9bF2dp7lnjPf8=";
     };
-  };
+  },
+}:
 
-  artifact =
-    appImageArtifacts.${stdenv.hostPlatform.system}
-      or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
+let
+  pname = "fluxer";
+  system = stdenv.hostPlatform.system;
+
+  artifact = artifacts.${system} or (throw "Unsupported system: ${system}");
 
   src = fetchurl artifact;
 
@@ -66,7 +64,7 @@ appimageTools.wrapType2 {
     homepage = "https://fluxer.app";
     license = licenses.agpl3Only;
     mainProgram = "fluxer";
-    platforms = builtins.attrNames appImageArtifacts;
+    platforms = builtins.attrNames artifacts;
     sourceProvenance = with sourceTypes; [ binaryNativeCode ];
   };
 }
