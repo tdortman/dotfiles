@@ -77,11 +77,8 @@ in
       # CUDA configuration
       (lib.mkIf cfg.cuda.enable {
 
-        environment.variables.CUDA_PATH = "${cfg.cuda.packages.cudatoolkit}";
-
         environment.systemPackages = [
           pkgs.cuda.nvtopPackages.nvidia
-          cfg.cuda.packages.cudatoolkit
           cfg.cuda.packages.nsight_systems
           cfg.cuda.packages.nsight_compute
         ];

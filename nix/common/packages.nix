@@ -11,13 +11,10 @@
       file
       shellcheck
       sqlitebrowser
-      gcc
       moor
       dust
       rm-improved
       wget
-      gnumake
-      ninja
       git
       delta
       unzip
@@ -35,7 +32,6 @@
       bun
       zoxide
       gh
-      rustup
       uv
       ookla-speedtest
       mold-unwrapped
@@ -57,11 +53,7 @@
       jq
       kmod
       lz4
-      maven
-      gradle
-      musl
       oha
-      protobuf
       qemu
       lazygit
       valgrind
@@ -75,15 +67,8 @@
       trashy
       zip
       gdb
-      nodejs
       unrar
       hydra-check
-
-      llvmPackages_21.clang-tools
-      llvmPackages_21.clang-manpages
-      llvmPackages_21.openmp
-      llvmPackages_21.clangUseLLVM
-      llvmPackages_21.bintools
 
       bear
       tokei
@@ -98,7 +83,6 @@
       vulkan-loader
       sd
       p7zip-rar
-      cabextract
       zenity
       shfmt
 
