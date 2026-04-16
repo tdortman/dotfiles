@@ -44,6 +44,7 @@
         basic.description = "Basic development environment";
         shell.description = "Shell environment";
         package.description = "Package development environment";
+        rust-shell.description = "Rust shell using rust-overlay";
       };
 
       outputs-builder = channels: {
