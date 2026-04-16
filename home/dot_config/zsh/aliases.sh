@@ -156,11 +156,11 @@ create_mold_wrapper() {
 }
 
 # Create wrappers for build tools
-build_tools=(make cmake ninja)
-for tool in "${build_tools[@]}"; do
-    create_mold_wrapper "$tool"
-    alias "$tool"="__mold_wrapped_$tool"
-done
+# build_tools=(make cmake ninja)
+# for tool in "${build_tools[@]}"; do
+#     create_mold_wrapper "$tool"
+#     alias "$tool"="__mold_wrapped_$tool"
+# done
 
 alias -g -- -h='-h 2>&1 | bat --language=help --style=plain --paging=never --theme="OneDark"'
 alias -g -- --help='--help 2>&1 | bat --language=help --style=plain --paging=never --theme="OneDark"'
