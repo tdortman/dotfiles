@@ -291,6 +291,12 @@
                 },
             },
         },
+        "zls": {
+            "initialization_options": {
+                "enable_argument_placeholders": false,
+                "warn_style": true,
+            },
+        },
         "rust-analyzer": {
             "initialization_options": {
                 "check": {
