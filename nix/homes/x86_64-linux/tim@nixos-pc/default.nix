@@ -189,6 +189,13 @@
         '';
         runAlways = true;
       };
+
+      teams = {
+        text = ''
+          setsid teams-for-linux --wayland --minimized --enableIncomingCallToast &
+        '';
+        runAlways = true;
+      };
     };
   };
 

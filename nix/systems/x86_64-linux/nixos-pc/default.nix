@@ -338,6 +338,7 @@
     xdg-utils
     xdg-desktop-portal
     kdePackages.xdg-desktop-portal-kde
+    teams-for-linux
 
     # Bluetooth Dongle
     rtl8761b-firmware
