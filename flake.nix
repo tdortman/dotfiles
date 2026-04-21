@@ -47,9 +47,40 @@
         rust-shell.description = "Rust shell using rust-overlay";
       };
 
-      outputs-builder = channels: {
-        formatter = channels.nixpkgs.nixfmt;
-      };
+      outputs-builder =
+        channels:
+        let
+          pkgs = channels.nixpkgs;
+        in
+        {
+          formatter = pkgs.nixfmt;
+
+          apps.update =
+            let
+              script = pkgs.writeShellScriptBin "update-packages" ''
+                set -euo pipefail
+                repo_root=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
+                exit_code=0
+
+                for updater in "$repo_root"/nix/packages/*/update.sh; do
+                  if [[ -f "$updater" ]]; then
+                    name=$(basename "$(dirname "$updater")")
+                    echo "==> Updating $name..."
+                    if ! (cd "$repo_root" && "$updater"); then
+                      echo "    FAILED: $name"
+                      exit_code=1
+                    fi
+                  fi
+                done
+
+                exit $exit_code
+              '';
+            in
+            {
+              type = "app";
+              program = "${script}/bin/update-packages";
+            };
+        };
     };
 
   inputs = {
