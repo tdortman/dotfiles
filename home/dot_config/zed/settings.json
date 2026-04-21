@@ -71,7 +71,7 @@
     "buffer_line_height": "standard",
     "use_system_path_prompts": true,
     "edit_predictions": {
-        "provider": "copilot",
+        "provider": "zed",
     },
     "colorize_brackets": true,
     "collaboration_panel": {
@@ -181,8 +181,10 @@
         ],
         "default_profile": "write",
         "default_model": {
-            "provider": "copilot_chat",
-            "model": "gpt-5-mini",
+            "effort": "high",
+            "enable_thinking": true,
+            "provider": "zed.dev",
+            "model": "gpt-5.4",
         },
         "button": true,
     },

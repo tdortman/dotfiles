@@ -12,12 +12,12 @@
 let
   system = stdenvNoCC.hostPlatform.system;
 
-  version = "0.102.0";
+  version = "0.105.1";
   hashes = {
-    "x86_64-linux" = "sha256-i32N/04Hkm0SyXmr9aGe5a9HFI2oEkiMgwRANBWFlaA=";
-    "aarch64-linux" = "sha256-jnyhD/S4MAJLRBRr4KNolRXo0hTsAF6tqU4922h19I0=";
-    "x86_64-darwin" = "sha256-j2aGyAi0iOjWS6TbIeHc00Jb6TLjY58siHPvEkJ5L0s=";
-    "aarch64-darwin" = "sha256-iFCSDXLIF1MG2X/4wz2Xy6pDGNZfQZZy5U9HRjE4tlg=";
+    "x86_64-linux" = "sha256-wOKULC+dKcZefWop3XR03+O8VEQtvBm3RFdjbIQyBnQ=";
+    "aarch64-linux" = "sha256-ARHmtlOdz9hHWpFZfXP4aIFGXD21zMtWGxvMd4BQZxI=";
+    "x86_64-darwin" = "sha256-gNQNepSgAkFFmkmbwrXpzI1cwEPmoWMEqTechTn7XG4=";
+    "aarch64-darwin" = "sha256-RuFHxPzkDR3djYjjh3ZaktNsMqqtZuM1ez1WwZiO3/8=";
   };
 
   platformPath =
