@@ -12,14 +12,23 @@
         config.allowUnfree = true;
       };
 
-      # https://github.com/clangd/clangd/issues/2531
-      cudaPkgs = pkgs.cudaPackages_12_9;
-      llvm = pkgs.llvmPackages_21;
+      cudaPkgs = pkgs.cudaPackages_13_2;
+      llvm = pkgs.llvmPackages_22;
+
+      cudaPackages = with cudaPkgs; [
+        cuda_nvcc
+        cuda_cudart
+        cuda_cccl
+        cuda_cuobjdump
+      ];
 
       cuda = {
         arch = "1200";
         sm_target = "sm_120";
-        path = cudaPkgs.cudatoolkit;
+        path = pkgs.symlinkJoin {
+          name = "cuda-dev-path";
+          paths = cudaPackages;
+        };
         version = {
           complete = cudaPkgs.cudaMajorMinorVersion;
           major = cudaPkgs.cudaMajorVersion;
@@ -27,9 +36,7 @@
         };
 
       };
-      buildInputs = with cudaPkgs; [
-        cudatoolkit
-        cuda_cudart
+      buildInputs = cudaPackages ++ [
         pkgs.stdenv.cc.cc.lib
       ];
 
@@ -39,16 +46,15 @@
         meson
         uv
         pkg-config
+
+        cudaPkgs.nsight_systems
+        cudaPkgs.nsight_compute
       ];
     in
     {
       devShells.${system}.default = pkgs.mkShell {
 
         inherit buildInputs nativeBuildInputs;
-
-        CPATH = pkgs.lib.makeIncludePath [
-          cudaPkgs.cudatoolkit
-        ];
 
         LD_LIBRARY_PATH = "${
           pkgs.lib.makeLibraryPath (buildInputs ++ nativeBuildInputs)
@@ -58,13 +64,13 @@
               if [ ! -e .clangd ]; then
                 cat > .clangd <<EOF
           CompileFlags:
-            Compiler: ${cudaPkgs.cudatoolkit}/bin/nvcc
+            Compiler: ${cuda.path}/bin/nvcc
             Add:
               - -xcuda
-              - --cuda-path=${cudaPkgs.cudatoolkit}
+              - --cuda-path=${cuda.path}
               - -D__INTELLISENSE__
               - -D__CLANGD__
-              - -I${cudaPkgs.cudatoolkit}/include
+              - -I${cuda.path}/include
               - -I$(pwd)/include
               - -D__LIBCUDAXX__STD_VER=${cuda.version.major}
               - -D__CUDACC_VER_MAJOR__=${cuda.version.major}
