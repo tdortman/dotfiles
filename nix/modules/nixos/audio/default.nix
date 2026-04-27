@@ -164,14 +164,9 @@ in
 
   config = lib.mkIf cfg.enable {
 
-    environment.systemPackages =
-      with pkgs;
-      [
-        qpwgraph
-        ladspaPlugins
-
-      ]
-      ++ (lib.optional cfg.micProcess.enable rnnoise-plugin);
+    environment.systemPackages = [
+      pkgs.qpwgraph
+    ];
 
     security.rtkit.enable = true;
 
@@ -181,6 +176,11 @@ in
       pulse.enable = true;
       jack.enable = true;
       wireplumber.enable = true;
+
+      extraLadspaPackages = [
+        pkgs.ladspaPlugins
+      ]
+      ++ lib.optional cfg.micProcess.enable pkgs.rnnoise-plugin;
     };
 
     services.pipewire.wireplumber.extraConfig."99-alsa-rules" = {
@@ -234,7 +234,7 @@ in
               nodes = [
                 {
                   type = "ladspa";
-                  plugin = "${pkgs.ladspaPlugins}/lib/ladspa/fast_lookahead_limiter_1913.so";
+                  plugin = "fast_lookahead_limiter_1913";
                   label = "fastLookaheadLimiter";
                   control = {
                     "Limit (dB)" = categoryConfig.limitThreshold;
@@ -279,13 +279,13 @@ in
                       {
                         type = "ladspa";
                         name = "rnnoise";
-                        plugin = "${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so";
+                        plugin = "librnnoise_ladspa";
                         label = "noise_suppressor_stereo";
                         control."VAD Threshold (%)" = cfg.micProcess.vadThreshold;
                       }
                       {
                         type = "ladspa";
-                        plugin = "${pkgs.ladspaPlugins}/lib/ladspa/sc4_1882.so";
+                        plugin = "sc4_1882";
                         name = "compressor";
                         label = "sc4";
                         control = with cfg.micProcess.compressor; {
