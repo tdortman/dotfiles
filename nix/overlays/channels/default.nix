@@ -16,4 +16,9 @@ final: prev: {
     config.allowUnfree = true;
     config.cudaSupport = true;
   };
+
+  master = import inputs.nixpkgs-master {
+    system = final.stdenv.hostPlatform.system;
+    config.allowUnfree = true;
+  };
 }

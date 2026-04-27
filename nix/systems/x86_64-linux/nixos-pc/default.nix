@@ -348,7 +348,7 @@
       commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
     })
 
-    opencode
+    master.opencode
     github-copilot-cli
     codex
     custom.droid

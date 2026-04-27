@@ -85,6 +85,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
     nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/503185/head";
 
