@@ -29,6 +29,58 @@
       tooltipDelay = 5;
     };
 
+    panels = [
+      {
+        location = "bottom";
+        height = 48;
+        floating = true;
+        screen = "all";
+        hiding = "none";
+
+        widgets = [
+          { kickoff = { }; }
+          { pager = { }; }
+          {
+            iconTasks = {
+              launchers = [
+                "applications:org.kde.kdeconnect.app.desktop"
+                "applications:thunderbird.desktop"
+                "applications:com.mitchellh.ghostty.desktop"
+                "applications:org.kde.dolphin.desktop"
+                "applications:librewolf.desktop"
+                "applications:discord.desktop"
+                "applications:steam.desktop"
+                "applications:spotify.desktop"
+              ];
+            };
+          }
+          "org.kde.plasma.marginsseparator"
+          { systemTray = { }; }
+          {
+            digitalClock = {
+              date = {
+                enable = true;
+                format.custom = "dd/MM/yyyy";
+                position = "belowTime";
+              };
+              time.format = "24h";
+              timeZone = {
+                selected = [
+                  "America/Los_Angeles"
+                  "Local"
+                  "Asia/Tokyo"
+                ];
+                lastSelected = "Local";
+              };
+              calendar.firstDayOfWeek = "monday";
+            };
+          }
+          "org.kde.plasma.showdesktop"
+        ];
+
+      }
+    ];
+
     kscreenlocker = {
       autoLock = false;
       appearance.showMediaControls = false;
@@ -99,10 +151,6 @@
     session.sessionRestore.restoreOpenApplicationsOnLogin = "startWithEmptySession";
 
     configFile = {
-      plasmashellrc."PlasmaViews/Panel 278/Defaults".thickness = 48;
-      plasmashellrc."PlasmaViews/Panel 25/Defaults".thickness = 48;
-      plasmashellrc."PlasmaViews/Panel 662/Defaults".thickness = 48;
-
       kdeglobals.Sounds.Enable = false;
       kdeglobals.General.TerminalApplication = "ghostty";
       kdeglobals.General.TerminalService = "com.mitchellh.ghostty.desktop";
@@ -111,17 +159,6 @@
       baloofilerc."Basic Settings".Indexing-Enabled = false;
 
       plasmanotifyrc.Notifications.PopupTimeout = 15000;
-
-      "plasma-org.kde.plasma.desktop-appletsrc" = {
-        "Containments/278/Applets/296/Configuration/Appearance" = {
-          fontWeight = 400;
-          selectedTimeZones = "America/Los_Angeles,Local,Asia/Tokyo";
-        };
-        "Containments/662/Applets/681/Configuration/Appearance" = {
-          fontWeight = 400;
-          selectedTimeZones = "America/Los_Angeles,Local,Asia/Tokyo";
-        };
-      };
 
       kcminputrc."Libinput/1133/16531/Logitech PRO X" = {
         PointerAccelerationProfile = 1;
