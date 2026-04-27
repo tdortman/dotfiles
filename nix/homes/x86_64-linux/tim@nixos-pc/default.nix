@@ -190,10 +190,22 @@
           desktopfilerule = 4;
         };
 
-        # GitButler
+        General = {
+          rules = "9f92402d-ab4d-45b7-9660-516c5f837c7b";
+          count = 1;
+        };
+
         "9f92402d-ab4d-45b7-9660-516c5f837c7b" = {
+          Description = "GitButler maximize";
+          types = 1;
+          wmclass = "gitbutler-tauri";
+          wmclasscomplete = false;
+          wmclassmatch = 1;
+
           maximizehoriz = true;
+          maximizehorizrule = 2;
           maximizevert = true;
+          maximizevertrule = 2;
         };
       };
     };
