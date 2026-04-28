@@ -350,7 +350,7 @@
 
     master.opencode
     github-copilot-cli
-    codex
+    master.codex
     custom.droid
 
     custom.danbooru-rs
