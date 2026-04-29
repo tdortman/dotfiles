@@ -1,4 +1,7 @@
 {
+    "git_panel": {
+        "dock": "left"
+    },
     "ui_font_weight": 300.0,
     "diff_view_style": "unified",
     "semantic_tokens": "combined",
@@ -75,12 +78,14 @@
     },
     "colorize_brackets": true,
     "collaboration_panel": {
+        "dock": "left",
         "button": true,
     },
     "debugger": {
         "dock": "right",
     },
     "outline_panel": {
+        "dock": "left",
         "file_icons": true,
         "button": true,
     },
@@ -142,6 +147,7 @@
         "diagnostics": false,
     },
     "agent": {
+        "dock": "right",
         "inline_assistant_model": {
             "provider": "copilot_chat",
             "model": "gpt-5-mini",
