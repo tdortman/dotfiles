@@ -121,7 +121,7 @@
     };
 
     spicetify-nix = {
-      url = "github:tdortman/spicetify-nix";
+      url = "github:tdortman/spicetify-nix/1e770da5b9445fe5bcce770aee904a311b48625b";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
