@@ -21,7 +21,6 @@
       zsh
       stow
       curl
-      cmake
       imagemagick
       gifsicle
       openssh
@@ -43,13 +42,11 @@
       direnv
       git-filter-repo
       git-lfs
-      go
       gtk4
       gtk3
       gtk2
       kdePackages.breeze-gtk
       hyperfine
-      jdk
       jq
       kmod
       lz4
