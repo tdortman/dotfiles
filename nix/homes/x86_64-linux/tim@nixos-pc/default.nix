@@ -55,7 +55,17 @@
             };
           }
           "org.kde.plasma.marginsseparator"
-          { systemTray = { }; }
+          {
+            systemTray = {
+              items = {
+                # Seems to not be functional at the moment, in fact the volume
+                # applet doesn't seem to exist at all?
+                #
+                # https://github.com/nix-community/plasma-manager/issues/565
+                configs."org.kde.plasma.volume".config.General.showVirtualDevices = true;
+              };
+            };
+          }
           {
             digitalClock = {
               date = {
