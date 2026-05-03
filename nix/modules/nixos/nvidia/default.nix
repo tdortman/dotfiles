@@ -16,7 +16,7 @@ in
 
       packages = lib.mkOption {
         type = lib.types.attrsOf lib.types.package;
-        default = pkgs.cuda.cudaPackages;
+        default = pkgs.cudaPackages;
         description = "The CUDA packages to use. Defaults to the latest CUDA packages provided by Nixpkgs";
       };
     };
