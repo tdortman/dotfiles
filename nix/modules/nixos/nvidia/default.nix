@@ -12,34 +12,25 @@ in
   options.nvidia = {
     enable = lib.mkEnableOption "NVIDIA GPU support (enables either driver, CUDA, or both)";
 
-    cuda = lib.mkOption {
-      type = lib.types.submodule {
-        options = {
-          enable = lib.mkEnableOption "CUDA support";
-          packages = lib.mkOption {
-            type = lib.types.attrsOf lib.types.package;
-            default = pkgs.cuda.cudaPackages;
-            description = "The CUDA packages to use. Defaults to the latest CUDA packages provided by Nixpkgs";
-          };
-        };
+    cuda = {
+      enable = lib.mkEnableOption "CUDA support";
+
+      cufile.enable = lib.mkEnableOption "cuFile (nvidia-fs) kernel module for GPUDirect Storage";
+
+      packages = lib.mkOption {
+        type = lib.types.attrsOf lib.types.package;
+        default = pkgs.cuda.cudaPackages;
+        description = "The CUDA packages to use. Defaults to the latest CUDA packages provided by Nixpkgs";
       };
-      default = { };
-      description = "CUDA configuration";
     };
 
-    driver = lib.mkOption {
-      type = lib.types.submodule {
-        options = {
-          enable = lib.mkEnableOption "NVIDIA graphics driver";
-          package = lib.mkOption {
-            type = lib.types.package;
-            default = config.boot.kernelPackages.nvidiaPackages.stable;
-            description = "The NVIDIA driver package to use";
-          };
-        };
+    driver = {
+      enable = lib.mkEnableOption "NVIDIA graphics driver";
+      package = lib.mkOption {
+        type = lib.types.package;
+        default = config.boot.kernelPackages.nvidiaPackages.stable;
+        description = "The NVIDIA driver package to use";
       };
-      default = { };
-      description = "NVIDIA driver configuration";
     };
   };
 
@@ -74,9 +65,8 @@ in
         };
       })
 
-      # CUDA configuration
+      # Base CUDA configuration
       (lib.mkIf cfg.cuda.enable {
-
         environment.systemPackages = [
           pkgs.cuda.nvtopPackages.nvidia
           cfg.cuda.packages.nsight_systems
@@ -84,6 +74,24 @@ in
         ];
       })
 
+      # cuFile (nvidia-fs) Kernel Module Integration
+      (lib.mkIf (cfg.cuda.enable && cfg.cuda.cufile.enable && cfg.driver.enable) {
+        boot.kernelModules = [ "nvidia-fs" ];
+
+        boot.extraModulePackages =
+          let
+            kernelPackages = config.boot.kernelPackages;
+          in
+          [
+            (kernelPackages.callPackage ./packages/nvidia-fs.nix {
+              cudaPkgs = cfg.cuda.packages;
+              nvidiaKernelModule = config.hardware.nvidia.package.open;
+              nvidiaKernelSourceDir = "${config.hardware.nvidia.package.open.src}/kernel-open/nvidia";
+            })
+          ];
+      })
+
+      # Driver configuration
       (lib.mkIf cfg.driver.enable {
         services.xserver.videoDrivers = [ "nvidia" ];
 

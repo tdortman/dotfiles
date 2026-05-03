@@ -81,7 +81,11 @@
   };
 
   nvidia = {
-    cuda.enable = true;
+    cuda = {
+      enable = true;
+      cufile.enable = true;
+      packages = pkgs.cudaPackages_13_2;
+    };
     driver = {
       enable = true;
       package = config.boot.kernelPackages.nvidiaPackages.latest;
