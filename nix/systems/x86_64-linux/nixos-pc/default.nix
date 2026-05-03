@@ -83,7 +83,7 @@
   nvidia = {
     cuda = {
       enable = true;
-      cufile.enable = true;
+      nvidia-fs.enable = true;
       packages = pkgs.cudaPackages_13_2;
     };
     driver = {

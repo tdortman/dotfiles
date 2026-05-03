@@ -10,12 +10,9 @@ let
 in
 {
   options.nvidia = {
-    enable = lib.mkEnableOption "NVIDIA GPU support (enables either driver, CUDA, or both)";
-
     cuda = {
       enable = lib.mkEnableOption "CUDA support";
-
-      cufile.enable = lib.mkEnableOption "cuFile (nvidia-fs) kernel module for GPUDirect Storage";
+      nvidia-fs.enable = lib.mkEnableOption "nvidia-fs kernel module for GPUDirect Storage";
 
       packages = lib.mkOption {
         type = lib.types.attrsOf lib.types.package;
@@ -74,8 +71,8 @@ in
         ];
       })
 
-      # cuFile (nvidia-fs) Kernel Module Integration
-      (lib.mkIf (cfg.cuda.enable && cfg.cuda.cufile.enable && cfg.driver.enable) {
+      # nvidia-fs  Kernel Module Integration
+      (lib.mkIf (cfg.cuda.enable && cfg.cuda.nvidia-fs.enable && cfg.driver.enable) {
         boot.kernelModules = [ "nvidia-fs" ];
 
         boot.extraModulePackages =
