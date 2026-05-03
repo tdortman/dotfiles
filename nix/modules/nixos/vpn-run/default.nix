@@ -8,8 +8,7 @@
 let
   cfg = config.vpn-run;
 
-  # Read the script and substitute config values
-  scriptText =
+  scriptTextSetup =
     builtins.replaceStrings
       [
         "@defaultInterface@"
@@ -25,23 +24,35 @@ let
         (if cfg.disableIPv6 then "true" else "false")
         (if cfg.dropNonVpnForward then "true" else "false")
       ]
-      (builtins.readFile ./vpn-run.sh);
+      (builtins.readFile ./vpn-run-setup.sh);
 
-  vpnRunScript = pkgs.writeShellApplication {
-    name = "vpn-run";
+  scriptTextRun = builtins.replaceStrings [ "@defaultInterface@" ] [ cfg.defaultInterface ] (
+    builtins.readFile ./vpn-run.sh
+  );
 
+  vpnRunSetup = pkgs.writeShellApplication {
+    name = "vpn-run-setup";
     runtimeInputs = [
       pkgs.iproute2
-      pkgs.gnugrep
+      pkgs.nftables
+      pkgs.coreutils
       pkgs.util-linux
       pkgs.procps
-      pkgs.netcat
-      pkgs.iptables
-      pkgs.coreutils
+      pkgs.gnugrep
       pkgs.socat
     ];
+    text = scriptTextSetup;
+  };
 
-    text = scriptText;
+  vpnRun = pkgs.writeShellApplication {
+    name = "vpn-run";
+    runtimeInputs = [
+      pkgs.iproute2
+      pkgs.coreutils
+      pkgs.util-linux
+      vpnRunSetup
+    ];
+    text = scriptTextRun;
   };
 
 in
@@ -59,7 +70,7 @@ in
     allowedUsers = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
-      description = "List of users allowed to use vpn-run without sudo";
+      description = "List of users allowed to use vpn-run without sudo password";
       example = [
         "alice"
         "bob"
@@ -100,7 +111,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = [ vpnRunScript ];
+    environment.systemPackages = [
+      vpnRun
+      vpnRunSetup
+    ];
 
     environment.shellAliases = {
       vpn-run = lib.mkIf cfg.shellAlias "sudo -E vpn-run";
@@ -111,7 +125,7 @@ in
         users = cfg.allowedUsers;
         commands = [
           {
-            command = "${vpnRunScript}/bin/vpn-run";
+            command = "${vpnRun}/bin/vpn-run";
             options = [
               "NOPASSWD"
               "SETENV"
