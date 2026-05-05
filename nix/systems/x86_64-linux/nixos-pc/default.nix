@@ -374,8 +374,9 @@
     BROWSER = "${pkgs.librewolf}/bin/librewolf";
     DEFAULT_BROWSER = "${pkgs.librewolf}/bin/librewolf";
 
-    VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
-    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.x86_64.json";
+    # nvidia_icd.x86_64.json -> nvidia_icd.json as of 595.71.05
+    VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
+    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
 
     NIXOS_OZONE_WL = "1";
 
