@@ -351,17 +351,16 @@
         "systems": "systems_3"
       },
       "locked": {
-        "lastModified": 1776578199,
-        "narHash": "sha256-5POTitE3eTNGTdbmiMS6ji5EihS0dE4lW0iybPXc/vU=",
+        "lastModified": 1777789434,
+        "narHash": "sha256-N+pSeybwlvIDlljSWTi9prItdHLG6d6xm3/LRLtBSoQ=",
         "owner": "tdortman",
         "repo": "spicetify-nix",
-        "rev": "1e770da5b9445fe5bcce770aee904a311b48625b",
+        "rev": "8c034fe9add93f3cf3f50b6208d8f6f2a7d862ec",
         "type": "github"
       },
       "original": {
         "owner": "tdortman",
         "repo": "spicetify-nix",
-        "rev": "1e770da5b9445fe5bcce770aee904a311b48625b",
         "type": "github"
       }
     },
