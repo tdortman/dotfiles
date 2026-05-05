@@ -120,7 +120,7 @@
     "codesnap.roundedCorners": true,
     "codesnap.transparentBackground": true,
     "codesnap.showWindowControls": false,
-    // "codesnap.boxShadow": "none",
+    "codesnap.boxShadow": "none",
     "workbench.colorCustomizations": {
         "editor.background": "#000000",
         "sideBar.background": "#000000",

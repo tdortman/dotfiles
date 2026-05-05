@@ -147,6 +147,7 @@
         "diagnostics": false,
     },
     "agent": {
+        "sidebar_side": "right",
         "dock": "right",
         "inline_assistant_model": {
             "provider": "copilot_chat",
