@@ -6,11 +6,11 @@
 
 appimageTools.wrapType2 rec {
   pname = "shiru";
-  version = "6.5.2";
+  version = "6.6.0";
 
   src = fetchurl {
     url = "https://github.com/RockinChaos/Shiru/releases/download/v${version}/linux-Shiru-v${version}.AppImage";
-    sha256 = "sha256-GNS23JtT+9RBcsI1LO17en9adQFtZyJYtX3E55UhBD0=";
+    sha256 = "sha256-Y7R8gKsPm7NmzKXC0C24KqY1s7boWal3w5Lin35eswk=";
   };
 
   extraInstallCommands =
