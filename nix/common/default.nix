@@ -70,6 +70,8 @@
     initialPassword = "password";
   };
 
+  boot.tmp.cleanOnBoot = true;
+
   programs.wireshark = {
     package = pkgs.wireshark;
     enable = true;
