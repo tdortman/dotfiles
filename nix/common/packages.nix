@@ -96,6 +96,7 @@
       python3
       pixi
       rclone
+      devenv
 
       man-pages
       man-pages-posix
