@@ -46,6 +46,7 @@
         package.description = "Package development environment";
         rust.description = "Rust development environment using rust-overlay";
         rust-shell.description = "Rust shell using rust-overlay";
+        cuda-oxide.description = "Rust development environment for cuda-oxide projects";
       };
 
       outputs-builder =
