@@ -40,6 +40,7 @@
           }:/run/opengl-driver/lib";
 
           CUDA_HOME = cudaPkgs.cudatoolkit;
+          CUDA_TOOLKIT_PATH = cudaPkgs.cudatoolkit;
           LIBCLANG_PATH = "${llvmPkgs.libclang.lib}/lib";
           CPATH = "${cudaPkgs.cudatoolkit}/include";
           LIBNVJITLINK_PATH = "${cudaPkgs.libnvjitlink.lib}/lib/libnvJitLink.so";

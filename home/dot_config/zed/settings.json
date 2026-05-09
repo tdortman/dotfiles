@@ -1,6 +1,6 @@
 {
     "git_panel": {
-        "dock": "left"
+        "dock": "left",
     },
     "ui_font_weight": 300.0,
     "diff_view_style": "unified",
