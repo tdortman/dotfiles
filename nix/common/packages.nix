@@ -97,6 +97,7 @@
       pixi
       rclone
       devenv
+      atool
 
       man-pages
       man-pages-posix
