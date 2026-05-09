@@ -8,6 +8,35 @@
 let
   cfg = config.audio;
 
+  muteAudioInputs = pkgs.writeShellApplication {
+    name = "mute-audio-inputs";
+    runtimeInputs = [
+      pkgs.jq
+      pkgs.pipewire
+      pkgs.wireplumber
+    ];
+    text = ''
+      for _ in $(seq 1 20); do
+        found=0
+
+        while IFS= read -r id; do
+          found=1
+          wpctl set-mute "$id" 1 || true
+        done < <(
+          pw-dump Node | jq -r --argjson names '${builtins.toJSON cfg.mutedInputs}' '
+            .[]
+            | select(.info.props."media.class" == "Audio/Source")
+            | select(.info.props."node.name" as $name | $names | index($name))
+            | .id
+          '
+        )
+
+        [ "$found" -eq 1 ] && exit 0
+        sleep 0.5
+      done
+    '';
+  };
+
   mkAppRoutingRules =
     categories:
     let
@@ -48,6 +77,13 @@ in
       type = lib.types.str;
       description = "The name of the hardware sink (output) device.";
       example = "alsa_output.pci-0000_00_1f.3.analog-stereo";
+    };
+
+    mutedInputs = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      description = "Hardware source node names to mute when PipeWire creates them.";
+      example = [ "alsa_input.usb-046d_Brio_100_2602ZBR396W8-02.mono-fallback" ];
     };
 
     appCategories = lib.mkOption {
@@ -202,6 +238,21 @@ in
           };
         }
       ];
+    };
+
+    systemd.user.services.mute-audio-inputs = lib.mkIf (cfg.mutedInputs != [ ]) {
+      description = "Mute configured PipeWire audio inputs";
+      wantedBy = [ "default.target" ];
+      after = [
+        "pipewire.service"
+        "wireplumber.service"
+      ];
+      wants = [ "wireplumber.service" ];
+
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = lib.getExe muteAudioInputs;
+      };
     };
 
     services.pipewire.extraConfig.pipewire-pulse."99-app-routing" = {

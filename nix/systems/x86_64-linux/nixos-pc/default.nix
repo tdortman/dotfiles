@@ -36,6 +36,7 @@
     enable = true;
     input = "alsa_input.pci-0000_0b_00.4.analog-stereo";
     output = "alsa_output.usb-Schiit_Audio_Schiit_Modi_Uber-00.analog-stereo";
+    mutedInputs = [ "alsa_input.usb-046d_Brio_100_2602ZBR396W8-02.mono-fallback" ];
 
     micProcess = {
       enable = true;
