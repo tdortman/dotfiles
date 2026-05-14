@@ -19,6 +19,18 @@
     user = currentUsername;
   };
 
+  boot.loader = {
+    efi.canTouchEfiVariables = true;
+
+    grub = {
+      enable = true;
+      devices = [ "nodev" ];
+      efiSupport = true;
+      font = "${pkgs.nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf";
+      fontSize = 20;
+    };
+  };
+
   audio = {
     enable = true;
     input = "alsa_input.pci-0000_02_02.0.analog-stereo";

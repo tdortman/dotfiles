@@ -1,18 +1,4 @@
-{ pkgs, ... }:
-
 {
-  boot.loader = {
-    efi.canTouchEfiVariables = true;
-
-    grub = {
-      enable = true;
-      devices = [ "nodev" ];
-      efiSupport = true;
-      font = "${pkgs.nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf";
-      fontSize = 20;
-    };
-  };
-
   disko.devices.disk.main = {
     type = "disk";
     device = "/dev/sda";
