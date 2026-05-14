@@ -6,4 +6,5 @@ in
   "nextdns-resolved.conf.age".publicKeys = [ pubKey ];
   "airvpn-privatekey.age".publicKeys = [ pubKey ];
   "airvpn-presharedkey.age".publicKeys = [ pubKey ];
+  "login-password.age".publicKeys = [ pubKey ];
 }

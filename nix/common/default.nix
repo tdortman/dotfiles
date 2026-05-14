@@ -1,7 +1,8 @@
 {
-  pkgs,
-  currentUsername,
   lib,
+  pkgs,
+  config,
+  currentUsername,
   ...
 }:
 
@@ -11,11 +12,17 @@
     ./packages.nix
   ];
 
-  age.identityPaths = [
-    "/home/${currentUsername}/.config/age/key"
-    "/root/.config/age/key"
-    "/etc/age/key"
-  ];
+  age = {
+    identityPaths = [
+      "/home/${currentUsername}/.config/age/key"
+      "/root/.config/age/key"
+      "/etc/age/key"
+    ];
+
+    secrets = {
+      login-password.file = ../secrets/login-password.age;
+    };
+  };
 
   nix.settings = {
     extra-substituters = [
@@ -67,7 +74,7 @@
       "libvirtd"
       "plugdev"
     ];
-    initialPassword = "password";
+    hashedPasswordFile = config.age.secrets."login-password".path;
   };
 
   programs.wireshark = {
