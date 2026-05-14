@@ -58,6 +58,8 @@
     ];
   };
 
+  users.mutableUsers = false;
+  users.users.root.hashedPasswordFile = config.age.secrets."login-password".path;
   users.users.${currentUsername} = {
     isNormalUser = true;
     extraGroups = [
