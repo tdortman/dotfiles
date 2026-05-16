@@ -168,6 +168,7 @@
       ips = [ "10.14.0.2/16" ];
 
       allowedIPsAsRoutes = false;
+      dynamicEndpointRefreshSeconds = 300;
 
       peers = [
         {
@@ -187,6 +188,7 @@
       ips = [ "10.183.233.232/32" ];
 
       allowedIPsAsRoutes = false;
+      dynamicEndpointRefreshSeconds = 300;
 
       peers = [
         {
