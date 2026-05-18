@@ -203,7 +203,7 @@
             "effort": "medium",
             "enable_thinking": true,
             "provider": "zed.dev",
-            "model": "gpt-5.5",
+            "model": "gpt-5.4",
         },
         "button": true,
     },
