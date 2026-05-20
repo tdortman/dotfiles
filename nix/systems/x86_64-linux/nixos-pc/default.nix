@@ -359,6 +359,7 @@
     github-copilot-cli
     master.codex
     custom.droid
+    custom.oh-my-pi
 
     custom.danbooru-rs
     custom.shiru
