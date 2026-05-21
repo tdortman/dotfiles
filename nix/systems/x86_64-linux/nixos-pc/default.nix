@@ -314,13 +314,9 @@
   environment.systemPackages = with pkgs; [
     ntfs3g
     ghostty
-    vscode-fhs
-    zed-editor-fhs
     btrfs-progs
     mpv
     librewolf
-    antigravity-fhs
-    google-chrome # Used by antigravity
 
     gvfs
     samba
@@ -355,9 +351,17 @@
       commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
     })
 
+    google-chrome # Used by antigravity
+    master.antigravity-fhs
+    master.vscode-fhs
+    zed-editor-fhs
+    master.code-cursor-fhs
+
     master.opencode
     github-copilot-cli
     master.codex
+    master.cursor-cli
+
     custom.droid
     custom.oh-my-pi
 
