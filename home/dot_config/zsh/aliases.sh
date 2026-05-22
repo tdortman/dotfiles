@@ -126,7 +126,7 @@ create_man_wrapper() {
 }
 
 skills() {
-    bunx skills "$@"
+    bunx skills "$@" -g -y
     chezmoi add ~/.agents/skills
 }
 
