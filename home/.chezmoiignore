@@ -3,6 +3,8 @@ nix-config
 .gitignore
 .gitattributes
 *.zwc
+__pycache__
+*.pyc
 
 {{- if not .use_secrets }}
   .config/age/key
@@ -30,3 +32,5 @@ nix-config
     .chezmoiscripts/*.ps1
     AppData
 {{- end }}
+
+
