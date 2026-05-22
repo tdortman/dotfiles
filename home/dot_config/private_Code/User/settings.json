@@ -739,5 +739,7 @@
     "antigravity.marketplaceExtensionGalleryServiceURL": "https://marketplace.visualstudio.com/_apis/public/gallery",
     "windsurf.marketplaceGalleryItemURL": "https://marketplace.visualstudio.com/items",
     "windsurf.marketplaceExtensionGalleryServiceURL": "https://marketplace.visualstudio.com/_apis/public/gallery",
-    "ltex.language": "en-GB"
+    "ltex.language": "en-GB",
+    "extensions.autoUpdate": false,
+    "extensions.autoCheckUpdates": true,
 }
