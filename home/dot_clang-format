@@ -19,7 +19,6 @@ AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLambdasOnASingleLine: Inline
 AllowShortLoopsOnASingleLine: true
 AllowShortNamespacesOnASingleLine: true
-AllowShortRecordOnASingleLine: true
 
 StatementMacros:
   - "_Pragma"
