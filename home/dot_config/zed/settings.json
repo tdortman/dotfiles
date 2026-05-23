@@ -8,6 +8,7 @@
     "git_panel": {
         "dock": "left",
     },
+    "completion_menu_item_kind": "symbol",
     "ui_font_weight": 300.0,
     "diff_view_style": "unified",
     "semantic_tokens": "combined",

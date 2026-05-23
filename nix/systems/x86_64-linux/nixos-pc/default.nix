@@ -309,7 +309,6 @@
   programs.dconf.enable = true;
 
   programs.thunderbird.enable = true;
-  services.gnome.gnome-keyring.enable = true;
 
   environment.systemPackages = with pkgs; [
     ntfs3g
