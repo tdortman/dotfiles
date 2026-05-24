@@ -1,5 +1,5 @@
 modelRoles: 
-  default: cursor/composer-2.5
-  commit: cursor/composer-2.5
+  default: openai-codex/gpt-5.4
+  commit: openai-codex/gpt-5.4
 startup: 
   checkUpdate: false
