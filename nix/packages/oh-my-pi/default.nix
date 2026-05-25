@@ -18,13 +18,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "oh-my-pi";
-  version = "15.2.4";
+  version = "15.3.0";
 
   src = fetchFromGitHub {
     owner = "can1357";
     repo = "oh-my-pi";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-THX4hr/dBASPxgN8RZeaMSTJRr5qKwrwXfITN3s+068=";
+    hash = "sha256-PSWPEtUjYPfEexwzFJCgpTJUrPEPhgddO2aBixBLIsw=";
   };
 
   nodeModules = stdenv.mkDerivation {
@@ -65,7 +65,7 @@ stdenv.mkDerivation (finalAttrs: {
       runHook postInstall
     '';
 
-    outputHash = "sha256-t0UglX8dKUARiqWygDW9N1I2aDv2+8CDx6RRmrxfwKk=";
+    outputHash = "sha256-aeRVFw5wQCtViibo/YyoMygnMq8jKb7VvxTd7PJ+r90=";
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
   };
