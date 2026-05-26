@@ -18,6 +18,10 @@
         ];
       };
 
+      overlays = with inputs; [
+        llm-agents.overlays.default
+      ];
+
       systems.modules.nixos = with inputs; [
         { _module.args.currentUsername = "tim"; }
         agenix.nixosModules.default
@@ -133,6 +137,6 @@
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
-
 }

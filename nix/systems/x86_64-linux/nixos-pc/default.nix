@@ -310,64 +310,67 @@
 
   programs.thunderbird.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    ntfs3g
-    ghostty
-    btrfs-progs
-    mpv
-    librewolf
+  environment.systemPackages =
+    with pkgs;
+    [
+      ntfs3g
+      ghostty
+      btrfs-progs
+      mpv
+      librewolf
 
-    gvfs
-    samba
-    glib
+      gvfs
+      samba
+      glib
 
-    inputs.agenix.packages."${system}".default
-    cuda.llama-cpp
-    cuda.lmstudio
-    dbeaver-bin
-    lsfg-vk-ui
-    lsfg-vk
-    winboat
+      inputs.agenix.packages."${system}".default
+      cuda.llama-cpp
+      cuda.lmstudio
+      dbeaver-bin
+      lsfg-vk-ui
+      lsfg-vk
+      winboat
 
-    libratbag
-    piper
-    vlc
-    libnotify
-    ghidra
-    libreoffice-qt6
-    nheko
+      libratbag
+      piper
+      vlc
+      libnotify
+      ghidra
+      libreoffice-qt6
+      nheko
 
-    xdg-utils
-    xdg-desktop-portal
-    kdePackages.xdg-desktop-portal-kde
-    teams-for-linux
+      xdg-utils
+      xdg-desktop-portal
+      kdePackages.xdg-desktop-portal-kde
+      teams-for-linux
 
-    # Bluetooth Dongle
-    rtl8761b-firmware
+      # Bluetooth Dongle
+      rtl8761b-firmware
 
-    (discord.override {
-      withVencord = true;
-      commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
-    })
+      (discord.override {
+        withVencord = true;
+        commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
+      })
 
-    google-chrome # Used by antigravity
-    master.antigravity-fhs
-    master.vscode-fhs
-    zed-editor-fhs
-    master.code-cursor-fhs
+      google-chrome # Used by antigravity
+      master.antigravity-fhs
+      master.vscode-fhs
+      zed-editor-fhs
+      master.code-cursor-fhs
+      github-copilot-cli
 
-    master.opencode
-    github-copilot-cli
-    master.codex
-    master.cursor-cli
-
-    custom.droid
-    custom.oh-my-pi
-
-    custom.danbooru-rs
-    custom.shiru
-    custom.fluxer
-  ];
+      custom.danbooru-rs
+      custom.shiru
+      custom.fluxer
+    ]
+    ++ (with pkgs.llm-agents; [
+      opencode
+      codex
+      cursor-agent
+      droid
+      omp
+      skills
+    ]);
 
   hardware.logitech.wireless.enable = true;
 
