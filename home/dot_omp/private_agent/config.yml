@@ -1,50 +1,50 @@
-modelRoles:
+modelRoles: 
   default: cursor/composer-2.5
   commit: cursor/composer-2.5
-startup:
+startup: 
   checkUpdate: false
 symbolPreset: nerd
-stt:
+stt: 
   enabled: false
   modelName: base.en
-theme:
+theme: 
   dark: dark-one
-statusLine:
-  preset: nerd
+statusLine: 
+  preset: default
   separator: powerline-thin
   sessionAccent: true
   showHookStatus: true
-terminal:
+terminal: 
   showImages: true
-images:
+images: 
   autoResize: true
   blockImages: false
-display:
+display: 
   shimmer: classic
   showTokenUsage: false
   tabWidth: 2
-compaction:
+compaction: 
   strategy: handoff
   thresholdPercent: 80
   thresholdTokens: -1
   handoffSaveToDisk: false
-memory:
+memory: 
   backend: "off"
-edit:
+edit: 
   mode: hashline
-lsp:
+lsp: 
   formatOnWrite: true
-calc:
+calc: 
   enabled: true
-inspect_image:
+inspect_image: 
   enabled: true
-checkpoint:
+checkpoint: 
   enabled: true
-task:
-  isolation:
+task: 
+  isolation: 
     mode: none
     merge: patch
-secrets:
+secrets: 
   enabled: true
-contextPromotion:
+contextPromotion: 
   enabled: true
