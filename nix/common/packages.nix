@@ -98,6 +98,7 @@
       rclone
       devenv
       atool
+      nodejs
 
       man-pages
       man-pages-posix
