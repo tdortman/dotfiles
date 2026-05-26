@@ -111,6 +111,60 @@
     allowedUsers = [ currentUsername ];
   };
 
+  agent-sandbox = {
+    enable = true;
+    packages =
+      let
+        agents = pkgs.llm-agents;
+      in
+      {
+        omp = {
+          package = agents.omp;
+          homePaths = [
+            ".omp"
+            ".agents"
+          ];
+          homeFiles = [ ".gitconfig" ];
+        };
+        "cursor-agent" = {
+          package = agents.cursor-agent;
+          homePaths = [
+            ".cursor"
+            ".config/cursor"
+            ".agents"
+          ];
+          homeFiles = [ ".gitconfig" ];
+        };
+        codex = {
+          package = agents.codex;
+          homePaths = [
+            ".codex"
+            ".agents"
+          ];
+          homeFiles = [ ".gitconfig" ];
+        };
+        opencode = {
+          package = agents.opencode;
+          homePaths = [
+            ".config/opencode"
+            ".local/share/opencode"
+            ".local/state/opencode/"
+            ".cache/opencode"
+            ".agents"
+          ];
+          homeFiles = [ ".gitconfig" ];
+        };
+        droid = {
+          package = agents.droid;
+          homePaths = [
+            ".factory"
+            ".agents"
+          ];
+          homeFiles = [ ".gitconfig" ];
+        };
+      };
+  };
+
   qbittorrent = {
     enable = true;
     port = 32882;
@@ -310,67 +364,60 @@
 
   programs.thunderbird.enable = true;
 
-  environment.systemPackages =
-    with pkgs;
-    [
-      ntfs3g
-      ghostty
-      btrfs-progs
-      mpv
-      librewolf
+  environment.systemPackages = with pkgs; [
+    ntfs3g
+    ghostty
+    btrfs-progs
+    mpv
+    librewolf
 
-      gvfs
-      samba
-      glib
+    gvfs
+    samba
+    glib
 
-      inputs.agenix.packages."${system}".default
-      cuda.llama-cpp
-      cuda.lmstudio
-      dbeaver-bin
-      lsfg-vk-ui
-      lsfg-vk
-      winboat
+    inputs.agenix.packages."${system}".default
+    cuda.llama-cpp
+    cuda.lmstudio
+    dbeaver-bin
+    lsfg-vk-ui
+    lsfg-vk
+    winboat
 
-      libratbag
-      piper
-      vlc
-      libnotify
-      ghidra
-      libreoffice-qt6
-      nheko
+    libratbag
+    piper
+    vlc
+    libnotify
+    ghidra
+    libreoffice-qt6
+    nheko
 
-      xdg-utils
-      xdg-desktop-portal
-      kdePackages.xdg-desktop-portal-kde
-      teams-for-linux
+    xdg-utils
+    xdg-desktop-portal
+    kdePackages.xdg-desktop-portal-kde
+    teams-for-linux
 
-      # Bluetooth Dongle
-      rtl8761b-firmware
+    # Bluetooth Dongle
+    rtl8761b-firmware
 
-      (discord.override {
-        withVencord = true;
-        commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
-      })
+    (discord.override {
+      withVencord = true;
+      commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
+    })
 
-      google-chrome # Used by antigravity
-      master.antigravity-fhs
-      master.vscode-fhs
-      zed-editor-fhs
-      master.code-cursor-fhs
-      github-copilot-cli
+    google-chrome # Used by antigravity
+    master.antigravity-fhs
+    master.vscode-fhs
+    zed-editor-fhs
+    master.code-cursor-fhs
+    github-copilot-cli
 
-      custom.danbooru-rs
-      custom.shiru
-      custom.fluxer
-    ]
-    ++ (with pkgs.llm-agents; [
-      opencode
-      codex
-      cursor-agent
-      droid
-      omp
-      skills
-    ]);
+    custom.danbooru-rs
+    custom.shiru
+    custom.fluxer
+
+    temp.docker-sbx
+    e2fsprogs # mkfs.ext4 for docker-sbx / sbx sandboxes
+  ];
 
   hardware.logitech.wireless.enable = true;
 
