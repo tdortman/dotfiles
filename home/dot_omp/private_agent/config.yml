@@ -1,5 +1,50 @@
-modelRoles: 
+modelRoles:
   default: cursor/composer-2.5
-  commit: openai-codex/gpt-5.4
-startup: 
+  commit: cursor/composer-2.5
+startup:
   checkUpdate: false
+symbolPreset: nerd
+stt:
+  enabled: false
+  modelName: base.en
+theme:
+  dark: dark-one
+statusLine:
+  preset: nerd
+  separator: powerline-thin
+  sessionAccent: true
+  showHookStatus: true
+terminal:
+  showImages: true
+images:
+  autoResize: true
+  blockImages: false
+display:
+  shimmer: classic
+  showTokenUsage: false
+  tabWidth: 2
+compaction:
+  strategy: handoff
+  thresholdPercent: 80
+  thresholdTokens: -1
+  handoffSaveToDisk: false
+memory:
+  backend: "off"
+edit:
+  mode: hashline
+lsp:
+  formatOnWrite: true
+calc:
+  enabled: true
+inspect_image:
+  enabled: true
+checkpoint:
+  enabled: true
+task:
+  isolation:
+    mode: none
+    merge: patch
+secrets:
+  enabled: true
+contextPromotion:
+  enabled: true
