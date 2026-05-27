@@ -27,6 +27,14 @@
 
     settings = {
       hotkey.enabled = false;
+      whisper = {
+        language = "auto";
+        on_demand_loading = true;
+        gpu_isolation = true;
+      };
+      text = {
+        spoke_punctuation = true;
+      };
     };
   };
 
