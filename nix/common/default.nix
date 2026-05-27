@@ -72,6 +72,7 @@
       "video"
       "render"
       "input"
+      "uinput"
       "gamemode"
       "wireshark"
       "kvm"

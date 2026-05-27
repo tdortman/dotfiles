@@ -40,6 +40,7 @@
 
       homes.modules = with inputs; [
         plasma-manager.homeModules.plasma-manager
+        voxtype.homeManagerModules.default
       ];
 
       templates = {
@@ -134,6 +135,11 @@
     agenix = {
       url = "github:ryantm/agenix";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    voxtype = {
+      url = "github:peteonrails/voxtype";
+      inputs.nixpkgs.follows = "nixpkgs-flox";
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";

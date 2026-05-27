@@ -1,7 +1,9 @@
 {
-  pkgs,
-  osConfig,
   lib,
+  pkgs,
+  system,
+  osConfig,
+  inputs,
   ...
 }:
 
@@ -13,6 +15,19 @@
   services.wl-clip-persist = {
     enable = true;
     clipboardType = "regular";
+  };
+
+  programs.voxtype = {
+    enable = true;
+    engine = "whisper";
+    package = inputs.voxtype.packages.${system}.vulkan;
+    service.enable = true;
+
+    model.name = "large-v3-turbo";
+
+    settings = {
+      hotkey.enabled = false;
+    };
   };
 
   programs.plasma = {
