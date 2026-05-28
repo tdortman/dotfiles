@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  currentUsername,
   ...
 }:
 
@@ -23,7 +24,7 @@ in
     };
     user = lib.mkOption {
       type = lib.types.str;
-      default = "tim";
+      default = currentUsername;
       description = "The username to backup files for";
     };
     passwordFile = lib.mkOption {

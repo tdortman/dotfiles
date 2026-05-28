@@ -166,10 +166,10 @@
   };
 
   age.secrets = {
-    "restic-password".file = ../../../secrets/restic-password.age;
-    "nextdns-resolved.conf".file = ../../../secrets/nextdns-resolved.conf.age;
-    "airvpn-privatekey".file = ../../../secrets/airvpn-privatekey.age;
-    "airvpn-presharedkey".file = ../../../secrets/airvpn-presharedkey.age;
+    "restic-password".file = inputs.self + /nix/secrets/restic-password.age;
+    "nextdns-resolved.conf".file = inputs.self + /nix/secrets/nextdns-resolved.conf.age;
+    "airvpn-privatekey".file = inputs.self + /nix/secrets/airvpn-privatekey.age;
+    "airvpn-presharedkey".file = inputs.self + /nix/secrets/airvpn-presharedkey.age;
   };
 
   virtualisation.libvirtd = {

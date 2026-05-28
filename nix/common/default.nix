@@ -2,8 +2,10 @@
   lib,
   pkgs,
   config,
+  inputs,
   currentUsername,
   ...
+}:
 }:
 
 {
@@ -20,7 +22,7 @@
     ];
 
     secrets = {
-      login-password.file = ../secrets/login-password.age;
+      login-password.file = inputs.self + /nix/secrets/login-password.age;
     };
   };
 
