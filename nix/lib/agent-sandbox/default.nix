@@ -26,7 +26,12 @@ let
     ];
 
   defaultBlockEnvVars = [ ];
-  defaultRuntimeReadonlyPaths = [ "/run" ];
+  defaultRuntimeReadonlyPaths = [
+    "/run/current-system"
+    "/run/wrappers"
+    "/run/opengl-driver"
+    "/run/opengl-driver-32"
+  ];
 
   defaultDevicePaths = [
     "/dev/nvidia0"
@@ -100,13 +105,10 @@ rec {
       bindHostPathLines =
         paths: mode:
         let
-          flag = if mode == "ro" then "ro-bind" else "bind";
+          mountMode = if mode == "ro" then "ro" else "rw";
         in
-        concatMapStringsSep "\n" (path: ''
-          hostPath=${lib.escapeShellArg path}
-          if [[ -e "$hostPath" ]]; then
-            bwrapArgs+=(--${flag} "$hostPath" "$hostPath")
-          fi
+        concatMapStringsSep "\n" (hostPath: ''
+          bindSandboxHostPath ${lib.escapeShellArg hostPath} ${mountMode}
         '') paths;
 
       bindDevicePathLines =
@@ -151,6 +153,80 @@ rec {
           ${blockEnvVarLines blockEnvVars}
           followHomeSymlinks=${if followHomeSymlinks then "1" else "0"}
 
+          declare -A sandboxDirsCreated=()
+          declare -A sandboxPathsBound=()
+
+          isSandboxPathCovered() {
+            local path="$1"
+            local key=""
+
+            for key in "''${!sandboxPathsBound[@]}"; do
+              if [[ "$path" == "$key" || "$path" == "$key"/* ]]; then
+                return 0
+              fi
+            done
+
+            return 1
+          }
+
+          ensureSandboxDir() {
+            local dir="$1"
+
+            if [[ -z "$dir" || "$dir" == "/" ]]; then
+              return
+            fi
+
+            ensureSandboxDir "$(dirname "$dir")"
+
+            if [[ -n "''${sandboxDirsCreated[$dir]+x}" ]]; then
+              return
+            fi
+
+            sandboxDirsCreated[$dir]=1
+            bwrapArgs+=(--dir "$dir")
+          }
+
+          bindSandboxHostPath() {
+            local dest="$1"
+            local mountMode="$2"
+            local target=""
+
+            if isSandboxPathCovered "$dest"; then
+              return
+            fi
+
+            if [[ ! -e "$dest" && ! -L "$dest" ]]; then
+              return
+            fi
+
+            if [[ -L "$dest" ]]; then
+              target=$(readlink -f "$dest" || true)
+              if [[ -z "$target" || ! -e "$target" ]]; then
+                return
+              fi
+
+              ensureSandboxDir "$(dirname "$dest")"
+
+              if [[ "$target" == /nix/store/* ]]; then
+                bwrapArgs+=(--symlink "$target" "$dest")
+              elif [[ "$mountMode" == "rw" ]]; then
+                bwrapArgs+=(--bind "$target" "$dest")
+              else
+                bwrapArgs+=(--ro-bind "$target" "$dest")
+              fi
+              sandboxPathsBound[$dest]=1
+              return
+            fi
+
+            ensureSandboxDir "$(dirname "$dest")"
+            if [[ "$mountMode" == "rw" ]]; then
+              bwrapArgs+=(--bind "$dest" "$dest")
+            else
+              bwrapArgs+=(--ro-bind "$dest" "$dest")
+            fi
+            sandboxPathsBound[$dest]=1
+          }
+
 
 
           bindProfileBinPath() {
@@ -158,22 +234,26 @@ rec {
             local profileRoot=""
 
             case "$entry" in
+              /etc/profiles/per-user/*/bin|/nix/var/nix/profiles/*/bin)
+                profileRoot="''${entry%/bin}"
+                ;;
               /run/*)
-                return
-                ;;
-              /etc/profiles/per-user/*/bin)
-                profileRoot="''${entry%/bin}"
-                ;;
-              /nix/var/nix/profiles/*/bin)
-                profileRoot="''${entry%/bin}"
+                case "$entry" in
+                  */bin)
+                    profileRoot="''${entry%/bin}"
+                    ;;
+                  *)
+                    return
+                    ;;
+                esac
                 ;;
               *)
                 return
                 ;;
             esac
 
-            if [[ -d "$profileRoot" ]]; then
-              bwrapArgs+=(--ro-bind "$profileRoot" "$profileRoot")
+            if [[ -d "$profileRoot" || -L "$profileRoot" ]]; then
+              bindSandboxHostPath "$profileRoot" ro
             fi
           }
 
@@ -339,6 +419,8 @@ rec {
             --dev /dev
           )
 
+          bwrapArgs+=(--ro-bind /nix/store /nix/store)
+
           ${bindHostPathLines runtimeReadonlyPaths "ro"}
 
           bwrapArgs+=(
@@ -350,8 +432,6 @@ rec {
             --ro-bind "$jailPasswd" /etc/passwd
             --ro-bind "$jailGroup" /etc/group
           )
-
-          bwrapArgs+=(--ro-bind /nix/store /nix/store)
 
           if [[ -L /bin/sh ]]; then
             shPath=$(readlink -f /bin/sh)
@@ -366,6 +446,10 @@ rec {
           bindEtcFile /etc/resolv.conf
           if [[ -d /etc/ssl ]]; then
             bwrapArgs+=(--ro-bind /etc/ssl /etc/ssl)
+          fi
+          # NixOS symlinks /etc/ssl/certs/* into /etc/static/ssl; bind targets too.
+          if [[ -d /etc/static/ssl ]]; then
+            bwrapArgs+=(--ro-bind /etc/static/ssl /etc/static/ssl)
           fi
           if [[ -L /etc/localtime ]]; then
             tz=$(readlink -f /etc/localtime)

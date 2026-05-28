@@ -10,15 +10,7 @@ let
   agentSandboxLib = inputs.self.lib;
   wrapPackage = agentSandboxLib.mkWrapPackage pkgs;
 
-  packageOptions = {
-    package = lib.mkPackageOption pkgs "llm-agents" { };
-
-    binary = lib.mkOption {
-      type = lib.types.nullOr lib.types.str;
-      default = null;
-      description = "Binary name when it differs from the package name.";
-    };
-
+  pathOptions = {
     homePaths = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
@@ -42,14 +34,6 @@ let
       '';
     };
 
-    extraPkgs = lib.mkOption {
-      type = lib.types.listOf lib.types.package;
-      default = [ ];
-      description = ''
-        Extra packages available inside the sandbox (on `PATH` and in the Nix store bind set).
-      '';
-    };
-
     extraReadwriteDirs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
@@ -63,12 +47,32 @@ let
       default = [ ];
       description = "Absolute host paths outside $HOME to mount read-only.";
     };
+  };
+
+  packageOptions = pathOptions // {
+    package = lib.mkPackageOption pkgs "llm-agents" { };
+
+    binary = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "Binary name when it differs from the package name.";
+    };
+
+    extraPkgs = lib.mkOption {
+      type = lib.types.listOf lib.types.package;
+      default = [ ];
+      description = ''
+        Extra packages available inside the sandbox (on `PATH` and in the Nix store bind set).
+      '';
+    };
+
     runtimeReadonlyPaths = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = agentSandboxLib.defaultRuntimeReadonlyPaths;
       description = ''
-        Absolute runtime paths mounted read-only. Defaults expose `/run` for
-        compatibility with NixOS profiles, GPU drivers, and devShell tools.
+        Absolute runtime paths mounted read-only. Defaults expose selected
+        `/run` entries for the system profile, setuid wrappers, and OpenGL
+        drivers.
       '';
     };
 
@@ -122,6 +126,17 @@ let
     };
   };
 
+  mergePackagePaths =
+    pkgCfg:
+    pkgCfg
+    // {
+      homePaths = lib.unique (cfg.homePaths ++ pkgCfg.homePaths);
+      homePathsReadOnly = lib.unique (cfg.homePathsReadOnly ++ pkgCfg.homePathsReadOnly);
+      homeFiles = lib.unique (cfg.homeFiles ++ pkgCfg.homeFiles);
+      extraReadwriteDirs = lib.unique (cfg.extraReadwriteDirs ++ pkgCfg.extraReadwriteDirs);
+      extraReadonlyDirs = lib.unique (cfg.extraReadonlyDirs ++ pkgCfg.extraReadonlyDirs);
+    };
+
   cfg = config.agent-sandbox;
 in
 {
@@ -136,10 +151,49 @@ in
         `bin/<name>` and `bin/sandboxed-<name>`.
       '';
     };
+  }
+  // pathOptions
+  // {
+    homePaths = pathOptions.homePaths // {
+      description = ''
+        Paths under $HOME shared by every wrapped agent (merged with per-package
+        `homePaths`).
+      '';
+    };
+
+    homePathsReadOnly = pathOptions.homePathsReadOnly // {
+      description = ''
+        Read-only $HOME paths shared by every wrapped agent (merged with per-package
+        `homePathsReadOnly`).
+      '';
+    };
+
+    homeFiles = pathOptions.homeFiles // {
+      description = ''
+        Read-only $HOME files shared by every wrapped agent (merged with per-package
+        `homeFiles`).
+      '';
+    };
+
+    extraReadwriteDirs = pathOptions.extraReadwriteDirs // {
+      description = ''
+        Absolute host paths mounted read-write for every wrapped agent (merged with
+        per-package `extraReadwriteDirs`).
+      '';
+    };
+
+    extraReadonlyDirs = pathOptions.extraReadonlyDirs // {
+      description = ''
+        Absolute host paths mounted read-only for every wrapped agent (merged with
+        per-package `extraReadonlyDirs`).
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = lib.mapAttrsToList (_: value: wrapPackage value) cfg.packages;
+    environment.systemPackages = lib.mapAttrsToList (
+      _: value: wrapPackage (mergePackagePaths value)
+    ) cfg.packages;
 
     nixpkgs.overlays = lib.mkAfter [
       (final: prev: {
