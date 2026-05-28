@@ -45,7 +45,7 @@ task:
     mode: none
     merge: patch
     commits: ai
-  eager: true
+  eager: false
   enableLsp: true
 secrets: 
   enabled: true
