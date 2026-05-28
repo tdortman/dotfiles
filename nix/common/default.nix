@@ -37,7 +37,6 @@
       "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
     ];
-    auto-optimise-store = true;
     trusted-users = [
       "@wheel"
     ];
@@ -138,6 +137,11 @@
     automatic = true;
     dates = "weekly";
     options = "--delete-older-than 14d";
+  };
+
+  nix.optimise = {
+    automatic = true;
+    dates = [ "03:00" ];
   };
 
   programs.nano = {
