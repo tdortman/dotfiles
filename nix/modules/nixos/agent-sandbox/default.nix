@@ -2,12 +2,11 @@
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 let
 
-  agentSandboxLib = inputs.self.lib;
+  agentSandboxLib = import ./lib.nix { inherit lib; };
   wrapPackage = agentSandboxLib.mkWrapPackage pkgs;
 
   pathOptions = {

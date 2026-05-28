@@ -26,6 +26,7 @@ let
     ];
 
   defaultBlockEnvVars = [ ];
+
   defaultRuntimeReadonlyPaths = [
     "/run/current-system"
     "/run/wrappers"
@@ -149,7 +150,6 @@ rec {
           realHome=$(readlink -f "$HOME")
           sandboxPath=${lib.escapeShellArg sandboxPath}
 
-
           ${blockEnvVarLines blockEnvVars}
           followHomeSymlinks=${if followHomeSymlinks then "1" else "0"}
 
@@ -227,8 +227,6 @@ rec {
             sandboxPathsBound[$dest]=1
           }
 
-
-
           bindProfileBinPath() {
             local entry="$1"
             local profileRoot=""
@@ -256,7 +254,6 @@ rec {
               bindSandboxHostPath "$profileRoot" ro
             fi
           }
-
 
           bindPathEntries() {
             local pathVar="$1"
@@ -372,7 +369,6 @@ rec {
               bindResolvedHomeSymlinkTarget "$link"
             done < <(find "$root" -type l -print0)
           }
-
 
           bindHomePath() {
             local rel="$1"
@@ -524,5 +520,4 @@ rec {
         ln -s ${launcher}/bin/${sandboxedName} ''$out/bin/${sandboxedName}
       '';
     };
-
 }
