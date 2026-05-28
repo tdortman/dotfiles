@@ -74,12 +74,7 @@
 
   networking.hostName = "nixos-vm";
 
-  xdg.mime.defaultApplications = {
-    "text/html" = "librewolf.desktop";
-    "x-scheme-handler/http" = "librewolf.desktop";
-    "x-scheme-handler/https" = "librewolf.desktop";
-    "x-scheme-handler/about" = "librewolf.desktop";
-  };
+  mime.librewolf.enable = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
@@ -107,9 +102,6 @@
   };
 
   environment.variables = {
-    BROWSER = "${pkgs.librewolf}/bin/librewolf";
-    DEFAULT_BROWSER = "${pkgs.librewolf}/bin/librewolf";
-
     NIXOS_OZONE_WL = "1";
   };
 

@@ -46,7 +46,6 @@ in
             + "/startup-page/dist";
           name = "startup-page.js";
         }
-        fullAlbumDate
         shuffle
         seekSong
         keyboardShortcut

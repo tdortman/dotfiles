@@ -113,6 +113,11 @@
 
   agent-sandbox = {
     enable = true;
+    homePaths = [ ".agents" ];
+    homeFiles = [
+      ".gitconfig"
+      ".1password/agent.sock"
+    ];
     packages =
       let
         agents = pkgs.llm-agents;
@@ -120,28 +125,18 @@
       {
         omp = {
           package = agents.omp;
-          homePaths = [
-            ".omp"
-            ".agents"
-          ];
-          homeFiles = [ ".gitconfig" ];
+          homePaths = [ ".omp" ];
         };
         "cursor-agent" = {
           package = agents.cursor-agent;
           homePaths = [
             ".cursor"
             ".config/cursor"
-            ".agents"
           ];
-          homeFiles = [ ".gitconfig" ];
         };
         codex = {
           package = agents.codex;
-          homePaths = [
-            ".codex"
-            ".agents"
-          ];
-          homeFiles = [ ".gitconfig" ];
+          homePaths = [ ".codex" ];
         };
         opencode = {
           package = agents.opencode;
@@ -150,17 +145,11 @@
             ".local/share/opencode"
             ".local/state/opencode/"
             ".cache/opencode"
-            ".agents"
           ];
-          homeFiles = [ ".gitconfig" ];
         };
         droid = {
           package = agents.droid;
-          homePaths = [
-            ".factory"
-            ".agents"
-          ];
-          homeFiles = [ ".gitconfig" ];
+          homePaths = [ ".factory" ];
         };
       };
   };
@@ -260,20 +249,7 @@
     };
   };
 
-  services.sonarr = {
-    enable = true;
-    openFirewall = true;
-  };
-
-  services.prowlarr = {
-    enable = true;
-    openFirewall = true;
-  };
-
-  services.flaresolverr = {
-    enable = true;
-    openFirewall = true;
-  };
+  arr-stack.enable = true;
 
   programs.streamcontroller.enable = true;
 
@@ -285,51 +261,20 @@
   virtualisation.docker.enable = true;
   hardware.nvidia-container-toolkit.enable = true;
 
-  services.flatpak = {
+  flatpak = {
     enable = true;
     packages = [
       "com.surfshark.Surfshark"
       "com.gitbutler.gitbutler"
     ];
-    update.auto = {
-      enable = true;
-      onCalendar = "weekly";
+    extraOverrides."com.gitbutler.gitbutler".Environment = {
+      WEBKIT_DISABLE_DMABUF_RENDERER = "1";
     };
-    overrides = {
-      global = {
-        Context = {
-          filesystems = [
-            "xdg-config/fontconfig:ro"
-            "xdg-config/gtkrc:ro"
-            "xdg-config/gtkrc-2.0:ro"
-            "xdg-config/gtk-2.0:ro"
-            "xdg-config/gtk-3.0:ro"
-            "xdg-config/gtk-4.0:ro"
-            "xdg-data/themes:ro"
-            "xdg-data/icons:ro"
-          ];
-        };
-        Environment = {
-          GTK_THEME = "Breeze";
-        };
-      };
-      "com.gitbutler.gitbutler" = {
-        Environment = {
-          WEBKIT_DISABLE_DMABUF_RENDERER = "1";
-        };
-      };
-    };
-
   };
 
   networking.hostName = "nixos-pc";
 
-  xdg.mime.defaultApplications = {
-    "text/html" = "librewolf.desktop";
-    "x-scheme-handler/http" = "librewolf.desktop";
-    "x-scheme-handler/https" = "librewolf.desktop";
-    "x-scheme-handler/about" = "librewolf.desktop";
-  };
+  mime.librewolf.enable = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
@@ -428,9 +373,6 @@
   };
 
   environment.variables = {
-    BROWSER = "${pkgs.librewolf}/bin/librewolf";
-    DEFAULT_BROWSER = "${pkgs.librewolf}/bin/librewolf";
-
     # nvidia_icd.x86_64.json -> nvidia_icd.json as of 595.71.05
     VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
     VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
