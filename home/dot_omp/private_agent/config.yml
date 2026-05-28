@@ -29,7 +29,7 @@ compaction:
   thresholdTokens: -1
   handoffSaveToDisk: false
 memory: 
-  backend: "off"
+  backend: local
 edit: 
   mode: hashline
 lsp: 
@@ -44,7 +44,12 @@ task:
   isolation: 
     mode: none
     merge: patch
+    commits: ai
+  eager: true
+  enableLsp: true
 secrets: 
   enabled: true
 contextPromotion: 
+  enabled: true
+renderMermaid: 
   enabled: true
