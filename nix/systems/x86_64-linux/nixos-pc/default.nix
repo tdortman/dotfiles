@@ -341,9 +341,6 @@
     kdePackages.xdg-desktop-portal-kde
     teams-for-linux
 
-    # Bluetooth Dongle
-    rtl8761b-firmware
-
     (discord.override {
       withVencord = true;
       commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
