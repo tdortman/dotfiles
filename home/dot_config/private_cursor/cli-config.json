@@ -1,7 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Shell(ls)"
+      "Shell(ls)",
+      "Shell(eza)",
+      "Shell(cd)",
+      "Shell(git status)",
+      "Shell(git diff)",
+      "Shell(git log)",
+      "Shell(head)",
+      "Shell(git ls-tree)",
+      "Shell(rg)",
+      "Shell(git show)",
+      "Shell(echo)"
     ],
     "deny": []
   },
@@ -30,7 +40,25 @@
         "value": "false"
       }
     ],
-    "default": []
+    "default": [],
+    "claude-opus-4-8": [
+      {
+        "id": "thinking",
+        "value": "true"
+      },
+      {
+        "id": "context",
+        "value": "300k"
+      },
+      {
+        "id": "effort",
+        "value": "high"
+      },
+      {
+        "id": "fast",
+        "value": "false"
+      }
+    ]
   },
   "selectedModel": {
     "modelId": "composer-2.5",
@@ -44,7 +72,7 @@
   "privacyCache": {
     "ghostMode": true,
     "privacyMode": 2,
-    "updatedAt": 1779469172737
+    "updatedAt": 1780014700731
   },
   "serverConfigCache": {
     "backendUrl": "https://api2.cursor.sh",
@@ -55,7 +83,7 @@
     },
     "cliSandboxDefaultEnabled": false,
     "serverHttp2Config": 0,
-    "updatedAt": 1779467577677
+    "updatedAt": 1780014625726
   },
   "authInfo": {
     "email": "cursor@tdortman.com",
