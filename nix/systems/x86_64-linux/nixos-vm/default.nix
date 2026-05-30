@@ -34,6 +34,7 @@
   audio = {
     enable = true;
     input = "alsa_input.pci-0000_02_02.0.analog-stereo";
+    inputChannels = "stereo";
     output = "alsa_output.pci-0000_02_02.0.analog-stereo";
 
     micProcess = {
