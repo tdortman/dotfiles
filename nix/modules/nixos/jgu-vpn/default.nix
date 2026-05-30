@@ -167,7 +167,7 @@ in
       swanctl.connections.jgu = {
         version = 2;
         local_addrs = [ "%any" ];
-        mobike = false;
+        mobike = true;
         dpd_delay = "30s";
         dpd_timeout = "150s";
         remote_addrs = [ cfg.gateway ];
