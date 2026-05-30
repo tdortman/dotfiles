@@ -7,4 +7,5 @@ in
   "airvpn-privatekey.age".publicKeys = [ pubKey ];
   "airvpn-presharedkey.age".publicKeys = [ pubKey ];
   "login-password.age".publicKeys = [ pubKey ];
+  "jgu-vpn-swanctl.age".publicKeys = [ pubKey ];
 }
