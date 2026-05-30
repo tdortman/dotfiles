@@ -23,7 +23,6 @@
       ];
 
       systems.modules.nixos = with inputs; [
-        { _module.args.currentUsername = "tim"; }
         agenix.nixosModules.default
         nix-index-database.nixosModules.nix-index
         nix-flatpak.nixosModules.nix-flatpak
@@ -32,10 +31,17 @@
         home-manager.nixosModules.home-manager
       ];
 
+      # Snowfall auto-imports nix/modules/nixos/* and invokes each module while
+      # collecting imports; currentUsername must be in specialArgs for that path.
       systems.hosts = {
-        nixos-wsl-pc.modules = with inputs; [
-          nixos-wsl.nixosModules.default
-        ];
+        nixos-pc.specialArgs.currentUsername = "tim";
+        nixos-vm.specialArgs.currentUsername = "tim";
+        nixos-wsl-pc = {
+          specialArgs.currentUsername = "tim";
+          modules = with inputs; [
+            nixos-wsl.nixosModules.default
+          ];
+        };
       };
 
       homes.modules = with inputs; [
