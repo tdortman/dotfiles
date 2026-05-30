@@ -73,6 +73,21 @@ in
       example = "alsa_input.pci-0000_01_00.1.analog-stereo";
     };
 
+    inputChannels = lib.mkOption {
+      type = lib.types.enum [
+        "mono"
+        "stereo"
+      ];
+      description = ''
+        Channel layout of the hardware input (audio.input).
+
+        Mono sources are duplicated to stereo (FL+FR) before mic processing so
+        stereo-only plugins and virtual inputs receive signal on both channels.
+        Stereo sources are passed through without upmixing.
+      '';
+      example = "mono";
+    };
+
     output = lib.mkOption {
       type = lib.types.str;
       description = "The name of the hardware sink (output) device.";
@@ -309,6 +324,61 @@ in
         appChains = lib.mapAttrsToList mkAppChain cfg.appCategories;
         mainLoopbacks = map (name: mkMainLoopback name) (lib.attrNames cfg.appCategories);
 
+        inputIsMono = cfg.inputChannels == "mono";
+
+        stereoStreamProps = {
+          "audio.position" = "FL,FR";
+        };
+
+        monoStreamProps = {
+          "audio.channels" = 1;
+          "audio.position" = "[ MONO ]";
+        };
+
+        # Upmix at the processed source output; loopback channelmix is unreliable for MONO→FL/FR.
+        monoToStereoOutputProps = {
+          "audio.channels" = 2;
+          "audio.position" = "FL,FR";
+          "channelmix.upmix" = true;
+          "channelmix.upmix-method" = "simple";
+          "channelmix.normalize" = false;
+          "stream.dont-remix" = false;
+        };
+
+        micCaptureStreamProps = if inputIsMono then monoStreamProps else stereoStreamProps;
+
+        # Stereo compressor output is already FL/FR; upmix only for direct HW passthrough.
+        micFilterPlaybackStreamProps = stereoStreamProps;
+
+        micPassthroughPlaybackStreamProps =
+          if inputIsMono then monoToStereoOutputProps else stereoStreamProps;
+
+        rnnoiseLabel = if inputIsMono then "noise_suppressor_mono" else "noise_suppressor_stereo";
+
+        compressorLinks =
+          if inputIsMono then
+            [
+              {
+                output = "rnnoise:Output";
+                input = "compressor:Left input";
+              }
+              {
+                output = "rnnoise:Output";
+                input = "compressor:Right input";
+              }
+            ]
+          else
+            [
+              {
+                output = "rnnoise:Output (L)";
+                input = "compressor:Left input";
+              }
+              {
+                output = "rnnoise:Output (R)";
+                input = "compressor:Right input";
+              }
+            ];
+
         micProcessingSetup =
           if cfg.micProcess.enable then
             [
@@ -319,19 +389,19 @@ in
                     "node.name" = "MicRaw";
                     "node.description" = "HW Mic (Raw Input)";
                     "media.class" = "Audio/Sink";
-                  };
+                  } // micCaptureStreamProps;
                   "playback.props" = {
                     "node.name" = "MicProcessed";
                     "node.description" = "HW Mic (Processed)";
                     "media.class" = "Audio/Source";
-                  };
+                  } // micFilterPlaybackStreamProps;
                   "filter.graph" = {
                     nodes = [
                       {
                         type = "ladspa";
                         name = "rnnoise";
                         plugin = "librnnoise_ladspa";
-                        label = "noise_suppressor_stereo";
+                        label = rnnoiseLabel;
                         control."VAD Threshold (%)" = cfg.micProcess.vadThreshold;
                       }
                       {
@@ -348,16 +418,7 @@ in
                         };
                       }
                     ];
-                    links = [
-                      {
-                        output = "rnnoise:Output (L)";
-                        input = "compressor:Left input";
-                      }
-                      {
-                        output = "rnnoise:Output (R)";
-                        input = "compressor:Right input";
-                      }
-                    ];
+                    links = compressorLinks;
                   };
                 };
               }
@@ -366,7 +427,9 @@ in
                 args = {
                   "node.description" = "HW-Mic ➜ Processing Chain";
                   "capture.props"."node.target" = cfg.input;
-                  "playback.props"."node.target" = "MicRaw";
+                  "playback.props" = {
+                    "node.target" = "MicRaw";
+                  } // lib.optionalAttrs inputIsMono monoStreamProps;
                 };
               }
             ]
@@ -381,7 +444,7 @@ in
                     "node.name" = "MicProcessed";
                     "node.description" = "Hardware Mic (Passthrough)";
                     "media.class" = "Audio/Source";
-                  };
+                  } // micPassthroughPlaybackStreamProps;
                 };
               }
             ];
