@@ -6,7 +6,6 @@
   currentUsername,
   ...
 }:
-}:
 
 {
   imports = [
