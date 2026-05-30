@@ -111,6 +111,16 @@
     allowedUsers = [ currentUsername ];
   };
 
+  jgu-vpn = {
+    enable = true;
+    username = "tdortman@uni-mainz.de";
+    secretsFile = config.age.secrets."jgu-vpn-swanctl".path;
+    dnsServers = [
+      "134.93.144.2"
+      "134.93.144.3"
+    ];
+  };
+
   agent-sandbox = {
     enable = true;
     homePaths = [ ".agents" ];
@@ -170,6 +180,7 @@
     "nextdns-resolved.conf".file = inputs.self + /nix/secrets/nextdns-resolved.conf.age;
     "airvpn-privatekey".file = inputs.self + /nix/secrets/airvpn-privatekey.age;
     "airvpn-presharedkey".file = inputs.self + /nix/secrets/airvpn-presharedkey.age;
+    "jgu-vpn-swanctl".file = inputs.self + /nix/secrets/jgu-vpn-swanctl.age;
   };
 
   virtualisation.libvirtd = {
@@ -278,16 +289,7 @@
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  networking.networkmanager = {
-    enable = true;
-    plugins = [
-      pkgs.networkmanager-strongswan
-    ];
-  };
-
-  environment.etc."strongswan.conf".text = ''
-    charon-nm { plugins { eap-peap { load = no } } }
-  '';
+  networking.networkmanager.enable = true;
 
   services.libinput.enable = true;
 
