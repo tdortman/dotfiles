@@ -6,17 +6,16 @@ NAMESPACE="vpn-run-ns"
 VERBOSE=false
 TEARDOWN=false
 
-# veth pair addressing
-VETH_HOST_CIDR="@vethHostAddress@"
-VETH_NS_CIDR="@vethNsAddress@"
+VETH_HOST_IP=""
+VETH_NS_IP=""
+VETH_HOST_CIDR=""
+VETH_NS_CIDR=""
 
 DISABLE_IPV6="@disableIPv6@"
 DROP_NON_VPN="@dropNonVpnForward@"
 
-VETH_HOST_IP="${VETH_HOST_CIDR%/*}"
-VETH_NS_IP="${VETH_NS_CIDR%/*}"
-
-HOST_DNS_TARGET="${VPN_RUN_HOST_DNS_TARGET:-127.0.0.54:53}"
+HOST_DNS_TARGET="${VPN_RUN_HOST_DNS_TARGET:-127.0.0.53:53}"
+SNAT_SOURCE="${VPN_RUN_SNAT_SOURCE:-}"
 
 DNS_TCP_PID=""
 DNS_UDP_PID=""
@@ -68,7 +67,8 @@ acquire_lock() {
 }
 
 # Compute deterministic identifiers from namespace name.
-# Sets: veth_host, veth_ns, route_table_id, rule_priority
+# Sets: veth_host, veth_ns, route_table_id, rule_priority,
+#       VETH_HOST_IP, VETH_NS_IP, VETH_HOST_CIDR, VETH_NS_CIDR
 declare -g veth_host="" veth_ns="" route_table_id="" rule_priority=""
 compute_ids() {
     local cksum_out suffix
@@ -78,7 +78,111 @@ compute_ids() {
     veth_ns="vrnn-${suffix}"
     route_table_id=$(((cksum_out % 55000) + 10000))
     rule_priority=$(((cksum_out % 20000) + 10000))
+
+    # Derive a unique /30 subnet per namespace within 198.18.0.0/16
+    local offset=$(( (cksum_out % 16384) * 4 ))
+    local h3=$(( offset / 256 ))
+    local h4=$(( offset % 256 ))
+    VETH_HOST_IP="198.18.${h3}.${h4}"
+    VETH_NS_IP="198.18.${h3}.$(( h4 + 1 ))"
+    VETH_HOST_CIDR="${VETH_HOST_IP}/30"
+    VETH_NS_CIDR="${VETH_NS_IP}/30"
 }
+
+dns_bridge_listening() {
+    ss -H -lntp 2>/dev/null | grep -qE "[[:space:]]${VETH_HOST_IP}:53[[:space:]].*socat" && \
+    ss -H -lnup 2>/dev/null | grep -qE "[[:space:]]${VETH_HOST_IP}:53[[:space:]].*socat"
+}
+
+dns_target_ip() {
+    printf '%s\n' "${HOST_DNS_TARGET%:*}"
+}
+
+dns_target_port() {
+    printf '%s\n' "${HOST_DNS_TARGET#*:}"
+}
+
+use_dns_bridge() {
+    local dns_ip
+    dns_ip=$(dns_target_ip)
+    [[ "$dns_ip" == 127.* ]]
+}
+
+setup_is_healthy() {
+    local state_file want_iface saved_veth=""
+    state_file=$(state_file)
+    want_iface="$INTERFACE"
+
+    [[ -f "$state_file" ]] || return 1
+    # shellcheck source=/dev/null
+    source "$state_file" || return 1
+
+    [[ "${INTERFACE}" == "$want_iface" ]] || return 1
+    [[ -n "${saved_veth:-}" ]] || return 1
+    [[ "${saved_dns_target:-}" == "$HOST_DNS_TARGET" ]] || return 1
+    [[ "${saved_snat_source:-}" == "$SNAT_SOURCE" ]] || return 1
+    ip netns list | grep -qE "^${NAMESPACE}(\s|$)" || return 1
+    ip link show "$saved_veth" >/dev/null 2>&1 || return 1
+    ip link show "$want_iface" >/dev/null 2>&1 || return 1
+    nft list table ip "vpn-run-${NAMESPACE}" >/dev/null 2>&1 || return 1
+    ip rule list | grep -qF "from ${VETH_NS_IP}" || return 1
+    ip route show table "${saved_route_table:-$route_table_id}" 2>/dev/null | grep -qF "dev ${want_iface}" || return 1
+    if use_dns_bridge; then
+        dns_bridge_listening || return 1
+    fi
+    return 0
+}
+
+ensure_dns_bridge() {
+    local state_file
+    state_file=$(state_file)
+
+    if ! use_dns_bridge; then
+        return 0
+    fi
+
+    if dns_bridge_listening; then
+        return 0
+    fi
+
+    log "DNS bridge not listening, restarting"
+    if [[ -f "$state_file" ]]; then
+        # shellcheck source=/dev/null
+        source "$state_file" || true
+    fi
+    stop_dns_bridge
+    start_dns_bridge
+
+    if [[ -f "$state_file" ]]; then
+        # shellcheck source=/dev/null
+        source "$state_file" || true
+    fi
+    cat >"$state_file" <<EOF
+INTERFACE=${INTERFACE}
+saved_veth=${saved_veth:-$veth_host}
+VETH_NS=${VETH_NS:-$veth_ns}
+saved_route_table=${saved_route_table:-$route_table_id}
+saved_rule_prio=${saved_rule_prio:-$rule_priority}
+saved_dns_target=${HOST_DNS_TARGET}
+saved_snat_source=${SNAT_SOURCE}
+DNS_TCP_PID=${DNS_TCP_PID}
+DNS_UDP_PID=${DNS_UDP_PID}
+EOF
+}
+
+vpn_default_route_args() {
+    local vpn_src
+    vpn_src="$SNAT_SOURCE"
+    if [[ -z "$vpn_src" ]]; then
+        vpn_src=$(ip -4 -o addr show dev "$INTERFACE" scope global 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | head -1)
+    fi
+    if [[ -n "$vpn_src" ]]; then
+        echo "default dev $INTERFACE src $vpn_src"
+    else
+        echo "default dev $INTERFACE"
+    fi
+}
+
 
 start_dns_bridge() {
     local dns_ip="${HOST_DNS_TARGET%:*}"
@@ -95,8 +199,8 @@ start_dns_bridge() {
     local i
     # shellcheck disable=SC2034
     for i in $(seq 1 40); do
-        if ss -H -lntp 2>/dev/null | grep -qE "[[:space:]]${VETH_HOST_IP}:53[[:space:]].*socat"; then
-            log "DNS TCP bridge listening"
+        if dns_bridge_listening; then
+            log "DNS bridge listening"
             break
         fi
         sleep 0.05
@@ -107,7 +211,8 @@ stop_dns_bridge() {
     local pid
     for pid in "${DNS_TCP_PID:-}" "${DNS_UDP_PID:-}"; do
         [[ -n "$pid" ]] || continue
-        if kill -0 "$pid" 2>/dev/null; then
+        # Only kill if PID still belongs to a socat process
+        if kill -0 "$pid" 2>/dev/null && ps -p "$pid" -o comm= 2>/dev/null | grep -qxF socat; then
             kill "$pid" 2>/dev/null || true
             local i
             # shellcheck disable=SC2034
@@ -118,6 +223,10 @@ stop_dns_bridge() {
             kill -9 "$pid" 2>/dev/null || true
         fi
     done
+    # Fallback: kill any socat still bound to our host IP
+    if command -v pkill &>/dev/null; then
+        pkill -f "socat.*bind=${VETH_HOST_IP}:53" 2>/dev/null || true
+    fi
 }
 
 teardown() {
@@ -177,27 +286,21 @@ setup() {
     local state_file
     state_file=$(state_file)
 
-    # Idempotency: already set up?
-    if [[ -f "$state_file" ]]; then
-        local saved_veth=""
+    compute_ids
+
+    if setup_is_healthy; then
         # shellcheck source=/dev/null
         source "$state_file" || true
-        if [[ -n "${saved_veth:-}" ]] && ip link show "$saved_veth" >/dev/null 2>&1; then
-            log "Namespace '$NAMESPACE' already set up (veth: $saved_veth)"
-            return 0
-        fi
-        log "Stale state file detected, cleaning up"
-        teardown
+        log "Namespace '$NAMESPACE' already set up (veth: ${saved_veth:-$veth_host}, interface: $INTERFACE)"
+        ensure_dns_bridge
+        return 0
     fi
 
-    # Unclean previous run?
-    if ip netns list | grep -qE "^${NAMESPACE}(\\s|$)"; then
-        log "Namespace exists without state file, cleaning up"
+    if [[ -f "$state_file" ]] || ip netns list | grep -qE "^${NAMESPACE}(\s|$)"; then
+        log "Stale or incomplete vpn-run setup, reinitializing"
         teardown
+        compute_ids
     fi
-
-    # Deterministic identifiers from namespace name
-    compute_ids
 
     log "Using veth: $veth_host <-> $veth_ns"
     log "Route table: $route_table_id, rule priority: $rule_priority"
@@ -240,9 +343,27 @@ setup() {
     ip netns exec "$NAMESPACE" ip route replace default via "$VETH_HOST_IP" dev "$veth_ns"
 
     # DNS resolver config for namespace
+    local ns_nameserver
+    ns_nameserver="$VETH_HOST_IP"
+    if ! use_dns_bridge; then
+        ns_nameserver=$(dns_target_ip)
+        log "Using direct DNS from namespace to ${ns_nameserver}:$(dns_target_port)"
+    fi
+
     mkdir -p "/etc/netns/${NAMESPACE}"
+    cat >"/etc/netns/${NAMESPACE}/nsswitch.conf" <<EOF
+passwd: files systemd
+group: files systemd
+shadow: files
+hosts: files dns
+networks: files
+protocols: files
+services: files
+ethers: files
+rpc: files
+EOF
     cat >"/etc/netns/${NAMESPACE}/resolv.conf" <<EOF
-nameserver ${VETH_HOST_IP}
+nameserver ${ns_nameserver}
 options edns0
 EOF
 
@@ -259,9 +380,22 @@ EOF
     # Build nftables ruleset (ip family, in same hook list as iptables-nft)
     local nft_table="vpn-run-${NAMESPACE}"
     local drop_rule=""
+    local nat_rule="ip saddr ${VETH_NS_IP} oifname \"${INTERFACE}\" masquerade"
+    local dns_forward_rules=""
+    local dns_input_rules=""
 
     if [[ "$DROP_NON_VPN" == "true" ]]; then
         drop_rule="iifname \"${veth_host}\" oifname != \"${INTERFACE}\" reject"
+    fi
+
+    if [[ -n "$SNAT_SOURCE" ]]; then
+        nat_rule="ip saddr ${VETH_NS_IP} oifname \"${INTERFACE}\" snat to ${SNAT_SOURCE}"
+        log "SNAT source: ${SNAT_SOURCE}"
+    fi
+
+    if use_dns_bridge; then
+        dns_forward_rules=$'        iifname "'"${veth_host}"'" udp dport 53 reject\n        iifname "'"${veth_host}"'" tcp dport 53 reject'
+        dns_input_rules=$'        iifname "'"${veth_host}"'" udp dport 53 accept\n        iifname "'"${veth_host}"'" tcp dport 53 accept'
     fi
 
     # Remove any stale table first
@@ -271,34 +405,35 @@ EOF
 table ip ${nft_table} {
     chain postrouting {
         type nat hook postrouting priority srcnat; policy accept;
-        ip saddr ${VETH_NS_IP} oifname "${INTERFACE}" masquerade
+        ${nat_rule}
     }
     chain forward {
         type filter hook forward priority filter - 200; policy accept;
         iifname "${veth_host}" oifname "${INTERFACE}" accept
         iifname "${INTERFACE}" oifname "${veth_host}" ct state established,related accept
-        iifname "${veth_host}" udp dport 53 reject
-        iifname "${veth_host}" tcp dport 53 reject
+${dns_forward_rules}
         ${drop_rule}
     }
     chain input {
         type filter hook input priority filter - 200; policy accept;
-        iifname "${veth_host}" udp dport 53 accept
-        iifname "${veth_host}" tcp dport 53 accept
+${dns_input_rules}
     }
 }
 EOF
 
     # Policy routing: force source IP out via VPN interface
-    ip route replace table "$route_table_id" default dev "$INTERFACE"
+    # shellcheck disable=SC2046
+    ip route replace table "$route_table_id" $(vpn_default_route_args)
     ip rule del from "${VETH_NS_IP}/32" table "$route_table_id" 2>/dev/null || true
     ip rule add from "${VETH_NS_IP}/32" table "$route_table_id" priority "$rule_priority"
 
     # Release file lock before spawning socat children (they inherit fds)
     exec 200>&-
 
-    # Start DNS bridge (socat proxy on veth host IP → host resolver)
-    start_dns_bridge
+    # Start DNS bridge only for host-local DNS targets.
+    if use_dns_bridge; then
+        start_dns_bridge
+    fi
 
     # Persist state
     cat >"$state_file" <<EOF
@@ -307,6 +442,8 @@ saved_veth=${veth_host}
 VETH_NS=${veth_ns}
 saved_route_table=${route_table_id}
 saved_rule_prio=${rule_priority}
+saved_dns_target=${HOST_DNS_TARGET}
+saved_snat_source=${SNAT_SOURCE}
 DNS_TCP_PID=${DNS_TCP_PID}
 DNS_UDP_PID=${DNS_UDP_PID}
 EOF

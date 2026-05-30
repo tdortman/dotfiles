@@ -1,59 +1,20 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
 let
   cfg = config.vpn-run;
-
-  scriptTextSetup =
-    builtins.replaceStrings
-      [
-        "@defaultInterface@"
-        "@vethHostAddress@"
-        "@vethNsAddress@"
-        "@disableIPv6@"
-        "@dropNonVpnForward@"
-      ]
-      [
-        cfg.defaultInterface
-        cfg.vethHostAddress
-        cfg.vethNsAddress
-        (if cfg.disableIPv6 then "true" else "false")
-        (if cfg.dropNonVpnForward then "true" else "false")
-      ]
-      (builtins.readFile ./vpn-run-setup.sh);
-
-  scriptTextRun = builtins.replaceStrings [ "@defaultInterface@" ] [ cfg.defaultInterface ] (
-    builtins.readFile ./vpn-run.sh
-  );
-
-  vpnRunSetup = pkgs.writeShellApplication {
-    name = "vpn-run-setup";
-    runtimeInputs = [
-      pkgs.iproute2
-      pkgs.nftables
-      pkgs.coreutils
-      pkgs.util-linux
-      pkgs.procps
-      pkgs.gnugrep
-      pkgs.socat
-    ];
-    text = scriptTextSetup;
-  };
-
-  vpnRun = pkgs.writeShellApplication {
+  runners = config.interface-run.lib.mkVethRunner {
     name = "vpn-run";
-    runtimeInputs = [
-      pkgs.iproute2
-      pkgs.coreutils
-      pkgs.util-linux
-      vpnRunSetup
-    ];
-    text = scriptTextRun;
+    defaultInterface = cfg.defaultInterface;
+    disableIPv6 = cfg.disableIPv6;
+    dropNonInterfaceForward = cfg.dropNonVpnForward;
   };
+
+  vpnRunSetup = runners.setupPackage;
+  vpnRun = runners.runPackage;
 
 in
 {
@@ -83,20 +44,6 @@ in
       description = "Whether to create a shell alias for vpn-run";
     };
 
-    vethHostAddress = lib.mkOption {
-      type = lib.types.str;
-      default = "198.18.0.1/30";
-      description = "Host-side veth address (CIDR). Keep a /30 or /31 to avoid conflicts.";
-      example = "198.18.0.1/30";
-    };
-
-    vethNsAddress = lib.mkOption {
-      type = lib.types.str;
-      default = "198.18.0.2/30";
-      description = "Namespace-side veth address (CIDR). Must be in the same subnet as vethHostAddress.";
-      example = "198.18.0.2/30";
-    };
-
     disableIPv6 = lib.mkOption {
       type = lib.types.bool;
       default = true;
@@ -108,9 +55,18 @@ in
       default = true;
       description = "Drop forwarding from the namespace to any interface other than the chosen VPN interface.";
     };
+
+    package = lib.mkOption {
+      type = lib.types.package;
+      internal = true;
+      readOnly = true;
+      description = "vpn-run derivation for wrappers such as jgu-vpn-run.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
+    vpn-run.package = vpnRun;
+
     environment.systemPackages = [
       vpnRun
       vpnRunSetup
@@ -118,6 +74,7 @@ in
 
     environment.shellAliases = {
       vpn-run = lib.mkIf cfg.shellAlias "sudo -E vpn-run";
+      vpn-run-down = lib.mkIf cfg.shellAlias "sudo vpn-run-setup -t";
     };
 
     security.sudo.extraRules = lib.mkIf (cfg.allowedUsers != [ ]) [
