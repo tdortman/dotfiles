@@ -14,7 +14,10 @@ in
     packages = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
-      example = [ "com.surfshark.Surfshark" "com.gitbutler.gitbutler" ];
+      example = [
+        "com.surfshark.Surfshark"
+        "com.gitbutler.gitbutler"
+      ];
       description = "Flatpak application IDs to install.";
     };
 
@@ -56,7 +59,8 @@ in
             GTK_THEME = "Breeze";
           };
         };
-      } // cfg.extraOverrides;
+      }
+      // cfg.extraOverrides;
     };
   };
 }
