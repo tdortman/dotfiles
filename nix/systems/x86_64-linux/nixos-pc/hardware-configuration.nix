@@ -21,7 +21,12 @@
     "hid-logitech-dj"
     "zenpower"
     "ntsync"
+    "it87"
   ];
+
+  boot.extraModprobeConfig = ''
+    options it87 force_id=0x8628
+  '';
 
   boot.blacklistedKernelModules = [ "k10temp" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.zenpower ];
@@ -30,6 +35,7 @@
     "resume_offset=33307031"
     "drm.edid_firmware=DP-3:edid/odyssey-g7-8bpc.bin"
     "amd_pstate=active"
+    "acpi_enforce_resources=lax"
   ];
   boot.resumeDevice = "/dev/disk/by-partlabel/disk-primary-root";
 
