@@ -359,8 +359,7 @@
     custom.shiru
     custom.fluxer
 
-    temp.docker-sbx
-    e2fsprogs # mkfs.ext4 for docker-sbx / sbx sandboxes
+    pkgs.llm-agents.git-surgeon
   ];
 
   hardware.logitech.wireless.enable = true;
