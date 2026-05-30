@@ -79,6 +79,7 @@
       containerd
       qemu
       chezmoi
+      strongswan
 
       # Media / Graphics
       ffmpeg-full
