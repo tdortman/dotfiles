@@ -135,6 +135,10 @@ skills-add() {
     chezmoi add ~/.agents/skills
 }
 
+omp-commit() {
+    omp "$@" "generate granular commits using the git-surgeon skill at $HOME/.agents/skills/git-surgeon/SKILL.md"
+}
+
 create_man_wrapper
 
 create_mold_wrapper() {
