@@ -42,12 +42,12 @@
     ];
   };
 
-  virtualisation.docker.enable = false;
+  virtualisation.podman.enable = false;
 
   users.users.${currentUsername} = {
     isNormalUser = true;
     extraGroups = [
-      "docker"
+      "podman"
       "wheel"
       "networkmanager"
       "video"

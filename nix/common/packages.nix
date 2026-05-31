@@ -75,7 +75,7 @@
       kmod
       lz4
       openssh
-      docker
+      podman
       containerd
       qemu
       chezmoi

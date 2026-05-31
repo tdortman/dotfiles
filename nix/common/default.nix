@@ -65,7 +65,7 @@
   users.users.${currentUsername} = {
     isNormalUser = true;
     extraGroups = [
-      "docker"
+      "podman"
       "wheel"
       "networkmanager"
       "audio"
