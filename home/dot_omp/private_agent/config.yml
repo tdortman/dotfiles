@@ -54,3 +54,6 @@ contextPromotion:
   enabled: true
 renderMermaid: 
   enabled: true
+providers: 
+  webSearch: auto
+setupVersion: 1
