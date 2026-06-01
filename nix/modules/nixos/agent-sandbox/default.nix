@@ -9,46 +9,56 @@ let
   agentSandboxLib = import ./lib.nix { inherit lib; };
   wrapPackage = agentSandboxLib.mkWrapPackage pkgs;
 
-  pathOptions = {
-    homePaths = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+  isValidMountPath = path: path == "~" || lib.hasPrefix "~/" path || lib.hasPrefix "/" path;
+
+  mountPathType = lib.types.addCheck lib.types.str (
+    path:
+    lib.assertMsg (isValidMountPath path) ''
+      agent-sandbox mount path must start with ~/ or / (for example "~/.agents" or "/run/user/1000"), got: ${path}
+    ''
+  );
+
+  mountPathDescription = ''
+    Each entry must be an absolute path: `~/…` under the invoking user's `$HOME`
+    (for example `"~/.agents"`), or `/…` on the host (for example `"/run/user/1000"`).
+  '';
+
+  mountOptions = {
+    readonlyDirs = lib.mkOption {
+      type = lib.types.listOf mountPathType;
       default = [ ];
       description = ''
-        Paths under $HOME that the sandboxed binary may read and write.
-        Example: [ ".omp" ".agents" ].
+        Directories mounted read-only. ${mountPathDescription}
       '';
     };
 
-    homePathsReadOnly = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [ ];
-      description = "Paths under $HOME that are mounted read-only.";
-    };
-
-    homeFiles = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+    readwriteDirs = lib.mkOption {
+      type = lib.types.listOf mountPathType;
       default = [ ];
       description = ''
-        Individual files under $HOME mounted read-only (for example `.gitconfig`).
+        Directories mounted read-write. ${mountPathDescription}
       '';
     };
 
-    extraReadwriteDirs = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+    readonlyFiles = lib.mkOption {
+      type = lib.types.listOf mountPathType;
       default = [ ];
       description = ''
-        Absolute host paths outside $HOME to mount read-write (for example a projects directory).
+        Files mounted read-only (for example `.gitconfig` or a socket under `/run`).
+        ${mountPathDescription}
       '';
     };
 
-    extraReadonlyDirs = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+    readwriteFiles = lib.mkOption {
+      type = lib.types.listOf mountPathType;
       default = [ ];
-      description = "Absolute host paths outside $HOME to mount read-only.";
+      description = ''
+        Files mounted read-write. ${mountPathDescription}
+      '';
     };
   };
 
-  packageOptions = pathOptions // {
+  packageOptions = mountOptions // {
     package = lib.mkPackageOption pkgs "llm-agents" { };
 
     binary = lib.mkOption {
@@ -71,11 +81,11 @@ let
       '';
     };
 
-    runtimeReadonlyPaths = lib.mkOption {
+    runtimeReadonlyDirs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
-      default = agentSandboxLib.defaultRuntimeReadonlyPaths;
+      default = agentSandboxLib.defaultRuntimeReadonlyDirs;
       description = ''
-        Absolute runtime paths mounted read-only. Defaults expose selected
+        Absolute runtime directories mounted read-only. Defaults expose selected
         `/run` entries for the system profile, setuid wrappers, and OpenGL
         drivers.
       '';
@@ -118,7 +128,7 @@ let
       type = lib.types.bool;
       default = true;
       description = ''
-        Resolve symlinks found under allowed $HOME paths and mount their targets
+        Resolve symlinks found under allowed $HOME directories and mount their targets
         read-only, so chezmoi-managed config symlinks work without exposing the
         whole repository that contains their targets.
       '';
@@ -131,15 +141,14 @@ let
     };
   };
 
-  mergePackagePaths =
+  mergePackageMounts =
     pkgCfg:
     pkgCfg
     // {
-      homePaths = lib.unique (cfg.homePaths ++ pkgCfg.homePaths);
-      homePathsReadOnly = lib.unique (cfg.homePathsReadOnly ++ pkgCfg.homePathsReadOnly);
-      homeFiles = lib.unique (cfg.homeFiles ++ pkgCfg.homeFiles);
-      extraReadwriteDirs = lib.unique (cfg.extraReadwriteDirs ++ pkgCfg.extraReadwriteDirs);
-      extraReadonlyDirs = lib.unique (cfg.extraReadonlyDirs ++ pkgCfg.extraReadonlyDirs);
+      readonlyDirs = lib.unique (cfg.readonlyDirs ++ pkgCfg.readonlyDirs);
+      readwriteDirs = lib.unique (cfg.readwriteDirs ++ pkgCfg.readwriteDirs);
+      readonlyFiles = lib.unique (cfg.readonlyFiles ++ pkgCfg.readonlyFiles);
+      readwriteFiles = lib.unique (cfg.readwriteFiles ++ pkgCfg.readwriteFiles);
     };
 
   cfg = config.agent-sandbox;
@@ -158,48 +167,39 @@ in
       '';
     };
   }
-  // pathOptions
+  // mountOptions
   // {
-    homePaths = pathOptions.homePaths // {
+    readonlyDirs = mountOptions.readonlyDirs // {
       description = ''
-        Paths under $HOME shared by every wrapped agent (merged with per-package
-        `homePaths`).
+        Read-only directories shared by every wrapped agent (merged with per-package
+        `readonlyDirs`).
       '';
     };
 
-    homePathsReadOnly = pathOptions.homePathsReadOnly // {
+    readwriteDirs = mountOptions.readwriteDirs // {
       description = ''
-        Read-only $HOME paths shared by every wrapped agent (merged with per-package
-        `homePathsReadOnly`).
+        Read-write directories shared by every wrapped agent (merged with per-package
+        `readwriteDirs`).
       '';
     };
 
-    homeFiles = pathOptions.homeFiles // {
+    readonlyFiles = mountOptions.readonlyFiles // {
       description = ''
-        Read-only $HOME files shared by every wrapped agent (merged with per-package
-        `homeFiles`).
+        Read-only files shared by every wrapped agent (merged with per-package
+        `readonlyFiles`).
       '';
     };
 
-    extraReadwriteDirs = pathOptions.extraReadwriteDirs // {
+    readwriteFiles = mountOptions.readwriteFiles // {
       description = ''
-        Absolute host paths mounted read-write for every wrapped agent (merged with
-        per-package `extraReadwriteDirs`).
-      '';
-    };
-
-    extraReadonlyDirs = pathOptions.extraReadonlyDirs // {
-      description = ''
-        Absolute host paths mounted read-only for every wrapped agent (merged with
-        per-package `extraReadonlyDirs`).
+        Read-write files shared by every wrapped agent (merged with per-package
+        `readwriteFiles`).
       '';
     };
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = map (
-      value: wrapPackage (mergePackagePaths value)
-    ) cfg.packages;
+    environment.systemPackages = map (value: wrapPackage (mergePackageMounts value)) cfg.packages;
 
     nixpkgs.overlays = lib.mkAfter [
       (final: prev: {
@@ -208,7 +208,7 @@ in
             mkWrapPackage
             defaultCommonPkgs
             defaultBlockEnvVars
-            defaultRuntimeReadonlyPaths
+            defaultRuntimeReadonlyDirs
             defaultDevicePaths
             ;
           wrapPackage = agentSandboxLib.mkWrapPackage final;
