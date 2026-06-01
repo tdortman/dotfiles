@@ -136,40 +136,40 @@
       [
         {
           package = agents.omp;
-          homePaths = [ ".omp" ];
+          readwriteDirs = [ "~/.omp" ];
         }
         {
           package = agents.cursor-agent;
-          homePaths = [
-            ".cursor"
-            ".config/cursor"
+          readwriteDirs = [
+            "~/.cursor"
+            "~/.config/cursor"
           ];
         }
         {
           package = agents.codex;
-          homePaths = [ ".codex" ];
+          readwriteDirs = [ "~/.codex" ];
         }
         {
           package = agents.opencode;
-          homePaths = [
-            ".config/opencode"
-            ".local/share/opencode"
-            ".local/state/opencode/"
-            ".cache/opencode"
+          readwriteDirs = [
+            "~/.config/opencode"
+            "~/.local/share/opencode"
+            "~/.local/state/opencode/"
           ];
-          homeFiles = [
-            ".config/cursor/auth.json" # For opencode-cursor
+          readonlyFiles = [
+            "~/.config/cursor/auth.json" # For opencode-cursor
           ];
         }
         {
           package = agents.droid;
-          homePaths = [ ".factory" ];
+          readwriteDirs = [ "~/.factory" ];
         }
         {
           package = agents.copilot-cli;
-          homePaths = [
-            ".config/gh-copilot"
-            ".copilot"
+          readwriteDirs = [
+            "~/.config/gh-copilot"
+            "~/.copilot"
+          ];
           ];
         }
       ];
