@@ -371,7 +371,6 @@
     master.vscode-fhs
     zed-editor-fhs
     master.code-cursor-fhs
-    github-copilot-cli
 
     custom.danbooru-rs
     custom.shiru
