@@ -1,7 +1,11 @@
 modelRoles: 
   default: cursor/composer-2.5
   commit: cursor/composer-2.5
-  vision: openai-codex/gpt-5.4
+  vision: cursor/gemini-3-flash
+  plan: cursor/gpt-5.3-codex-xhigh
+  smol: deepseek/deepseek-v4-flash
+  task: deepseek/deepseek-v4-flash
+  slow: cursor/gpt-5.3-codex-xhigh
 startup: 
   checkUpdate: false
 symbolPreset: nerd
