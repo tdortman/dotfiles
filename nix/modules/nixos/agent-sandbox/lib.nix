@@ -27,7 +27,7 @@ let
 
   defaultBlockEnvVars = [ ];
 
-  defaultRuntimeReadonlyPaths = [
+  defaultRuntimeReadonlyDirs = [
     "/run/current-system"
     "/run/wrappers"
     "/run/opengl-driver"
@@ -41,17 +41,40 @@ let
     "/dev/nvidia-uvm-tools"
   ];
 
-  normalizeHomePath =
-    path:
-    let
-      stripped = lib.removePrefix "/" path;
-    in
-    if stripped == "" then null else stripped;
+  isHomeMountPath = path: path == "~" || lib.hasPrefix "~/" path;
 
-  bindHomePathLines =
+  isHostMountPath = path: lib.hasPrefix "/" path;
+
+  homeMountRel =
+    path:
+    if path == "~" then "" else lib.removePrefix "~/" path;
+
+  splitMountPaths =
+    paths:
+    let
+      invalid = lib.filter (p: !isHomeMountPath p && !isHostMountPath p) paths;
+    in
+    if invalid != [ ] then
+      builtins.throw ''
+        agent-sandbox: mount paths must start with ~/ or / (for example "~/.agents" or "/run/user/1000").
+        Invalid: ${lib.concatStringsSep ", " (map (p: ''"${p}"'') invalid)}
+      ''
+    else
+      {
+        home = map homeMountRel (lib.filter isHomeMountPath paths);
+        abs = lib.filter isHostMountPath paths;
+      };
+
+  bindHomeDirLines =
     paths: mode:
     concatMapStringsSep "\n" (rel: ''
-      bindHomePath ${lib.escapeShellArg rel} ${mode}
+      bindHomeDir ${lib.escapeShellArg rel} ${mode}
+    '') paths;
+
+  bindHomeFileLines =
+    paths: mode:
+    concatMapStringsSep "\n" (rel: ''
+      bindHomeFile ${lib.escapeShellArg rel} ${mode}
     '') paths;
 
   blockEnvVarLines =
@@ -64,7 +87,7 @@ rec {
   inherit
     defaultCommonPkgs
     defaultBlockEnvVars
-    defaultRuntimeReadonlyPaths
+    defaultRuntimeReadonlyDirs
     defaultDevicePaths
     ;
 
@@ -73,13 +96,12 @@ rec {
     {
       package,
       binary ? null,
-      homePaths ? [ ],
-      homePathsReadOnly ? [ ],
-      homeFiles ? [ ],
+      readonlyDirs ? [ ],
+      readwriteDirs ? [ ],
+      readonlyFiles ? [ ],
+      readwriteFiles ? [ ],
       extraPkgs ? [ ],
-      extraReadwriteDirs ? [ ],
-      extraReadonlyDirs ? [ ],
-      runtimeReadonlyPaths ? defaultRuntimeReadonlyPaths,
+      runtimeReadonlyDirs ? defaultRuntimeReadonlyDirs,
       devicePaths ? defaultDevicePaths,
       commonPkgs ? defaultCommonPkgs pkgs,
       blockEnvVars ? defaultBlockEnvVars,
@@ -102,9 +124,10 @@ rec {
           lib.getExe package;
       sandboxedName = "sandboxed-${binName}";
 
-      homePaths' = lib.filter (p: p != null) (map normalizeHomePath homePaths);
-      homePathsReadOnly' = lib.filter (p: p != null) (map normalizeHomePath homePathsReadOnly);
-      homeFiles' = lib.filter (p: p != null) (map normalizeHomePath homeFiles);
+      readonlyDirs' = splitMountPaths readonlyDirs;
+      readwriteDirs' = splitMountPaths readwriteDirs;
+      readonlyFiles' = splitMountPaths readonlyFiles;
+      readwriteFiles' = splitMountPaths readwriteFiles;
 
       sandboxPkgs = lib.unique ([ package ] ++ commonPkgs ++ extraPkgs);
       sandboxPath = lib.makeBinPath sandboxPkgs;
@@ -378,7 +401,7 @@ rec {
             done < <(find "$root" -type l -print0)
           }
 
-          bindHomePath() {
+          bindHomeDir() {
             local rel="$1"
             local mode="$2"
             local src="$realHome/$rel"
@@ -386,6 +409,25 @@ rec {
 
             if [[ ! -e "$src" ]]; then
               mkdir -p "$src"
+            fi
+
+            if [[ "$mode" == "ro" ]]; then
+              bwrapArgs+=(--ro-bind "$src" "$dst")
+            else
+              bwrapArgs+=(--bind "$src" "$dst")
+            fi
+            bindResolvedHomeSymlinksUnder "$src"
+          }
+
+          bindHomeFile() {
+            local rel="$1"
+            local mode="$2"
+            local src="$realHome/$rel"
+            local dst="$realHome/$rel"
+
+            if [[ ! -e "$src" ]]; then
+              mkdir -p "$(dirname "$src")"
+              : > "$src"
             fi
 
             if [[ "$mode" == "ro" ]]; then
@@ -425,7 +467,7 @@ rec {
 
           bwrapArgs+=(--ro-bind /nix/store /nix/store)
 
-          ${bindHostPathLines runtimeReadonlyPaths "ro"}
+          ${bindHostPathLines runtimeReadonlyDirs "ro"}
 
           bwrapArgs+=(
             --tmpfs /tmp
@@ -471,24 +513,15 @@ rec {
             ensureSandboxTmpDir "$TEMP"
           fi
 
-          ${bindHomePathLines homePaths' "rw"}
+          ${bindHomeDirLines readonlyDirs'.home "ro"}
+          ${bindHomeDirLines readwriteDirs'.home "rw"}
+          ${bindHostPathLines readonlyDirs'.abs "ro"}
+          ${bindHostPathLines readwriteDirs'.abs "bind"}
 
-          ${bindHomePathLines homePathsReadOnly' "ro"}
-
-          ${concatMapStringsSep "\n" (rel: ''
-            rel=${lib.escapeShellArg rel}
-            src="$realHome/$rel"
-            dst="$realHome/$rel"
-            if [[ ! -e "$src" ]]; then
-              mkdir -p "$(dirname "$src")"
-              : > "$src"
-            fi
-            bwrapArgs+=(--ro-bind "$src" "$dst")
-            bindResolvedHomeSymlinksUnder "$src"
-          '') homeFiles'}
-
-          ${bindHostPathLines extraReadwriteDirs "bind"}
-          ${bindHostPathLines extraReadonlyDirs "ro"}
+          ${bindHomeFileLines readonlyFiles'.home "ro"}
+          ${bindHomeFileLines readwriteFiles'.home "rw"}
+          ${bindHostPathLines readonlyFiles'.abs "ro"}
+          ${bindHostPathLines readwriteFiles'.abs "bind"}
 
           ${exposeWorkingDirectoryBlock}
 
