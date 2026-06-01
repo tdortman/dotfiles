@@ -124,10 +124,10 @@
 
   agent-sandbox = {
     enable = true;
-    homePaths = [ ".agents" ];
-    homeFiles = [
-      ".gitconfig"
-      ".1password/agent.sock"
+    readwriteDirs = [ "~/.agents" ];
+    readonlyFiles = [
+      "~/.gitconfig"
+      "~/.1password/agent.sock"
     ];
     packages =
       let
