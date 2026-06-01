@@ -164,6 +164,15 @@
         {
           package = agents.droid;
           homePaths = [ ".factory" ];
+        }
+        {
+          package = agents.copilot-cli;
+          homePaths = [
+            ".config/gh-copilot"
+            ".copilot"
+          ];
+        }
+      ];
   };
 
   qbittorrent = {
