@@ -72,9 +72,9 @@ rec {
     pkgs:
     {
       package,
+      binary ? null,
       homePaths ? [ ],
       homePathsReadOnly ? [ ],
-      binary ? null,
       homeFiles ? [ ],
       extraPkgs ? [ ],
       extraReadwriteDirs ? [ ],
@@ -90,8 +90,16 @@ rec {
     }:
     let
       pname = lib.getName package;
-      binName = if binary != null then binary else pname;
-      mainProgram = "${lib.getBin package}/bin/${binName}";
+      binName =
+        if binary != null then
+          binary
+        else
+          builtins.baseNameOf (lib.getExe package);
+      mainProgram =
+        if binary != null then
+          lib.getExe' package binary
+        else
+          lib.getExe package;
       sandboxedName = "sandboxed-${binName}";
 
       homePaths' = lib.filter (p: p != null) (map normalizeHomePath homePaths);
