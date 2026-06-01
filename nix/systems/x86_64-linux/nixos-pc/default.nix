@@ -157,6 +157,9 @@
             ".local/state/opencode/"
             ".cache/opencode"
           ];
+          homeFiles = [
+            ".config/cursor/auth.json" # For opencode-cursor
+          ];
         };
         droid = {
           package = agents.droid;

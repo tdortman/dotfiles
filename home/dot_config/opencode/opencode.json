@@ -1,34 +1,1669 @@
 {
-    "$schema": "https://opencode.ai/config.json",
-    "lsp": true,
-    "permission": {
-        "*": "ask",
-        "edit": "allow",
-        "read": {
-            "*": "allow",
-            "*.env": "deny",
-            "*.env.*": "deny",
-            "*.env.example": "allow"
+  "$schema": "https://opencode.ai/config.json",
+  "lsp": true,
+  "plugin": [
+    "@rama_nigg/open-cursor@latest",
+    "cursor-acp"
+  ],
+  "provider": {
+    "cursor-acp": {
+      "name": "Cursor",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://127.0.0.1:32124/v1"
+      },
+      "models": {
+        "gpt-5.3-codex": {
+          "name": "Codex 5.3",
+          "options": {
+            "cursorModel": "gpt-5.3-codex"
+          },
+          "variants": {
+            "low": {
+              "cursorModel": "gpt-5.3-codex-low",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "low-fast": {
+              "cursorModel": "gpt-5.3-codex-low-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "fast": {
+              "cursorModel": "gpt-5.3-codex-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "high": {
+              "cursorModel": "gpt-5.3-codex-high",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "high-fast": {
+              "cursorModel": "gpt-5.3-codex-high-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "xhigh": {
+              "cursorModel": "gpt-5.3-codex-xhigh",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "xhigh-fast": {
+              "cursorModel": "gpt-5.3-codex-xhigh-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            }
+          },
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cache_read": 0.175,
+            "cache_write": 1.75
+          }
         },
-        "todowrite": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "todoread": "allow",
-        "lsp": "allow",
-        "task": "allow",
-        "bash": {
-            "find *": "allow",
-            "ls *": "allow",
-            "sort *": "allow",
-            "wc *": "allow",
-            "git *": "allow",
-            "git commit *": "deny",
-            "git push *": "deny",
-            "mkdir *": "allow",
-            "rm *": "deny",
-            "head *": "allow",
-            "echo *": "allow"
+        "gpt-5.2": {
+          "name": "GPT-5.2",
+          "options": {
+            "cursorModel": "gpt-5.2"
+          },
+          "variants": {
+            "low": {
+              "cursorModel": "gpt-5.2-low",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "low-fast": {
+              "cursorModel": "gpt-5.2-low-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "fast": {
+              "cursorModel": "gpt-5.2-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "high": {
+              "cursorModel": "gpt-5.2-high",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "high-fast": {
+              "cursorModel": "gpt-5.2-high-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "xhigh": {
+              "cursorModel": "gpt-5.2-xhigh",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "xhigh-fast": {
+              "cursorModel": "gpt-5.2-xhigh-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "codex": {
+              "cursorModel": "gpt-5.2-codex",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "codex-fast": {
+              "cursorModel": "gpt-5.2-codex-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "codex-high": {
+              "cursorModel": "gpt-5.2-codex-high",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "codex-high-fast": {
+              "cursorModel": "gpt-5.2-codex-high-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "codex-low": {
+              "cursorModel": "gpt-5.2-codex-low",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "codex-low-fast": {
+              "cursorModel": "gpt-5.2-codex-low-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "codex-xhigh": {
+              "cursorModel": "gpt-5.2-codex-xhigh",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            },
+            "codex-xhigh-fast": {
+              "cursorModel": "gpt-5.2-codex-xhigh-fast",
+              "cost": {
+                "input": 1.75,
+                "output": 14,
+                "cache_read": 0.175,
+                "cache_write": 1.75
+              }
+            }
+          },
+          "cost": {
+            "input": 1.75,
+            "output": 14,
+            "cache_read": 0.175,
+            "cache_write": 1.75
+          }
+        },
+        "gpt-5.1": {
+          "name": "GPT-5.1",
+          "options": {
+            "cursorModel": "gpt-5.1"
+          },
+          "variants": {
+            "low": {
+              "cursorModel": "gpt-5.1-low",
+              "cost": {
+                "input": 1.25,
+                "output": 10,
+                "cache_read": 0.125,
+                "cache_write": 1.25
+              }
+            },
+            "high": {
+              "cursorModel": "gpt-5.1-high",
+              "cost": {
+                "input": 1.25,
+                "output": 10,
+                "cache_read": 0.125,
+                "cache_write": 1.25
+              }
+            },
+            "codex-max-high": {
+              "cursorModel": "gpt-5.1-codex-max-high",
+              "cost": {
+                "input": 1.25,
+                "output": 10,
+                "cache_read": 0.125,
+                "cache_write": 1.25
+              }
+            },
+            "codex-max-high-fast": {
+              "cursorModel": "gpt-5.1-codex-max-high-fast",
+              "cost": {
+                "input": 1.25,
+                "output": 10,
+                "cache_read": 0.125,
+                "cache_write": 1.25
+              }
+            },
+            "codex-max-low": {
+              "cursorModel": "gpt-5.1-codex-max-low",
+              "cost": {
+                "input": 1.25,
+                "output": 10,
+                "cache_read": 0.125,
+                "cache_write": 1.25
+              }
+            },
+            "codex-max-low-fast": {
+              "cursorModel": "gpt-5.1-codex-max-low-fast",
+              "cost": {
+                "input": 1.25,
+                "output": 10,
+                "cache_read": 0.125,
+                "cache_write": 1.25
+              }
+            },
+            "codex-max-medium": {
+              "cursorModel": "gpt-5.1-codex-max-medium",
+              "cost": {
+                "input": 1.25,
+                "output": 10,
+                "cache_read": 0.125,
+                "cache_write": 1.25
+              }
+            },
+            "codex-max-medium-fast": {
+              "cursorModel": "gpt-5.1-codex-max-medium-fast",
+              "cost": {
+                "input": 1.25,
+                "output": 10,
+                "cache_read": 0.125,
+                "cache_write": 1.25
+              }
+            },
+            "codex-max-xhigh": {
+              "cursorModel": "gpt-5.1-codex-max-xhigh",
+              "cost": {
+                "input": 1.25,
+                "output": 10,
+                "cache_read": 0.125,
+                "cache_write": 1.25
+              }
+            },
+            "codex-max-xhigh-fast": {
+              "cursorModel": "gpt-5.1-codex-max-xhigh-fast",
+              "cost": {
+                "input": 1.25,
+                "output": 10,
+                "cache_read": 0.125,
+                "cache_write": 1.25
+              }
+            },
+            "codex-mini": {
+              "cursorModel": "gpt-5.1-codex-mini",
+              "cost": {
+                "input": 0.25,
+                "output": 2,
+                "cache_read": 0.025,
+                "cache_write": 0.25
+              }
+            },
+            "codex-mini-high": {
+              "cursorModel": "gpt-5.1-codex-mini-high",
+              "cost": {
+                "input": 0.25,
+                "output": 2,
+                "cache_read": 0.025,
+                "cache_write": 0.25
+              }
+            },
+            "codex-mini-low": {
+              "cursorModel": "gpt-5.1-codex-mini-low",
+              "cost": {
+                "input": 0.25,
+                "output": 2,
+                "cache_read": 0.025,
+                "cache_write": 0.25
+              }
+            }
+          },
+          "cost": {
+            "input": 1.25,
+            "output": 10,
+            "cache_read": 0.125,
+            "cache_write": 1.25
+          }
+        },
+        "composer-2.5": {
+          "name": "Composer 2.5",
+          "options": {
+            "cursorModel": "composer-2.5"
+          },
+          "variants": {
+            "fast": {
+              "cursorModel": "composer-2.5-fast"
+            }
+          }
+        },
+        "claude-opus-4-8": {
+          "name": "Claude Opus 4 8",
+          "options": {
+            "cursorModel": "claude-opus-4-8-medium"
+          },
+          "variants": {
+            "low": {
+              "cursorModel": "claude-opus-4-8-low"
+            },
+            "low-fast": {
+              "cursorModel": "claude-opus-4-8-low-fast"
+            },
+            "medium": {
+              "cursorModel": "claude-opus-4-8-medium"
+            },
+            "medium-fast": {
+              "cursorModel": "claude-opus-4-8-medium-fast"
+            },
+            "high": {
+              "cursorModel": "claude-opus-4-8-high"
+            },
+            "high-fast": {
+              "cursorModel": "claude-opus-4-8-high-fast"
+            },
+            "xhigh": {
+              "cursorModel": "claude-opus-4-8-xhigh"
+            },
+            "xhigh-fast": {
+              "cursorModel": "claude-opus-4-8-xhigh-fast"
+            },
+            "max": {
+              "cursorModel": "claude-opus-4-8-max"
+            },
+            "thinking-low": {
+              "cursorModel": "claude-opus-4-8-thinking-low"
+            },
+            "thinking-medium": {
+              "cursorModel": "claude-opus-4-8-thinking-medium"
+            },
+            "thinking-high": {
+              "cursorModel": "claude-opus-4-8-thinking-high"
+            },
+            "thinking-high-fast": {
+              "cursorModel": "claude-opus-4-8-thinking-high-fast"
+            },
+            "thinking-xhigh": {
+              "cursorModel": "claude-opus-4-8-thinking-xhigh"
+            },
+            "thinking-max": {
+              "cursorModel": "claude-opus-4-8-thinking-max"
+            },
+            "max-fast": {
+              "cursorModel": "claude-opus-4-8-max-fast"
+            },
+            "thinking-low-fast": {
+              "cursorModel": "claude-opus-4-8-thinking-low-fast"
+            },
+            "thinking-max-fast": {
+              "cursorModel": "claude-opus-4-8-thinking-max-fast"
+            },
+            "thinking-medium-fast": {
+              "cursorModel": "claude-opus-4-8-thinking-medium-fast"
+            },
+            "thinking-xhigh-fast": {
+              "cursorModel": "claude-opus-4-8-thinking-xhigh-fast"
+            }
+          }
+        },
+        "gpt-5.5": {
+          "name": "GPT 5.5",
+          "options": {
+            "cursorModel": "gpt-5.5-medium"
+          },
+          "variants": {
+            "none": {
+              "cursorModel": "gpt-5.5-none",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5,
+                "context_over_200k": {
+                  "input": 10,
+                  "output": 45,
+                  "cache_read": 1,
+                  "cache_write": 10
+                }
+              }
+            },
+            "low": {
+              "cursorModel": "gpt-5.5-low",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5,
+                "context_over_200k": {
+                  "input": 10,
+                  "output": 45,
+                  "cache_read": 1,
+                  "cache_write": 10
+                }
+              }
+            },
+            "low-fast": {
+              "cursorModel": "gpt-5.5-low-fast",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5,
+                "context_over_200k": {
+                  "input": 10,
+                  "output": 45,
+                  "cache_read": 1,
+                  "cache_write": 10
+                }
+              }
+            },
+            "medium": {
+              "cursorModel": "gpt-5.5-medium",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5,
+                "context_over_200k": {
+                  "input": 10,
+                  "output": 45,
+                  "cache_read": 1,
+                  "cache_write": 10
+                }
+              }
+            },
+            "medium-fast": {
+              "cursorModel": "gpt-5.5-medium-fast",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5,
+                "context_over_200k": {
+                  "input": 10,
+                  "output": 45,
+                  "cache_read": 1,
+                  "cache_write": 10
+                }
+              }
+            },
+            "high": {
+              "cursorModel": "gpt-5.5-high",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5,
+                "context_over_200k": {
+                  "input": 10,
+                  "output": 45,
+                  "cache_read": 1,
+                  "cache_write": 10
+                }
+              }
+            },
+            "high-fast": {
+              "cursorModel": "gpt-5.5-high-fast",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5,
+                "context_over_200k": {
+                  "input": 10,
+                  "output": 45,
+                  "cache_read": 1,
+                  "cache_write": 10
+                }
+              }
+            },
+            "extra-high": {
+              "cursorModel": "gpt-5.5-extra-high",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5,
+                "context_over_200k": {
+                  "input": 10,
+                  "output": 45,
+                  "cache_read": 1,
+                  "cache_write": 10
+                }
+              }
+            },
+            "extra-high-fast": {
+              "cursorModel": "gpt-5.5-extra-high-fast",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5,
+                "context_over_200k": {
+                  "input": 10,
+                  "output": 45,
+                  "cache_read": 1,
+                  "cache_write": 10
+                }
+              }
+            },
+            "none-fast": {
+              "cursorModel": "gpt-5.5-none-fast",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5,
+                "context_over_200k": {
+                  "input": 10,
+                  "output": 45,
+                  "cache_read": 1,
+                  "cache_write": 10
+                }
+              }
+            }
+          },
+          "cost": {
+            "input": 5,
+            "output": 30,
+            "cache_read": 0.5,
+            "cache_write": 5,
+            "context_over_200k": {
+              "input": 10,
+              "output": 45,
+              "cache_read": 1,
+              "cache_write": 10
+            }
+          }
+        },
+        "claude-opus-4-7": {
+          "name": "Claude Opus 4 7",
+          "options": {
+            "cursorModel": "claude-opus-4-7-medium"
+          },
+          "variants": {
+            "low": {
+              "cursorModel": "claude-opus-4-7-low",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "low-fast": {
+              "cursorModel": "claude-opus-4-7-low-fast",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "medium": {
+              "cursorModel": "claude-opus-4-7-medium",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "medium-fast": {
+              "cursorModel": "claude-opus-4-7-medium-fast",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "high": {
+              "cursorModel": "claude-opus-4-7-high",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "high-fast": {
+              "cursorModel": "claude-opus-4-7-high-fast",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "xhigh": {
+              "cursorModel": "claude-opus-4-7-xhigh",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "xhigh-fast": {
+              "cursorModel": "claude-opus-4-7-xhigh-fast",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "max": {
+              "cursorModel": "claude-opus-4-7-max",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "thinking-low": {
+              "cursorModel": "claude-opus-4-7-thinking-low",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "thinking-medium": {
+              "cursorModel": "claude-opus-4-7-thinking-medium",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "thinking-high": {
+              "cursorModel": "claude-opus-4-7-thinking-high",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "thinking-high-fast": {
+              "cursorModel": "claude-opus-4-7-thinking-high-fast",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "thinking-xhigh": {
+              "cursorModel": "claude-opus-4-7-thinking-xhigh",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "thinking-max": {
+              "cursorModel": "claude-opus-4-7-thinking-max",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "max-fast": {
+              "cursorModel": "claude-opus-4-7-max-fast",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "thinking-low-fast": {
+              "cursorModel": "claude-opus-4-7-thinking-low-fast",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "thinking-max-fast": {
+              "cursorModel": "claude-opus-4-7-thinking-max-fast",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "thinking-medium-fast": {
+              "cursorModel": "claude-opus-4-7-thinking-medium-fast",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "thinking-xhigh-fast": {
+              "cursorModel": "claude-opus-4-7-thinking-xhigh-fast",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            }
+          },
+          "cost": {
+            "input": 5,
+            "output": 25,
+            "cache_read": 0.5,
+            "cache_write": 6.25
+          }
+        },
+        "gpt-5.4": {
+          "name": "GPT 5.4",
+          "options": {
+            "cursorModel": "gpt-5.4-medium"
+          },
+          "variants": {
+            "low": {
+              "cursorModel": "gpt-5.4-low",
+              "cost": {
+                "input": 2.5,
+                "output": 15,
+                "cache_read": 0.25,
+                "cache_write": 2.5,
+                "context_over_200k": {
+                  "input": 5,
+                  "output": 22.5,
+                  "cache_read": 0.5,
+                  "cache_write": 5
+                }
+              }
+            },
+            "medium": {
+              "cursorModel": "gpt-5.4-medium",
+              "cost": {
+                "input": 2.5,
+                "output": 15,
+                "cache_read": 0.25,
+                "cache_write": 2.5,
+                "context_over_200k": {
+                  "input": 5,
+                  "output": 22.5,
+                  "cache_read": 0.5,
+                  "cache_write": 5
+                }
+              }
+            },
+            "medium-fast": {
+              "cursorModel": "gpt-5.4-medium-fast",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5
+              }
+            },
+            "high": {
+              "cursorModel": "gpt-5.4-high",
+              "cost": {
+                "input": 2.5,
+                "output": 15,
+                "cache_read": 0.25,
+                "cache_write": 2.5,
+                "context_over_200k": {
+                  "input": 5,
+                  "output": 22.5,
+                  "cache_read": 0.5,
+                  "cache_write": 5
+                }
+              }
+            },
+            "high-fast": {
+              "cursorModel": "gpt-5.4-high-fast",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5
+              }
+            },
+            "xhigh": {
+              "cursorModel": "gpt-5.4-xhigh",
+              "cost": {
+                "input": 2.5,
+                "output": 15,
+                "cache_read": 0.25,
+                "cache_write": 2.5,
+                "context_over_200k": {
+                  "input": 5,
+                  "output": 22.5,
+                  "cache_read": 0.5,
+                  "cache_write": 5
+                }
+              }
+            },
+            "xhigh-fast": {
+              "cursorModel": "gpt-5.4-xhigh-fast",
+              "cost": {
+                "input": 5,
+                "output": 30,
+                "cache_read": 0.5,
+                "cache_write": 5
+              }
+            },
+            "mini-high": {
+              "cursorModel": "gpt-5.4-mini-high",
+              "cost": {
+                "input": 0.75,
+                "output": 4.5,
+                "cache_read": 0.075,
+                "cache_write": 0.75
+              }
+            },
+            "mini-low": {
+              "cursorModel": "gpt-5.4-mini-low",
+              "cost": {
+                "input": 0.75,
+                "output": 4.5,
+                "cache_read": 0.075,
+                "cache_write": 0.75
+              }
+            },
+            "mini-medium": {
+              "cursorModel": "gpt-5.4-mini-medium",
+              "cost": {
+                "input": 0.75,
+                "output": 4.5,
+                "cache_read": 0.075,
+                "cache_write": 0.75
+              }
+            },
+            "mini-none": {
+              "cursorModel": "gpt-5.4-mini-none",
+              "cost": {
+                "input": 0.75,
+                "output": 4.5,
+                "cache_read": 0.075,
+                "cache_write": 0.75
+              }
+            },
+            "mini-xhigh": {
+              "cursorModel": "gpt-5.4-mini-xhigh",
+              "cost": {
+                "input": 0.75,
+                "output": 4.5,
+                "cache_read": 0.075,
+                "cache_write": 0.75
+              }
+            },
+            "nano-high": {
+              "cursorModel": "gpt-5.4-nano-high",
+              "cost": {
+                "input": 0.2,
+                "output": 1.25,
+                "cache_read": 0.02,
+                "cache_write": 0.2
+              }
+            },
+            "nano-low": {
+              "cursorModel": "gpt-5.4-nano-low",
+              "cost": {
+                "input": 0.2,
+                "output": 1.25,
+                "cache_read": 0.02,
+                "cache_write": 0.2
+              }
+            },
+            "nano-medium": {
+              "cursorModel": "gpt-5.4-nano-medium",
+              "cost": {
+                "input": 0.2,
+                "output": 1.25,
+                "cache_read": 0.02,
+                "cache_write": 0.2
+              }
+            },
+            "nano-none": {
+              "cursorModel": "gpt-5.4-nano-none",
+              "cost": {
+                "input": 0.2,
+                "output": 1.25,
+                "cache_read": 0.02,
+                "cache_write": 0.2
+              }
+            },
+            "nano-xhigh": {
+              "cursorModel": "gpt-5.4-nano-xhigh",
+              "cost": {
+                "input": 0.2,
+                "output": 1.25,
+                "cache_read": 0.02,
+                "cache_write": 0.2
+              }
+            }
+          },
+          "cost": {
+            "input": 2.5,
+            "output": 15,
+            "cache_read": 0.25,
+            "cache_write": 2.5,
+            "context_over_200k": {
+              "input": 5,
+              "output": 22.5,
+              "cache_read": 0.5,
+              "cache_write": 5
+            }
+          }
+        },
+        "claude-4.6-opus": {
+          "name": "Claude 4.6 Opus",
+          "options": {
+            "cursorModel": "claude-4.6-opus-high"
+          },
+          "variants": {
+            "high": {
+              "cursorModel": "claude-4.6-opus-high",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "high-thinking": {
+              "cursorModel": "claude-4.6-opus-high-thinking",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "high-thinking-fast": {
+              "cursorModel": "claude-4.6-opus-high-thinking-fast",
+              "cost": {
+                "input": 30,
+                "output": 150,
+                "cache_read": 3,
+                "cache_write": 37.5
+              }
+            },
+            "max": {
+              "cursorModel": "claude-4.6-opus-max",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "max-thinking": {
+              "cursorModel": "claude-4.6-opus-max-thinking",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "max-thinking-fast": {
+              "cursorModel": "claude-4.6-opus-max-thinking-fast",
+              "cost": {
+                "input": 30,
+                "output": 150,
+                "cache_read": 3,
+                "cache_write": 37.5
+              }
+            }
+          },
+          "cost": {
+            "input": 5,
+            "output": 25,
+            "cache_read": 0.5,
+            "cache_write": 6.25
+          }
+        },
+        "claude-4.6": {
+          "name": "Claude 4.6",
+          "options": {
+            "cursorModel": "claude-4.6-sonnet-medium"
+          },
+          "variants": {
+            "sonnet-medium": {
+              "cursorModel": "claude-4.6-sonnet-medium",
+              "cost": {
+                "input": 3,
+                "output": 15,
+                "cache_read": 0.3,
+                "cache_write": 3.75,
+                "context_over_200k": {
+                  "input": 6,
+                  "output": 22.5,
+                  "cache_read": 0.6,
+                  "cache_write": 7.5
+                }
+              }
+            },
+            "sonnet-medium-thinking": {
+              "cursorModel": "claude-4.6-sonnet-medium-thinking",
+              "cost": {
+                "input": 3,
+                "output": 15,
+                "cache_read": 0.3,
+                "cache_write": 3.75,
+                "context_over_200k": {
+                  "input": 6,
+                  "output": 22.5,
+                  "cache_read": 0.6,
+                  "cache_write": 7.5
+                }
+              }
+            }
+          },
+          "cost": {
+            "input": 3,
+            "output": 15,
+            "cache_read": 0.3,
+            "cache_write": 3.75,
+            "context_over_200k": {
+              "input": 6,
+              "output": 22.5,
+              "cache_read": 0.6,
+              "cache_write": 7.5
+            }
+          }
+        },
+        "claude-4.5": {
+          "name": "Claude 4.5",
+          "options": {
+            "cursorModel": "claude-4.5-opus-high"
+          },
+          "variants": {
+            "opus-high": {
+              "cursorModel": "claude-4.5-opus-high",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "opus-high-thinking": {
+              "cursorModel": "claude-4.5-opus-high-thinking",
+              "cost": {
+                "input": 5,
+                "output": 25,
+                "cache_read": 0.5,
+                "cache_write": 6.25
+              }
+            },
+            "sonnet": {
+              "cursorModel": "claude-4.5-sonnet",
+              "cost": {
+                "input": 3,
+                "output": 15,
+                "cache_read": 0.3,
+                "cache_write": 3.75,
+                "context_over_200k": {
+                  "input": 6,
+                  "output": 22.5,
+                  "cache_read": 0.6,
+                  "cache_write": 7.5
+                }
+              }
+            },
+            "sonnet-thinking": {
+              "cursorModel": "claude-4.5-sonnet-thinking",
+              "cost": {
+                "input": 3,
+                "output": 15,
+                "cache_read": 0.3,
+                "cache_write": 3.75,
+                "context_over_200k": {
+                  "input": 6,
+                  "output": 22.5,
+                  "cache_read": 0.6,
+                  "cache_write": 7.5
+                }
+              }
+            }
+          },
+          "cost": {
+            "input": 5,
+            "output": 25,
+            "cache_read": 0.5,
+            "cache_write": 6.25
+          }
+        },
+        "claude-4": {
+          "name": "Claude 4",
+          "options": {
+            "cursorModel": "claude-4-sonnet"
+          },
+          "variants": {
+            "sonnet": {
+              "cursorModel": "claude-4-sonnet",
+              "cost": {
+                "input": 3,
+                "output": 15,
+                "cache_read": 0.3,
+                "cache_write": 3.75
+              }
+            },
+            "sonnet-thinking": {
+              "cursorModel": "claude-4-sonnet-thinking",
+              "cost": {
+                "input": 3,
+                "output": 15,
+                "cache_read": 0.3,
+                "cache_write": 3.75
+              }
+            }
+          },
+          "cost": {
+            "input": 3,
+            "output": 15,
+            "cache_read": 0.3,
+            "cache_write": 3.75
+          }
+        },
+        "auto": {
+          "name": "Auto",
+          "cost": {
+            "input": 1.25,
+            "output": 6,
+            "cache_read": 0.25,
+            "cache_write": 1.25
+          }
+        },
+        "grok-build-0.1": {
+          "name": "Grok Build 0.1 1M"
+        },
+        "gemini-3.1-pro": {
+          "name": "Gemini 3.1 Pro",
+          "cost": {
+            "input": 2,
+            "output": 12,
+            "cache_read": 0.2,
+            "cache_write": 2,
+            "context_over_200k": {
+              "input": 4,
+              "output": 18,
+              "cache_read": 0.4,
+              "cache_write": 4
+            }
+          }
+        },
+        "grok-4.3": {
+          "name": "Grok 4.3 1M"
+        },
+        "gemini-3-flash": {
+          "name": "Gemini 3 Flash",
+          "cost": {
+            "input": 0.5,
+            "output": 3,
+            "cache_read": 0.05,
+            "cache_write": 0.5
+          }
+        },
+        "gemini-3.5-flash": {
+          "name": "Gemini 3.5 Flash"
+        },
+        "gpt-5-mini": {
+          "name": "GPT-5 Mini",
+          "cost": {
+            "input": 0.25,
+            "output": 2,
+            "cache_read": 0.025,
+            "cache_write": 0.25
+          }
+        },
+        "kimi-k2.5": {
+          "name": "Kimi K2.5",
+          "cost": {
+            "input": 0.6,
+            "output": 3,
+            "cache_read": 0.1,
+            "cache_write": 0.6
+          }
+        },
+        "gpt-5.3-codex-low": {
+          "name": "Codex 5.3 Low"
+        },
+        "gpt-5.3-codex-low-fast": {
+          "name": "Codex 5.3 Low Fast"
+        },
+        "gpt-5.3-codex-fast": {
+          "name": "Codex 5.3 Fast"
+        },
+        "gpt-5.3-codex-high": {
+          "name": "Codex 5.3 High"
+        },
+        "gpt-5.3-codex-high-fast": {
+          "name": "Codex 5.3 High Fast"
+        },
+        "gpt-5.3-codex-xhigh": {
+          "name": "Codex 5.3 Extra High"
+        },
+        "gpt-5.3-codex-xhigh-fast": {
+          "name": "Codex 5.3 Extra High Fast"
+        },
+        "gpt-5.2-codex-low": {
+          "name": "Codex 5.2 Low"
+        },
+        "gpt-5.2-codex-low-fast": {
+          "name": "Codex 5.2 Low Fast"
+        },
+        "gpt-5.2-codex": {
+          "name": "Codex 5.2"
+        },
+        "gpt-5.2-codex-fast": {
+          "name": "Codex 5.2 Fast"
+        },
+        "gpt-5.2-codex-high": {
+          "name": "Codex 5.2 High"
+        },
+        "gpt-5.2-codex-high-fast": {
+          "name": "Codex 5.2 High Fast"
+        },
+        "gpt-5.2-codex-xhigh": {
+          "name": "Codex 5.2 Extra High"
+        },
+        "gpt-5.2-codex-xhigh-fast": {
+          "name": "Codex 5.2 Extra High Fast"
+        },
+        "gpt-5.1-codex-max-low": {
+          "name": "Codex 5.1 Max Low"
+        },
+        "gpt-5.1-codex-max-low-fast": {
+          "name": "Codex 5.1 Max Low Fast"
+        },
+        "gpt-5.1-codex-max-medium": {
+          "name": "Codex 5.1 Max"
+        },
+        "gpt-5.1-codex-max-medium-fast": {
+          "name": "Codex 5.1 Max Medium Fast"
+        },
+        "gpt-5.1-codex-max-high": {
+          "name": "Codex 5.1 Max High"
+        },
+        "gpt-5.1-codex-max-high-fast": {
+          "name": "Codex 5.1 Max High Fast"
+        },
+        "gpt-5.1-codex-max-xhigh": {
+          "name": "Codex 5.1 Max Extra High"
+        },
+        "gpt-5.1-codex-max-xhigh-fast": {
+          "name": "Codex 5.1 Max Extra High Fast"
+        },
+        "claude-opus-4-8-thinking-high": {
+          "name": "Opus 4.8 1M Thinking"
+        },
+        "claude-opus-4-8-thinking-high-fast": {
+          "name": "Opus 4.8 1M Thinking Fast"
+        },
+        "gpt-5.5-high": {
+          "name": "GPT-5.5 1M High"
+        },
+        "gpt-5.5-high-fast": {
+          "name": "GPT-5.5 High Fast"
+        },
+        "claude-opus-4-7-thinking-high": {
+          "name": "Opus 4.7 1M High Thinking"
+        },
+        "claude-opus-4-7-thinking-high-fast": {
+          "name": "Opus 4.7 1M High Thinking Fast"
+        },
+        "gpt-5.4-high": {
+          "name": "GPT-5.4 1M High"
+        },
+        "gpt-5.4-high-fast": {
+          "name": "GPT-5.4 High Fast"
+        },
+        "claude-4.6-opus-high-thinking": {
+          "name": "Opus 4.6 1M Thinking"
+        },
+        "composer-2.5-fast": {
+          "name": "Composer 2.5 Fast"
+        },
+        "claude-opus-4-8-low": {
+          "name": "Opus 4.8 1M Low"
+        },
+        "claude-opus-4-8-low-fast": {
+          "name": "Opus 4.8 1M Low Fast"
+        },
+        "claude-opus-4-8-medium": {
+          "name": "Opus 4.8 1M Medium"
+        },
+        "claude-opus-4-8-medium-fast": {
+          "name": "Opus 4.8 1M Medium Fast"
+        },
+        "claude-opus-4-8-high": {
+          "name": "Opus 4.8 1M"
+        },
+        "claude-opus-4-8-high-fast": {
+          "name": "Opus 4.8 1M Fast"
+        },
+        "claude-opus-4-8-xhigh": {
+          "name": "Opus 4.8 1M Extra High"
+        },
+        "claude-opus-4-8-xhigh-fast": {
+          "name": "Opus 4.8 1M Extra High Fast"
+        },
+        "claude-opus-4-8-max": {
+          "name": "Opus 4.8 1M Max"
+        },
+        "claude-opus-4-8-max-fast": {
+          "name": "Opus 4.8 1M Max Fast"
+        },
+        "claude-opus-4-8-thinking-low": {
+          "name": "Opus 4.8 1M Low Thinking"
+        },
+        "claude-opus-4-8-thinking-low-fast": {
+          "name": "Opus 4.8 1M Low Thinking Fast"
+        },
+        "claude-opus-4-8-thinking-medium": {
+          "name": "Opus 4.8 1M Medium Thinking"
+        },
+        "claude-opus-4-8-thinking-medium-fast": {
+          "name": "Opus 4.8 1M Medium Thinking Fast"
+        },
+        "claude-opus-4-8-thinking-xhigh": {
+          "name": "Opus 4.8 1M Extra High Thinking"
+        },
+        "claude-opus-4-8-thinking-xhigh-fast": {
+          "name": "Opus 4.8 1M Extra High Thinking Fast"
+        },
+        "claude-opus-4-8-thinking-max": {
+          "name": "Opus 4.8 1M Max Thinking"
+        },
+        "claude-opus-4-8-thinking-max-fast": {
+          "name": "Opus 4.8 1M Max Thinking Fast"
+        },
+        "gpt-5.5-none": {
+          "name": "GPT-5.5 1M None"
+        },
+        "gpt-5.5-none-fast": {
+          "name": "GPT-5.5 None Fast"
+        },
+        "gpt-5.5-low": {
+          "name": "GPT-5.5 1M Low"
+        },
+        "gpt-5.5-low-fast": {
+          "name": "GPT-5.5 Low Fast"
+        },
+        "gpt-5.5-medium": {
+          "name": "GPT-5.5 1M"
+        },
+        "gpt-5.5-medium-fast": {
+          "name": "GPT-5.5 Fast"
+        },
+        "gpt-5.5-extra-high": {
+          "name": "GPT-5.5 1M Extra High"
+        },
+        "gpt-5.5-extra-high-fast": {
+          "name": "GPT-5.5 Extra High Fast"
+        },
+        "claude-4.6-sonnet-medium": {
+          "name": "Sonnet 4.6 1M"
+        },
+        "claude-4.6-sonnet-medium-thinking": {
+          "name": "Sonnet 4.6 1M Thinking"
+        },
+        "claude-opus-4-7-low": {
+          "name": "Opus 4.7 1M Low"
+        },
+        "claude-opus-4-7-low-fast": {
+          "name": "Opus 4.7 1M Low Fast"
+        },
+        "claude-opus-4-7-medium": {
+          "name": "Opus 4.7 1M Medium"
+        },
+        "claude-opus-4-7-medium-fast": {
+          "name": "Opus 4.7 1M Medium Fast"
+        },
+        "claude-opus-4-7-high": {
+          "name": "Opus 4.7 1M High"
+        },
+        "claude-opus-4-7-high-fast": {
+          "name": "Opus 4.7 1M High Fast"
+        },
+        "claude-opus-4-7-xhigh": {
+          "name": "Opus 4.7 1M"
+        },
+        "claude-opus-4-7-xhigh-fast": {
+          "name": "Opus 4.7 1M Fast"
+        },
+        "claude-opus-4-7-max": {
+          "name": "Opus 4.7 1M Max"
+        },
+        "claude-opus-4-7-max-fast": {
+          "name": "Opus 4.7 1M Max Fast"
+        },
+        "claude-opus-4-7-thinking-low": {
+          "name": "Opus 4.7 1M Low Thinking"
+        },
+        "claude-opus-4-7-thinking-low-fast": {
+          "name": "Opus 4.7 1M Low Thinking Fast"
+        },
+        "claude-opus-4-7-thinking-medium": {
+          "name": "Opus 4.7 1M Medium Thinking"
+        },
+        "claude-opus-4-7-thinking-medium-fast": {
+          "name": "Opus 4.7 1M Medium Thinking Fast"
+        },
+        "claude-opus-4-7-thinking-xhigh": {
+          "name": "Opus 4.7 1M Thinking"
+        },
+        "claude-opus-4-7-thinking-xhigh-fast": {
+          "name": "Opus 4.7 1M Thinking Fast"
+        },
+        "claude-opus-4-7-thinking-max": {
+          "name": "Opus 4.7 1M Max Thinking"
+        },
+        "claude-opus-4-7-thinking-max-fast": {
+          "name": "Opus 4.7 1M Max Thinking Fast"
+        },
+        "gpt-5.4-low": {
+          "name": "GPT-5.4 1M Low"
+        },
+        "gpt-5.4-medium": {
+          "name": "GPT-5.4 1M"
+        },
+        "gpt-5.4-medium-fast": {
+          "name": "GPT-5.4 Fast"
+        },
+        "gpt-5.4-xhigh": {
+          "name": "GPT-5.4 1M Extra High"
+        },
+        "gpt-5.4-xhigh-fast": {
+          "name": "GPT-5.4 Extra High Fast"
+        },
+        "claude-4.6-opus-high": {
+          "name": "Opus 4.6 1M"
+        },
+        "claude-4.6-opus-max": {
+          "name": "Opus 4.6 1M Max"
+        },
+        "claude-4.6-opus-high-thinking-fast": {
+          "name": "Opus 4.6 1M Thinking Fast"
+        },
+        "claude-4.6-opus-max-thinking": {
+          "name": "Opus 4.6 1M Max Thinking"
+        },
+        "claude-4.6-opus-max-thinking-fast": {
+          "name": "Opus 4.6 1M Max Thinking Fast"
+        },
+        "claude-4.5-opus-high": {
+          "name": "Opus 4.5"
+        },
+        "claude-4.5-opus-high-thinking": {
+          "name": "Opus 4.5 Thinking"
+        },
+        "gpt-5.2-low": {
+          "name": "GPT-5.2 Low"
+        },
+        "gpt-5.2-low-fast": {
+          "name": "GPT-5.2 Low Fast"
+        },
+        "gpt-5.2-fast": {
+          "name": "GPT-5.2 Fast"
+        },
+        "gpt-5.2-high": {
+          "name": "GPT-5.2 High"
+        },
+        "gpt-5.2-high-fast": {
+          "name": "GPT-5.2 High Fast"
+        },
+        "gpt-5.2-xhigh": {
+          "name": "GPT-5.2 Extra High"
+        },
+        "gpt-5.2-xhigh-fast": {
+          "name": "GPT-5.2 Extra High Fast"
+        },
+        "gpt-5.4-mini-none": {
+          "name": "GPT-5.4 Mini None"
+        },
+        "gpt-5.4-mini-low": {
+          "name": "GPT-5.4 Mini Low"
+        },
+        "gpt-5.4-mini-medium": {
+          "name": "GPT-5.4 Mini"
+        },
+        "gpt-5.4-mini-high": {
+          "name": "GPT-5.4 Mini High"
+        },
+        "gpt-5.4-mini-xhigh": {
+          "name": "GPT-5.4 Mini Extra High"
+        },
+        "gpt-5.4-nano-none": {
+          "name": "GPT-5.4 Nano None"
+        },
+        "gpt-5.4-nano-low": {
+          "name": "GPT-5.4 Nano Low"
+        },
+        "gpt-5.4-nano-medium": {
+          "name": "GPT-5.4 Nano"
+        },
+        "gpt-5.4-nano-high": {
+          "name": "GPT-5.4 Nano High"
+        },
+        "gpt-5.4-nano-xhigh": {
+          "name": "GPT-5.4 Nano Extra High"
+        },
+        "claude-4.5-sonnet": {
+          "name": "Sonnet 4.5"
+        },
+        "claude-4.5-sonnet-thinking": {
+          "name": "Sonnet 4.5 Thinking"
+        },
+        "gpt-5.1-low": {
+          "name": "GPT-5.1 Low"
+        },
+        "gpt-5.1-high": {
+          "name": "GPT-5.1 High"
+        },
+        "gpt-5.1-codex-mini-low": {
+          "name": "Codex 5.1 Mini Low"
+        },
+        "gpt-5.1-codex-mini": {
+          "name": "Codex 5.1 Mini"
+        },
+        "gpt-5.1-codex-mini-high": {
+          "name": "Codex 5.1 Mini High"
+        },
+        "claude-4-sonnet": {
+          "name": "Sonnet 4"
+        },
+        "claude-4-sonnet-thinking": {
+          "name": "Sonnet 4 Thinking"
         }
+      }
+    }
+  },
+  "permission": {
+    "*": "ask",
+    "edit": "allow",
+    "read": {
+      "*": "allow",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      "*.env.example": "allow"
     },
-    "autoupdate": false
+    "todowrite": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "todoread": "allow",
+    "lsp": "allow",
+    "task": "allow",
+    "bash": {
+      "find *": "allow",
+      "ls *": "allow",
+      "sort *": "allow",
+      "wc *": "allow",
+      "git *": "allow",
+      "git commit *": "deny",
+      "git push *": "deny",
+      "mkdir *": "allow",
+      "rm *": "deny",
+      "head *": "allow",
+      "echo *": "allow"
+    }
+  },
+  "autoupdate": false
 }
