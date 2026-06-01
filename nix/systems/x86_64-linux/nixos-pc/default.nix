@@ -133,23 +133,23 @@
       let
         agents = pkgs.llm-agents;
       in
-      {
-        omp = {
+      [
+        {
           package = agents.omp;
           homePaths = [ ".omp" ];
-        };
-        "cursor-agent" = {
+        }
+        {
           package = agents.cursor-agent;
           homePaths = [
             ".cursor"
             ".config/cursor"
           ];
-        };
-        codex = {
+        }
+        {
           package = agents.codex;
           homePaths = [ ".codex" ];
-        };
-        opencode = {
+        }
+        {
           package = agents.opencode;
           homePaths = [
             ".config/opencode"
@@ -160,12 +160,10 @@
           homeFiles = [
             ".config/cursor/auth.json" # For opencode-cursor
           ];
-        };
-        droid = {
+        }
+        {
           package = agents.droid;
           homePaths = [ ".factory" ];
-        };
-      };
   };
 
   qbittorrent = {
