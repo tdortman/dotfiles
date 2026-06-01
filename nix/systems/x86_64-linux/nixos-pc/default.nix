@@ -383,10 +383,6 @@
 
   xdg.portal.xdgOpenUsePortal = true;
 
-  environment.shellAliases = {
-    agy = "(pkill -f -9 antigravity || true) && ${pkgs.antigravity-fhs}/bin/antigravity";
-  };
-
   environment.variables = {
     # nvidia_icd.x86_64.json -> nvidia_icd.json as of 595.71.05
     VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
