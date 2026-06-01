@@ -54,7 +54,13 @@ let
     binary = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;
-      description = "Binary name when it differs from the package name.";
+      example = "copilot";
+      description = ''
+        Optional executable name within {option}`package` (basename only).
+        When unset, resolved automatically via `lib.getExe`.
+        Set this when the package's default main program is not the agent CLI
+        you want to wrap, or when `lib.getExe` does not resolve correctly.
+      '';
     };
 
     extraPkgs = lib.mkOption {
@@ -143,11 +149,12 @@ in
     enable = lib.mkEnableOption "bubblewrap home sandbox helpers for AI agent CLIs";
 
     packages = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule { options = packageOptions; });
-      default = { };
+      type = lib.types.listOf (lib.types.submodule { options = packageOptions; });
+      default = [ ];
       description = ''
-        Agent packages to wrap and install system-wide. Each entry produces
-        `bin/<name>` and `bin/sandboxed-<name>`.
+        Agent packages to wrap and install system-wide. Each entry produces the
+        package binaries plus `bin/sandboxed-<mainProgram>` where `mainProgram` is
+        resolved from the package via `lib.getExe`.
       '';
     };
   }
@@ -190,8 +197,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = lib.mapAttrsToList (
-      _: value: wrapPackage (mergePackagePaths value)
+    environment.systemPackages = map (
+      value: wrapPackage (mergePackagePaths value)
     ) cfg.packages;
 
     nixpkgs.overlays = lib.mkAfter [
