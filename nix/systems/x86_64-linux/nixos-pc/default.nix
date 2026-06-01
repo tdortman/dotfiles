@@ -170,6 +170,9 @@
             "~/.config/gh-copilot"
             "~/.copilot"
           ];
+          readonlyFiles = [
+            "/run/user/1000/wayland-0"
+            "/run/user/1000/bus"
           ];
         }
       ];
