@@ -24,10 +24,10 @@
   "rewind": true,
   "suggestNextPrompt": false,
   "model": {
-    "modelId": "composer-2.5",
-    "displayModelId": "composer-2.5",
-    "displayName": "Composer 2.5",
-    "displayNameShort": "Composer 2.5",
+    "modelId": "gpt-5.4",
+    "displayModelId": "gpt-5.4",
+    "displayName": "GPT-5.4 272K High",
+    "displayNameShort": "GPT-5.4 272K High",
     "aliases": [],
     "maxMode": false
   },
@@ -58,11 +58,44 @@
         "id": "fast",
         "value": "false"
       }
+    ],
+    "gemini-3-flash": [],
+    "gpt-5.3-codex": [
+      {
+        "id": "reasoning",
+        "value": "extra-high"
+      },
+      {
+        "id": "fast",
+        "value": "false"
+      }
+    ],
+    "gpt-5.4": [
+      {
+        "id": "context",
+        "value": "272k"
+      },
+      {
+        "id": "reasoning",
+        "value": "high"
+      },
+      {
+        "id": "fast",
+        "value": "false"
+      }
     ]
   },
   "selectedModel": {
-    "modelId": "composer-2.5",
+    "modelId": "gpt-5.4",
     "parameters": [
+      {
+        "id": "context",
+        "value": "272k"
+      },
+      {
+        "id": "reasoning",
+        "value": "high"
+      },
       {
         "id": "fast",
         "value": "false"
@@ -72,7 +105,7 @@
   "privacyCache": {
     "ghostMode": true,
     "privacyMode": 2,
-    "updatedAt": 1780014700731
+    "updatedAt": 1780412672165
   },
   "serverConfigCache": {
     "backendUrl": "https://api2.cursor.sh",
