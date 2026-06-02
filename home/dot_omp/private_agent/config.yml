@@ -61,3 +61,5 @@ renderMermaid:
 providers: 
   webSearch: auto
 setupVersion: 1
+extensions:
+  - ./extensions/agent-sandbox
