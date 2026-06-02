@@ -150,5 +150,7 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
     llm-agents.url = "github:numtide/llm-agents.nix";
+
+    jail-nix.url = "git+https://git.sr.ht/~alexdavid/jail.nix";
   };
 }
