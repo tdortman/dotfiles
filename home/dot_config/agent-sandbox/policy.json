@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "allow": [
+    {
+      "host": "api.xiaomimimo.com",
+      "port": 443,
+      "comment": "global"
+    }
+  ],
+  "deny": []
+}
