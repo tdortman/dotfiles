@@ -2,12 +2,16 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }:
 let
+  agentSandboxLib = import ./lib.nix {
+    inherit lib;
+    jail-nix = inputs.jail-nix;
+  };
 
-  agentSandboxLib = import ./lib.nix { inherit lib; };
-  wrapPackage = agentSandboxLib.mkWrapPackage pkgs;
+  policyPkg = pkgs.callPackage ./policy/package.nix { };
 
   isValidMountPath = path: path == "~" || lib.hasPrefix "~/" path || lib.hasPrefix "/" path;
 
@@ -27,179 +31,296 @@ let
     readonlyDirs = lib.mkOption {
       type = lib.types.listOf mountPathType;
       default = [ ];
-      description = ''
-        Directories mounted read-only. ${mountPathDescription}
-      '';
+      description = "Directories mounted read-only. ${mountPathDescription}";
     };
-
     readwriteDirs = lib.mkOption {
       type = lib.types.listOf mountPathType;
       default = [ ];
-      description = ''
-        Directories mounted read-write. ${mountPathDescription}
-      '';
+      description = "Directories mounted read-write. ${mountPathDescription}";
     };
-
     readonlyFiles = lib.mkOption {
       type = lib.types.listOf mountPathType;
       default = [ ];
-      description = ''
-        Files mounted read-only (for example `.gitconfig` or a socket under `/run`).
-        ${mountPathDescription}
-      '';
+      description = "Files mounted read-only. ${mountPathDescription}";
     };
-
     readwriteFiles = lib.mkOption {
       type = lib.types.listOf mountPathType;
       default = [ ];
-      description = ''
-        Files mounted read-write. ${mountPathDescription}
-      '';
+      description = "Files mounted read-write. ${mountPathDescription}";
+    };
+  };
+
+  ruleType = lib.types.submodule {
+    options = {
+      host = lib.mkOption { type = lib.types.str; };
+      port = lib.mkOption { type = lib.types.port; };
     };
   };
 
   packageOptions = mountOptions // {
     package = lib.mkPackageOption pkgs "llm-agents" { };
-
     binary = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;
-      example = "copilot";
-      description = ''
-        Optional executable name within {option}`package` (basename only).
-        When unset, resolved automatically via `lib.getExe`.
-        Set this when the package's default main program is not the agent CLI
-        you want to wrap, or when `lib.getExe` does not resolve correctly.
-      '';
+      description = "Override the main executable name; when null, uses lib.baseNameOf (lib.getExe package).";
     };
-
     extraPkgs = lib.mkOption {
       type = lib.types.listOf lib.types.package;
       default = [ ];
-      description = ''
-        Extra packages available inside the sandbox (on `PATH` and in the Nix store bind set).
-      '';
     };
-
     runtimeReadonlyDirs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = agentSandboxLib.defaultRuntimeReadonlyDirs;
-      description = ''
-        Absolute runtime directories mounted read-only. Defaults expose selected
-        `/run` entries for the system profile, setuid wrappers, and OpenGL
-        drivers.
-      '';
     };
-
     devicePaths = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = agentSandboxLib.defaultDevicePaths;
-      description = ''
-        Device nodes mounted into the sandbox. Defaults expose NVIDIA devices
-        when present so CUDA builds and tests can run.
-      '';
     };
-
     blockEnvVars = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = agentSandboxLib.defaultBlockEnvVars;
-      description = ''
-        Environment variables stripped from the parent process before starting the sandbox.
-        All other variables are inherited (for example devShell exports).
-      '';
     };
-
-    forwardPath = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = ''
-        When enabled, prepend the sandbox toolchain to the parent `PATH` and bind
-        `/nix/store` entries from that path read-only. Useful in `nix develop`.
-      '';
-    };
-
-    exposeWorkingDirectory = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Bind the current working directory read-write and start the sandbox there.";
-    };
-
-    followHomeSymlinks = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = ''
-        Resolve symlinks found under allowed $HOME directories and mount their targets
-        read-only, so chezmoi-managed config symlinks work without exposing the
-        whole repository that contains their targets.
-      '';
-    };
-
+    exposeWorkingDirectory = lib.mkOption { type = lib.types.bool; default = true; };
     extraBwrapArgs = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
-      description = "Additional bubblewrap arguments inserted before `--`.";
     };
   };
 
-  mergePackageMounts =
-    pkgCfg:
+  cfg = config.agent-sandbox;
+
+  sharedRuntimeReadonly =
+    lib.optional cfg.network.enable "/run/agent-sandbox"
+    ++ lib.optional cfg.network.enable "/run/netns";
+
+  mergePackageMounts = pkgCfg:
     pkgCfg
     // {
-      readonlyDirs = lib.unique (cfg.readonlyDirs ++ pkgCfg.readonlyDirs);
+      readonlyDirs = lib.unique (cfg.readonlyDirs ++ sharedRuntimeReadonly ++ pkgCfg.readonlyDirs);
       readwriteDirs = lib.unique (cfg.readwriteDirs ++ pkgCfg.readwriteDirs);
       readonlyFiles = lib.unique (cfg.readonlyFiles ++ pkgCfg.readonlyFiles);
       readwriteFiles = lib.unique (cfg.readwriteFiles ++ pkgCfg.readwriteFiles);
     };
 
-  cfg = config.agent-sandbox;
+  networkConfig =
+    if cfg.network.enable then
+      {
+        netnsName = cfg.network.netnsName;
+        proxyUrl = cfg.network.proxyUrl;
+        netnsEnter = "${config.security.wrapperDir}/agent-sandbox-enter";
+        injectProxyEnv = cfg.network.injectProxyEnv;
+      }
+    else
+      null;
+
+  sudoGuardPkg = import ./sudo-guard.nix {
+    inherit pkgs policyPkg;
+    policy = cfg.sudoPolicy;
+  };
+
+  wrapOne = value:
+    agentSandboxLib.mkWrapPackage pkgs (
+      mergePackageMounts value
+      // {
+        inherit (cfg.wrapping) replaceOriginalBinary unsafeAliasPrefix;
+        policySocket = cfg.policy.socketPath;
+        network = networkConfig;
+        sudoGuard = sudoGuardPkg;
+      }
+    );
+
 in
 {
+  imports = [ ./network.nix ];
+
   options.agent-sandbox = {
-    enable = lib.mkEnableOption "bubblewrap home sandbox helpers for AI agent CLIs";
+    enable = lib.mkEnableOption "jail.nix bubblewrap sandbox + optional network policy for AI agent CLIs";
 
     packages = lib.mkOption {
       type = lib.types.listOf (lib.types.submodule { options = packageOptions; });
       default = [ ];
-      description = ''
-        Agent packages to wrap and install system-wide. Each entry produces the
-        package binaries plus `bin/sandboxed-<mainProgram>` where `mainProgram` is
-        resolved from the package via `lib.getExe`.
-      '';
+      description = "Agent packages wrapped for sandboxed execution.";
     };
-  }
-  // mountOptions
-  // {
-    readonlyDirs = mountOptions.readonlyDirs // {
+
+    wrapping = {
+      replaceOriginalBinary = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Install the sandbox launcher as the original program name (jail.nix-style).";
+      };
+      unsafeAliasPrefix = lib.mkOption {
+        type = lib.types.str;
+        default = "unsafe-";
+        description = "Prefix for the unwrapped executable when replaceOriginalBinary is true.";
+      };
+    };
+
+    sudoPolicy = lib.mkOption {
+      type = lib.types.enum [ "deny" "approve" ];
+      default = "approve";
       description = ''
-        Read-only directories shared by every wrapped agent (merged with per-package
-        `readonlyDirs`).
+        How sandboxed agents may invoke sudo. ``deny`` blocks elevation.
+        ``approve`` replaces sudo with a shim that requests OMP approval via policyd,
+        then runs the approved command as root on the host (not inside bubblewrap).
+        Requires OMP with the agent-sandbox extension loaded. v1: ``sudo <cmd> [args…]``
+        only; ``-u`` / ``-E`` and similar flags are not supported.
       '';
     };
 
-    readwriteDirs = mountOptions.readwriteDirs // {
-      description = ''
-        Read-write directories shared by every wrapped agent (merged with per-package
-        `readwriteDirs`).
-      '';
+    policy = {
+      socketPath = lib.mkOption {
+        type = lib.types.str;
+        default = "/run/agent-sandbox/policy.sock";
+      };
+      exportedJson = lib.mkOption {
+        type = lib.types.str;
+        default = "/var/lib/agent-sandbox/exported-policy.json";
+      };
+      exportedNix = lib.mkOption {
+        type = lib.types.str;
+        default = "";
+        description = "Optional path to export merged policy as a .nix file beside your config repo.";
+      };
+      interactiveApproval = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = ''
+          When true, unknown hosts emit non-blocking OMP approval suggestions.
+          Connections still fail fast unless pre-allowed in policy JSON.
+        '';
+      };
+      approvalTimeout = lib.mkOption {
+        type = lib.types.float;
+        default = 300.0;
+        description = "Max seconds to wait for elevation approval after UI is connected.";
+      };
     };
 
-    readonlyFiles = mountOptions.readonlyFiles // {
-      description = ''
-        Read-only files shared by every wrapped agent (merged with per-package
-        `readonlyFiles`).
-      '';
-    };
+    network = {
+      enable = lib.mkEnableOption "deny-by-default network via netns + policy proxy";
 
-    readwriteFiles = mountOptions.readwriteFiles // {
-      description = ''
-        Read-write files shared by every wrapped agent (merged with per-package
-        `readwriteFiles`).
-      '';
+      netnsName = lib.mkOption {
+        type = lib.types.str;
+        default = "agent-sandbox";
+      };
+
+      proxyUrl = lib.mkOption {
+        type = lib.types.str;
+        default = "http://127.0.0.1:17888";
+        description = "Forced HTTP CONNECT proxy URL injected into wrapped agents.";
+      };
+
+      proxyAddress = lib.mkOption {
+        type = lib.types.str;
+        default = "127.0.0.1:17888";
+        description = ''
+          host:port where the policy proxy listens inside the ``agent-sandbox`` netns.
+          Loopback keeps nftables DNAT and ``SO_ORIGINAL_DST`` in the same namespace.
+        '';
+      };
+
+      hostIp = lib.mkOption { type = lib.types.str; default = "169.254.100.1"; };
+      netnsIp = lib.mkOption { type = lib.types.str; default = "169.254.100.2"; };
+      vethHost = lib.mkOption { type = lib.types.str; default = "asbx-host"; };
+      vethNetns = lib.mkOption { type = lib.types.str; default = "asbx-ns"; };
+
+      declarativeAllow = lib.mkOption {
+        type = lib.types.listOf ruleType;
+        default = [
+          # LLM / agent APIs
+          { host = "api.openai.com"; port = 443; }
+          { host = "chatgpt.com"; port = 443; }
+          { host = "api.deepseek.com"; port = 443; }
+          { host = "*.anthropic.com"; port = 443; }
+          { host = "api.githubcopilot.com"; port = 443; }
+          { host = "*.githubcopilot.com"; port = 443; }
+          { host = "generativelanguage.googleapis.com"; port = 443; }
+          { host = "api.mistral.ai"; port = 443; }
+          { host = "api.cohere.ai"; port = 443; }
+          { host = "api.together.xyz"; port = 443; }
+          { host = "openrouter.ai"; port = 443; }
+          { host = "api.morphllm.com"; port = 443; }
+          { host = "*.amazonaws.com"; port = 443; }
+          { host = "opencode.ai"; port = 443; }
+          { host = "api.opencode.ai"; port = 443; }
+          { host = "ampcode.com"; port = 443; }
+          { host = "*.ampcode.com"; port = 443; }
+          { host = "*.factory.ai"; port = 443; }
+          { host = "api.workos.com"; port = 443; }
+          { host = "*.cursor.sh"; port = 443; }
+          { host = "data.charm.land"; port = 443; }
+          { host = "catwalk.charm.sh"; port = 443; }
+          { host = "models.dev"; port = 443; }
+          # Git / source hosts
+          { host = "github.com"; port = 443; }
+          { host = "api.github.com"; port = 443; }
+          { host = "raw.githubusercontent.com"; port = 443; }
+          { host = "codeload.github.com"; port = 443; }
+          { host = "objects.githubusercontent.com"; port = 443; }
+          { host = "release-assets.githubusercontent.com"; port = 443; }
+          { host = "gitlab.com"; port = 443; }
+          # Package registries
+          { host = "registry.npmjs.org"; port = 443; }
+          { host = "*.npmjs.org"; port = 443; }
+          { host = "registry.yarnpkg.com"; port = 443; }
+          { host = "pypi.org"; port = 443; }
+          { host = "files.pythonhosted.org"; port = 443; }
+          { host = "crates.io"; port = 443; }
+          { host = "static.crates.io"; port = 443; }
+          { host = "index.crates.io"; port = 443; }
+          { host = "proxy.golang.org"; port = 443; }
+          { host = "sum.golang.org"; port = 443; }
+          { host = "formulae.brew.sh"; port = 443; }
+          # Nix
+          { host = "cache.nixos.org"; port = 443; }
+        ];
+        description = "Hosts allowed without interactive approval (merged under user/project policy).";
+      };
+
+      declarativeDeny = lib.mkOption {
+        type = lib.types.listOf ruleType;
+        default = [ ];
+      };
+
+      transparentRedirect = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = ''
+          DNAT outbound TCP 80/443 in the sandbox netns to the policy proxy.
+          Apps do not need to honor HTTP_PROXY; the proxy learns the real destination
+          via SO_ORIGINAL_DST and tunnels after policy approval.
+        '';
+      };
+
+      injectProxyEnv = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = ''
+          Set HTTP_PROXY/HTTPS_PROXY for clients that support explicit proxies.
+          Transparent redirect remains the enforcement path when enabled.
+        '';
+      };
+
+      policyTimeout = lib.mkOption {
+        type = lib.types.float;
+        default = 35.0;
+        description = "Max seconds the policy proxy waits for policyd per connection check.";
+      };
+
+      dnsForwardTarget = lib.mkOption {
+        type = lib.types.str;
+        default = "127.0.0.53:53";
+        description = ''
+          Host resolver the veth-gateway DNS proxy forwards to.
+          Use the systemd-resolved stub (127.0.0.53:53) so sandboxes inherit host
+          resolver behavior (split DNS, VPN, NextDNS, etc.). Sandboxes use nameserver 169.254.100.1.
+        '';
+      };
     };
-  };
+  } // mountOptions;
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = map (value: wrapPackage (mergePackageMounts value)) cfg.packages;
+    environment.systemPackages = map wrapOne cfg.packages;
 
     nixpkgs.overlays = lib.mkAfter [
       (final: prev: {
@@ -212,6 +333,7 @@ in
             defaultDevicePaths
             ;
           wrapPackage = agentSandboxLib.mkWrapPackage final;
+          inherit policyPkg;
         };
       })
     ];
