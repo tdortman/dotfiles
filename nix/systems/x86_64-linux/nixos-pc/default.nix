@@ -124,7 +124,11 @@
 
   agent-sandbox = {
     enable = true;
-    readwriteDirs = [ "~/.agents" ];
+    network.enable = true;
+    readwriteDirs = [
+      "~/.agents"
+      "~/.config/agent-sandbox"
+    ];
     readonlyFiles = [
       "~/.gitconfig"
       "~/.1password/agent.sock"
