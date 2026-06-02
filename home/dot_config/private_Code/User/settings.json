@@ -744,4 +744,5 @@
     "extensions.autoCheckUpdates": true,
     "python.defaultInterpreterPath": "/home/tim/.local/bin/python3.14",
     "window.autoDetectColorScheme": false,
+    "workbench.agentsWindowButton.enabled": false,
 }
