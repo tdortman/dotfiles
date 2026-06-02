@@ -1,3 +1,4 @@
 *.zwc
 age-key.txt
 result
+__pycache__
