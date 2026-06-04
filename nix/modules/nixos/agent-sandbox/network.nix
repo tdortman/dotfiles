@@ -8,7 +8,9 @@ let
   rootCfg = config.agent-sandbox;
   cfg = config.agent-sandbox.network;
   policyEnabled = cfg.enable || rootCfg.sudoPolicy == "approve";
-  policyPkg = pkgs.callPackage ./policy/package.nix { };
+  policyPkg = pkgs.callPackage ./policy/package.nix {
+    kdialog = pkgs.kdePackages.kdialog;
+  };
   enterPkg = import ./netns/enter.nix {
     stdenv = pkgs.stdenv;
     libcap = pkgs.libcap;
@@ -172,6 +174,10 @@ lib.mkIf policyEnabled (
             ++ lib.optionals (!config.agent-sandbox.policy.interactiveApproval) [
               "--no-interactive-approval"
             ]
+            ++ lib.optionals config.agent-sandbox.policy.autoSpawnPolicyUi [
+              "--ui-spawn-cmd"
+              "${policyPkg}/bin/agent-sandbox-ui"
+            ]
             ++ lib.optionals (config.agent-sandbox.policy.exportedNix != "") [
               "--export-nix"
               config.agent-sandbox.policy.exportedNix
@@ -179,6 +185,17 @@ lib.mkIf policyEnabled (
           );
           StateDirectory = "agent-sandbox";
           Restart = "on-failure";
+        };
+        path = [
+          pkgs.util-linux
+          pkgs.systemd
+          pkgs.libnotify
+        ];
+        environment = {
+          AGENT_SANDBOX_RUNUSER = "${pkgs.util-linux}/bin/runuser";
+          AGENT_SANDBOX_LOGINCTL = "${pkgs.systemd}/bin/loginctl";
+          AGENT_SANDBOX_NOTIFY_SEND = "${pkgs.libnotify}/bin/notify-send";
+          AGENT_SANDBOX_KDIALOG = "${pkgs.kdePackages.kdialog}/bin/kdialog";
         };
       };
     }
@@ -282,7 +299,11 @@ lib.mkIf policyEnabled (
             "--policy-socket"
             config.agent-sandbox.policy.socketPath
             "--policy-timeout"
-            (toString cfg.policyTimeout)
+            (
+              toString (
+                lib.max cfg.policyTimeout config.agent-sandbox.policy.approvalTimeout
+              )
+            )
           ];
           Environment = "AGENT_SANDBOX_DNS_CACHE=/run/agent-sandbox/dns-cache.json";
           Restart = "on-failure";
