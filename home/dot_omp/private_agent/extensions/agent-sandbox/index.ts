@@ -237,20 +237,30 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
     ctx: ExtensionContext,
   ): Promise<void> {
     const choice = await ctx.ui.select(elevationPrompt(req), [
-      ...ELEVATION_OPTIONS,
+      ...SUDO_APPROVAL_OPTIONS,
     ]);
     if (!choice) return;
 
+    const scope = SCOPE_BY_LABEL[choice];
     const { cwd: rpcCwd, home: rpcHome, project_root: rpcProjectRoot } =
       sandboxContext(req);
+    const sessionId = policySessionId;
 
-    if (choice === "Deny") {
+    if (DENY_LABELS.has(choice)) {
+      if (scope === "session" && !sessionId) {
+        ctx.ui.notify?.(
+          "agent-sandbox: session deny unavailable (policy UI not connected).",
+        );
+        return;
+      }
       const resp = await policyRpc(
         {
           op: "deny",
           id: req.id,
+          scope,
           cwd: rpcCwd,
           home: rpcHome,
+          ...(sessionId ? { session_id: sessionId } : {}),
           ...(rpcProjectRoot ? { project_root: rpcProjectRoot } : {}),
         },
         socketPath(),
@@ -259,7 +269,16 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
         ctx.ui.notify?.(
           `agent-sandbox: elevation deny failed (${String(resp.error ?? "unknown")}).`,
         );
+      } else if (scope === "project" && resp.path) {
+        ctx.ui.notify?.(`Project policy saved to ${String(resp.path)}.`);
       }
+      return;
+    }
+
+    if (scope === "session" && !sessionId) {
+      ctx.ui.notify?.(
+        "agent-sandbox: session approval unavailable (policy UI not connected).",
+      );
       return;
     }
 
@@ -267,9 +286,10 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
       {
         op: "approve",
         id: req.id,
-        scope: "once",
+        scope,
         cwd: rpcCwd,
         home: rpcHome,
+        ...(sessionId ? { session_id: sessionId } : {}),
         ...(rpcProjectRoot ? { project_root: rpcProjectRoot } : {}),
       },
       socketPath(),
@@ -279,6 +299,8 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
       ctx.ui.notify?.(
         `agent-sandbox: elevation approval failed (${String(resp.error ?? "unknown")}).`,
       );
+    } else if (scope === "project" && resp.path) {
+      ctx.ui.notify?.(`Project policy saved to ${String(resp.path)}.`);
     }
   }
 
@@ -335,6 +357,7 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
       socket.write(
         `${JSON.stringify({
           op: "register_ui",
+          ui_client: "omp",
           cwd: regCtx.cwd,
           home: regCtx.home,
           ...(regCtx.project_root ? { project_root: regCtx.project_root } : {}),
