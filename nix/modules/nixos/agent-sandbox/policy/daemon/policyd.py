@@ -9,6 +9,8 @@ import contextlib
 import json
 import os
 import pwd
+import shutil
+import subprocess
 import sys
 import time
 import uuid
@@ -16,6 +18,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from graphical_env import graphical_session_env
 from hosts import allow_keys, is_ipv4_literal, normalize_host, policy_host_for_connect
 from merge_policy import (
     atomic_write_policy,
@@ -34,6 +37,13 @@ def log(msg: str) -> None:
     print(msg, file=sys.stderr, flush=True)
 
 
+def _tool_path(env_key: str, binary: str) -> str | None:
+    explicit = os.environ.get(env_key)
+    if explicit and os.path.isfile(explicit) and os.access(explicit, os.X_OK):
+        return explicit
+    return shutil.which(binary)
+
+
 def _opt_int(value: Any) -> int | None:
     if isinstance(value, int):
         return value if value > 0 else None
@@ -50,7 +60,12 @@ def _opt_uid(value: Any) -> int | None:
 class Pending:
     id: str
     created_at: float
+    kind: str = "elevation"
     argv: list[str] | None = None
+    host: str | None = None
+    port: int | None = None
+    scheme: str | None = None
+    url: str | None = None
     cwd: str | None = None
     home: str | None = None
     project_root: str | None = None
@@ -71,9 +86,11 @@ class PolicyStore:
         self.once_allow: set[tuple[str, int]] = set()
         self.pending: dict[str, Pending] = {}
         self.elevation_futures: dict[str, asyncio.Future[dict[str, Any]]] = {}
+        self.network_futures: dict[str, asyncio.Future[dict[str, Any]]] = {}
         self.ui_clients: set[asyncio.StreamWriter] = set()
         self.ui_session_by_writer: dict[asyncio.StreamWriter, str] = {}
         self.ui_context_by_session: dict[str, UiSessionContext] = {}
+        self.ui_spawn_last_by_uid: dict[int, float] = {}
 
     def resolve_context(
         self,
@@ -327,6 +344,134 @@ class PolicyStore:
                 return True
         return False
 
+    async def _wait_for_ui_client(self, timeout: float) -> bool:
+        if self.ui_clients:
+            return True
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + timeout
+        while loop.time() < deadline:
+            if self.ui_clients:
+                return True
+            await asyncio.sleep(0.05)
+        return False
+
+    def _ui_spawn_env(
+        self,
+        user: pwd.struct_passwd,
+        uid: int,
+        *,
+        home: str | None,
+        cwd: str | None,
+        project_root: str | None,
+    ) -> dict[str, str]:
+        env: dict[str, str] = {
+            "HOME": home or user.pw_dir,
+            "USER": user.pw_name,
+            "LOGNAME": user.pw_name,
+            "AGENT_SANDBOX_POLICY_SOCKET": str(self.args.socket),
+        }
+        if cwd:
+            env["AGENT_SANDBOX_CWD"] = cwd
+        if project_root:
+            env["AGENT_SANDBOX_PROJECT_ROOT"] = project_root
+        env.update(
+            graphical_session_env(uid, _tool_path, home=home or user.pw_dir)
+        )
+        env["AGENT_SANDBOX_UI_PREFER_GRAPHICAL"] = "1"
+        profile_bin = f"/etc/profiles/per-user/{user.pw_name}/bin"
+        if os.path.isdir(profile_bin):
+            env["PATH"] = f"{profile_bin}:{env.get('PATH', '')}"
+        kdialog = _tool_path("AGENT_SANDBOX_KDIALOG", "kdialog")
+        if kdialog:
+            env["AGENT_SANDBOX_KDIALOG"] = kdialog
+            kdialog_dir = os.path.dirname(kdialog)
+            if kdialog_dir not in env.get("PATH", "").split(":"):
+                env["PATH"] = f"{kdialog_dir}:{env.get('PATH', '')}"
+        return env
+
+    def _maybe_spawn_ui(
+        self,
+        *,
+        uid: int | None,
+        home: str | None,
+        cwd: str | None,
+        project_root: str | None,
+    ) -> None:
+        cmd = getattr(self.args, "ui_spawn_cmd", None)
+        if not cmd or self.ui_clients:
+            return
+        if uid is None or uid <= 0:
+            return
+        now = time.time()
+        if now - self.ui_spawn_last_by_uid.get(uid, 0.0) < 10.0:
+            return
+        self.ui_spawn_last_by_uid[uid] = now
+        try:
+            user = pwd.getpwuid(uid)
+        except KeyError:
+            return
+        runuser = _tool_path("AGENT_SANDBOX_RUNUSER", "runuser")
+        if not runuser:
+            log("agent-sandbox: cannot spawn UI (runuser not found)")
+            return
+        env = self._ui_spawn_env(
+            user, uid, home=home, cwd=cwd, project_root=project_root
+        )
+        # -p keeps Wayland/D-Bus env; plain runuser clears it and Qt dies immediately.
+        spawn_cmd = [runuser, "-p", "-u", user.pw_name, "--", cmd]
+        ui_log_path = f"/run/user/{uid}/agent-sandbox-ui.log"
+        try:
+            ui_log_file = open(ui_log_path, "a", encoding="utf-8")
+        except OSError:
+            ui_log_file = subprocess.DEVNULL  # type: ignore[assignment]
+        try:
+            proc = subprocess.Popen(
+                spawn_cmd,
+                env=env,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=ui_log_file,
+                start_new_session=True,
+            )
+        except OSError as err:
+            log(f"agent-sandbox: UI spawn failed for uid={uid}: {err}")
+            if ui_log_file not in (subprocess.DEVNULL, None):
+                ui_log_file.close()
+            return
+        if ui_log_file not in (subprocess.DEVNULL, None):
+            ui_log_file.close()
+        time.sleep(0.25)
+        if proc.poll() is not None:
+            log(
+                f"agent-sandbox: UI spawn exited {proc.returncode} "
+                f"(see {ui_log_path})"
+            )
+            return
+        log(
+            f"spawned policy UI for uid={uid} ({user.pw_name}); "
+            f"log {ui_log_path}"
+        )
+        notify = _tool_path("AGENT_SANDBOX_NOTIFY_SEND", "notify-send")
+        if notify:
+            with contextlib.suppress(OSError):
+                subprocess.Popen(
+                    [
+                        runuser,
+                        "-p",
+                        "-u",
+                        user.pw_name,
+                        "--",
+                        notify,
+                        "agent-sandbox",
+                        "Network approval needed — respond to the KDE prompt.",
+                    ],
+                    env=env,
+                    stdin=subprocess.DEVNULL,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    start_new_session=True,
+                )
+
     async def notify_ui(self, payload: dict[str, Any]) -> None:
         if not self.ui_clients:
             return
@@ -336,26 +481,52 @@ class PolicyStore:
             try:
                 writer.write(line)
                 await writer.drain()
-            except Exception:
+            except (ConnectionResetError, BrokenPipeError, ConnectionError, OSError):
                 dead.append(writer)
         for writer in dead:
-            self.ui_clients.discard(writer)
+            self.end_ui_session(writer)
 
     async def flush_pending_to_ui(self) -> None:
-        """Re-notify OMP UI for elevation requests still awaiting a decision."""
+        """Re-notify OMP UI for pending elevation/network requests."""
         for pending in list(self.pending.values()):
-            await self.notify_ui(
-                {
-                    "type": "elevation_request",
-                    "id": pending.id,
-                    "argv": pending.argv or [],
-                    "cwd": pending.cwd,
-                    "home": pending.home,
-                    "project_root": pending.project_root,
-                }
-            )
+            if pending.kind == "network":
+                await self.notify_ui(
+                    {
+                        "type": "network_request",
+                        "id": pending.id,
+                        "host": pending.host,
+                        "port": pending.port,
+                        "scheme": pending.scheme,
+                        "url": pending.url,
+                        "cwd": pending.cwd,
+                        "home": pending.home,
+                        "project_root": pending.project_root,
+                    }
+                )
+            else:
+                await self.notify_ui(
+                    {
+                        "type": "elevation_request",
+                        "id": pending.id,
+                        "argv": pending.argv or [],
+                        "cwd": pending.cwd,
+                        "home": pending.home,
+                        "project_root": pending.project_root,
+                    }
+                )
 
-    async def suggest_approval(
+    def _finish_network(
+        self,
+        pending_id: str,
+        *,
+        allowed: bool,
+        source: str,
+    ) -> None:
+        fut = self.network_futures.pop(pending_id, None)
+        if fut and not fut.done():
+            fut.set_result({"ok": True, "allowed": allowed, "source": source})
+
+    async def request_network_approval(
         self,
         host: str,
         port: int,
@@ -364,18 +535,44 @@ class PolicyStore:
         cwd: str | None,
         home: str | None,
         project_root: str | None = None,
-    ) -> None:
-        cwd, home, project_root = self.resolve_context(cwd, home, project_root)
-        if self._policy_denied(host, port, cwd, home, project_root):
-            log(f"check deny {normalize_host(host)}:{port} (project policy)")
-            return
+        *,
+        pid: int | None = None,
+        uid: int | None = None,
+    ) -> dict[str, Any]:
+        policy_host = normalize_host(host)
+        cwd, home, project_root = self.resolve_context(
+            cwd, home, project_root, pid=pid, uid=uid
+        )
+        if self._policy_denied(
+            policy_host, port, cwd, home, project_root, pid=pid, uid=uid
+        ):
+            log(f"check deny {policy_host}:{port} (project policy)")
+            return {"ok": True, "allowed": False, "source": "deny"}
         if not self.args.interactive_approval:
-            return
-        self._audit("suggest", host, port, scheme)
+            return {"ok": True, "allowed": False, "source": "blocked"}
+
+        pending_id = f"net:{uuid.uuid4().hex}"
+        loop = asyncio.get_running_loop()
+        fut: asyncio.Future[dict[str, Any]] = loop.create_future()
+        self.network_futures[pending_id] = fut
+        self.pending[pending_id] = Pending(
+            pending_id,
+            time.time(),
+            kind="network",
+            host=policy_host,
+            port=port,
+            scheme=scheme,
+            url=url,
+            cwd=cwd,
+            home=home,
+            project_root=project_root,
+        )
+        self._audit("pending", policy_host, port, scheme)
         await self.notify_ui(
             {
-                "type": "approval_suggestion",
-                "host": host,
+                "type": "network_request",
+                "id": pending_id,
+                "host": policy_host,
                 "port": port,
                 "scheme": scheme,
                 "url": url,
@@ -385,10 +582,63 @@ class PolicyStore:
             }
         )
         if not self.ui_clients:
-            log(
-                f"approval suggestion {normalize_host(host)}:{port} "
-                "(no OMP UI connected)"
+            self._maybe_spawn_ui(
+                uid=uid, home=home, cwd=cwd, project_root=project_root
             )
+        if not self.ui_clients:
+            ui_wait = min(60.0, self.args.approval_timeout)
+            if not await self._wait_for_ui_client(ui_wait):
+                self.pending.pop(pending_id, None)
+                self.network_futures.pop(pending_id, None)
+                if not fut.done():
+                    fut.cancel()
+                log(
+                    f"network approval {policy_host}:{port} "
+                    "(no policy UI connected)"
+                )
+                return {
+                    "ok": True,
+                    "allowed": False,
+                    "source": "blocked",
+                    "error": (
+                        "agent-sandbox: no policy UI registered "
+                        "(OMP extension, agent-sandbox-ui, or auto-spawn)"
+                    ),
+                }
+            await self.notify_ui(
+                {
+                    "type": "network_request",
+                    "id": pending_id,
+                    "host": policy_host,
+                    "port": port,
+                    "scheme": scheme,
+                    "url": url,
+                    "cwd": cwd,
+                    "home": home,
+                    "project_root": project_root,
+                }
+            )
+        try:
+            return await asyncio.wait_for(fut, timeout=self.args.approval_timeout)
+        except asyncio.TimeoutError:
+            self.pending.pop(pending_id, None)
+            self.network_futures.pop(pending_id, None)
+            if not fut.done():
+                fut.cancel()
+            self._audit("timeout", policy_host, port, scheme)
+            log(
+                f"check blocked {policy_host}:{port} "
+                "(approval timed out; is policy UI loaded?)"
+            )
+            return {
+                "ok": True,
+                "allowed": False,
+                "source": "blocked",
+                "error": (
+                    "agent-sandbox: network approval timed out "
+                    "(no response from policy UI)"
+                ),
+            }
 
     def _user_for_home(self, home: str | None) -> str:
         if not home:
@@ -484,20 +734,42 @@ class PolicyStore:
             }
         )
         if not self.ui_clients:
-            self.pending.pop(pending_id, None)
-            self.elevation_futures.pop(pending_id, None)
-            if not fut.done():
-                fut.cancel()
-            return {
-                "ok": True,
-                "allowed": False,
-                "exit_code": 1,
-                "stdout": "",
-                "stderr": (
-                    "agent-sandbox: no OMP UI registered "
-                    "(is agent-sandbox extension loaded?)"
-                ),
-            }
+            uid: int | None = None
+            if home:
+                try:
+                    uid = pwd.getpwnam(self._user_for_home(home)).pw_uid
+                except KeyError:
+                    uid = None
+            self._maybe_spawn_ui(
+                uid=uid, home=home, cwd=cwd, project_root=project_root
+            )
+        if not self.ui_clients:
+            ui_wait = min(60.0, self.args.approval_timeout)
+            if not await self._wait_for_ui_client(ui_wait):
+                self.pending.pop(pending_id, None)
+                self.elevation_futures.pop(pending_id, None)
+                if not fut.done():
+                    fut.cancel()
+                return {
+                    "ok": True,
+                    "allowed": False,
+                    "exit_code": 1,
+                    "stdout": "",
+                    "stderr": (
+                        "agent-sandbox: no policy UI registered "
+                        "(OMP extension, agent-sandbox-ui, or auto-spawn)"
+                    ),
+                }
+            await self.notify_ui(
+                {
+                    "type": "elevation_request",
+                    "id": pending_id,
+                    "argv": argv,
+                    "cwd": cwd,
+                    "home": home,
+                    "project_root": project_root,
+                }
+            )
         try:
             return await asyncio.wait_for(fut, timeout=self.args.approval_timeout)
         except asyncio.TimeoutError:
@@ -513,16 +785,25 @@ class PolicyStore:
                 "stdout": "",
                 "stderr": (
                     "agent-sandbox: elevation timed out "
-                    "(no response from OMP; is agent-sandbox extension loaded?)"
+                    "(no response from policy UI)"
                 ),
             }
 
-    def _persist_json_rule(self, path: Path, host: str, port: int, label: str) -> None:
+    def _persist_json_rule(
+        self,
+        path: Path,
+        host: str,
+        port: int,
+        label: str,
+        *,
+        home: str | None = None,
+        owner_uid: int | None = None,
+    ) -> None:
         current = load_policy(path)
         allow = {rule_key(r): r for r in current.get("allow", []) if isinstance(r, dict)}
         allow[(host.lower(), port)] = {"host": normalize_host(host), "port": port, "comment": label}
         current["allow"] = sorted(allow.values(), key=lambda r: (r["host"], r["port"]))
-        atomic_write_policy(path, current)
+        atomic_write_policy(path, current, home=home, owner_uid=owner_uid)
 
     def _approve_network_scope(
         self,
@@ -534,6 +815,7 @@ class PolicyStore:
         *,
         session_id: str | None = None,
         project_root: str | None = None,
+        owner_uid: int | None = None,
     ) -> dict[str, Any]:
         keys = allow_keys(host, port)
         if scope == "once":
@@ -553,7 +835,9 @@ class PolicyStore:
                 return {"ok": False, "error": "home required for global scope"}
             path = self._user_global_path(home)
             assert path is not None
-            self._persist_json_rule(path, host, port, scope)
+            self._persist_json_rule(
+                path, host, port, scope, home=home, owner_uid=owner_uid
+            )
         elif scope == "project":
             if not project_root:
                 return {
@@ -564,7 +848,14 @@ class PolicyStore:
                 project = resolve_project_policy_path(project_root=project_root)
             except ValueError as exc:
                 return {"ok": False, "error": str(exc)}
-            self._persist_json_rule(project, host, port, scope)
+            self._persist_json_rule(
+                project,
+                host,
+                port,
+                scope,
+                home=home,
+                owner_uid=owner_uid,
+            )
             log(f"project policy saved {project}")
         else:
             return {"ok": False, "error": f"invalid scope: {scope}"}
@@ -621,6 +912,7 @@ class PolicyStore:
             home,
             session_id=session_id,
             project_root=project_root,
+            owner_uid=uid,
         )
 
     async def approve(
@@ -632,11 +924,39 @@ class PolicyStore:
         *,
         session_id: str | None = None,
         project_root: str | None = None,
+        owner_uid: int | None = None,
     ) -> dict[str, Any]:
         pending = self.pending.get(pending_id)
         if pending is None:
             return {"ok": False, "error": "unknown pending id"}
         pending = self.pending.pop(pending_id)
+        if pending.kind == "network":
+            host = pending.host or ""
+            port = pending.port or 0
+            # Blocking UI "once" only unblocks this pending check. Do not add to
+            # once_allow — that would let the next connection auto-allow without a prompt.
+            if scope == "once":
+                self._audit("approve", host, port, scope)
+                self._finish_network(pending_id, allowed=True, source="once")
+                return {"ok": True, "host": host, "port": port, "scope": scope}
+            result = self._approve_network_scope(
+                host,
+                port,
+                scope,
+                pending.cwd or cwd,
+                pending.home or home,
+                session_id=session_id,
+                project_root=pending.project_root or project_root,
+                owner_uid=owner_uid,
+            )
+            if result.get("ok"):
+                self._finish_network(
+                    pending_id, allowed=True, source=str(result.get("scope", scope))
+                )
+            else:
+                self._finish_network(pending_id, allowed=False, source="blocked")
+            return result
+
         if scope != "once":
             self.pending[pending.id] = pending
             return {"ok": False, "error": "elevation only supports scope once"}
@@ -652,6 +972,12 @@ class PolicyStore:
         pending = self.pending.pop(pending_id, None)
         if pending is None:
             return {"ok": False, "error": "unknown pending id"}
+        if pending.kind == "network":
+            host = pending.host or ""
+            port = pending.port or 0
+            self._audit("deny", host, port, pending.scheme or "")
+            self._finish_network(pending_id, allowed=False, source="denied")
+            return {"ok": True}
         argv = pending.argv or []
         self._audit("deny", detail=json.dumps({"id": pending_id, "argv": argv}))
         self._finish_elevation(pending_id, self._elevation_denied())
@@ -663,13 +989,26 @@ class PolicyStore:
         return {
             "merged": self.merged_for(cwd, home, project_root),
             "pending": [
-                {
-                    "id": p.id,
-                    "kind": "elevation",
-                    "argv": p.argv or [],
-                    "cwd": p.cwd,
-                    "home": p.home,
-                }
+                (
+                    {
+                        "id": p.id,
+                        "kind": "network",
+                        "host": p.host,
+                        "port": p.port,
+                        "scheme": p.scheme,
+                        "url": p.url,
+                        "cwd": p.cwd,
+                        "home": p.home,
+                    }
+                    if p.kind == "network"
+                    else {
+                        "id": p.id,
+                        "kind": "elevation",
+                        "argv": p.argv or [],
+                        "cwd": p.cwd,
+                        "home": p.home,
+                    }
+                )
                 for p in self.pending.values()
             ],
         }
@@ -691,16 +1030,31 @@ class PolicyServer:
                 except json.JSONDecodeError:
                     await self._reply(writer, {"ok": False, "error": "invalid json"})
                     continue
-                await self._reply(writer, await self._dispatch(req, writer))
+                try:
+                    resp = await self._dispatch(req, writer)
+                except Exception as err:
+                    log(f"dispatch error op={req.get('op')}: {err}")
+                    resp = {"ok": False, "error": str(err)}
+                await self._reply(writer, resp)
+                if req.get("op") == "register_ui" and resp.get("ok"):
+                    await self.store.flush_pending_to_ui()
         finally:
             self.store.end_ui_session(writer)
-            writer.close()
-            with contextlib.suppress(Exception):
+            with contextlib.suppress(
+                BrokenPipeError,
+                ConnectionResetError,
+                ConnectionError,
+                OSError,
+            ):
+                writer.close()
                 await writer.wait_closed()
 
     async def _reply(self, writer: asyncio.StreamWriter, payload: dict[str, Any]) -> None:
-        writer.write((json.dumps(payload) + "\n").encode())
-        await writer.drain()
+        try:
+            writer.write((json.dumps(payload) + "\n").encode())
+            await writer.drain()
+        except (ConnectionResetError, BrokenPipeError, ConnectionError):
+            self.store.end_ui_session(writer)
 
     async def _dispatch(self, req: dict[str, Any], writer: asyncio.StreamWriter) -> dict[str, Any]:
         op = req.get("op")
@@ -727,7 +1081,7 @@ class PolicyServer:
                 )
             if ctx and ctx.project_root:
                 log(f"ui registered project_root={ctx.project_root}")
-            await self.store.flush_pending_to_ui()
+            # Pending notifications are sent after the register_ui reply (handle_client).
             return {"ok": True, "role": "ui", "session_id": session_id}
         if op == "unregister_ui":
             self.store.end_ui_session(writer)
@@ -766,14 +1120,17 @@ class PolicyServer:
                 if allowed:
                     log(f"check allow {policy_host}:{port} ({source})")
                 return {"ok": True, "allowed": allowed, "source": source}
-            await self.store.suggest_approval(
-                policy_host, port, scheme, url, cwd, home, project_root
+            return await self.store.request_network_approval(
+                policy_host,
+                port,
+                scheme,
+                url,
+                cwd,
+                home,
+                project_root,
+                pid=pid,
+                uid=uid,
             )
-            log(
-                f"check blocked {policy_host}:{port} "
-                "(not in policy; approve in OMP or via agent-sandbox-approve and retry)"
-            )
-            return {"ok": True, "allowed": False, "source": "blocked"}
         if op == "elevate":
             argv = req.get("argv")
             if not isinstance(argv, list) or not argv:
@@ -789,6 +1146,7 @@ class PolicyServer:
                 home,
                 session_id=req.get("session_id"),
                 project_root=project_root,
+                owner_uid=_opt_uid(req.get("uid")),
             )
         if op == "approve_host":
             port_value = _opt_int(req.get("port"))
@@ -841,7 +1199,13 @@ def parse_args() -> argparse.Namespace:
         "--interactive-approval",
         action=argparse.BooleanOptionalAction,
         default=True,
-        help="Emit OMP approval suggestions for blocked hosts (non-blocking)",
+        help="Block on OMP approval for blocked hosts until allow/deny/timeout",
+    )
+    p.add_argument(
+        "--ui-spawn-cmd",
+        default=os.environ.get("AGENT_SANDBOX_UI_SPAWN_CMD", ""),
+        metavar="PATH",
+        help="Executable to run as the sandbox user when no policy UI is connected",
     )
     return p.parse_args()
 
