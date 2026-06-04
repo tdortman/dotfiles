@@ -1,6 +1,6 @@
 # agent-sandbox
 
-NixOS module that wraps LLM agent CLIs in a filesystem jail ([jail.nix](https://alexdav.id/projects/jail-nix/)) and optionally enforces deny-by-default outbound network access with interactive approvals through OMP.
+NixOS module that wraps LLM agent CLIs in a filesystem jail ([jail.nix](https://alexdav.id/projects/jail-nix/)) and optionally enforces deny-by-default outbound network access with interactive approvals through OMP or `agent-sandbox-ui`.
 
 ## Layout
 
@@ -24,13 +24,13 @@ agent-sandbox/
     └── tests/
 ```
 
-Installed binaries: `agent-sandbox-policyd`, `agent-sandbox-proxy`, `agent-sandbox-dns-proxy`, `agent-sandbox-approve`, `agent-sandbox-elevate`, `agent-sandbox-enter`.
+Installed binaries: `agent-sandbox-policyd`, `agent-sandbox-proxy`, `agent-sandbox-dns-proxy`, `agent-sandbox-approve`, `agent-sandbox-elevate`, `agent-sandbox-ui`, `agent-sandbox-enter`.
 
 ## What it does
 
 **Filesystem.** Each wrapped command (`omp`, `codex`, …) is replaced by a launcher that runs the real binary as `unsafe-<name>` inside bubblewrap. Read-only and read-write mount lists come from Nix options (`readonlyDirs`, `readwriteDirs`). Symlinks under the home tree (e.g. chezmoi → dotfiles) are resolved to read-only binds at their real paths.
 
-**Network (optional).** When `agent-sandbox.network.enable = true`, the launcher joins a dedicated network namespace before bwrap. nftables drops egress by default and DNATs TCP 80/443 to a policy proxy. Unknown destinations are denied immediately; OMP can suggest an approval scope so the user can allow and retry.
+**Network (optional).** When `agent-sandbox.network.enable = true`, the launcher joins a dedicated network namespace before bwrap. nftables drops egress by default and DNATs TCP 80/443 to a policy proxy. Unknown destinations block until a registered UI client (OMP extension or `agent-sandbox-ui`) approves or denies (same as elevation).
 
 **Elevation (optional).** With `sudoPolicy = "approve"` (default), a `sudo` shim on the jail `PATH` forwards commands to policyd for OMP approval, then runs them as root on the host. Set `"deny"` to block elevation entirely.
 
@@ -44,7 +44,7 @@ flowchart LR
   netns -->|TCP 80/443 DNAT| proxy[Policy proxy :17888]
   netns -->|optional HTTP_PROXY| proxy
   proxy --> policyd[policyd socket]
-  policyd --> omp[OMP extension UI]
+  policyd --> ui[OMP or agent-sandbox-ui]
   policyd --> files[(policy JSON layers)]
 ```
 
@@ -53,6 +53,8 @@ flowchart LR
 1. Nix installs the jailed launcher as the original command name via `jail-nix.lib.extend` and agent-specific combinators in `combinators.nix`.
 2. If network is enabled, `agent-sandbox-enter` (capabilities `CAP_SYS_ADMIN`, `CAP_NET_ADMIN`) moves the process into the `agent-sandbox` netns, then jail.nix runs bwrap with `share-ns "net"`.
 3. Combinators inject proxy environment variables, restricted resolv/nsswitch configs, and launch context env vars (`AGENT_SANDBOX_PROJECT_ROOT`, policy socket path).
+
+`inherit-shell-env` forwards the invoking shell’s environment and ro-binds absolute paths it finds (for devShell/direnv tools outside `$HOME`). Paths under `$HOME` are **not** auto-mounted — only `readonlyDirs` / `readwriteDirs` / `readonlyFiles` / `readwriteFiles` entries for `~/…` (plus `$PWD` rw). Env vars like `XDG_CONFIG_HOME` may still be set even when that directory is not mounted.
 
 The jail shares the host **pid** namespace so the proxy can read client context from `/proc/<pid>/environ` and `SO_PEERCRED`.
 
@@ -84,11 +86,23 @@ Sandboxes resolve via `nameserver 169.254.100.1` (`/etc/agent-sandbox/resolv.con
 
 ### Approvals
 
-**Network:** fail-fast deny. policyd emits a non-blocking OMP suggestion when `interactiveApproval` is enabled. Scopes: `once`, `session`, `project`, `global`. CLI fallback: `agent-sandbox-approve approve-host <host> <port> <scope>`.
+**Network:** blocking deny until approved when `interactiveApproval` is enabled. Scopes: `once` (this connection only), `session`, `project`, `global`. CLI `approve-host` still uses `once_allow` for pre-approving before a request. OMP blocking **Allow once** does not stash a spare grant for the next connection.
 
 **Elevation:** blocking pending request; OMP or `agent-sandbox-approve` with pending id.
 
 OMP extension lives at `~/.omp/private_agent/extensions/agent-sandbox` — enable in `config.yml` with `extensions: ['./extensions/agent-sandbox']`. On connect it registers UI session context (cwd, home, project root) to `/run/agent-sandbox/session-context.json`.
+
+### Other agents (OpenCode, codex, droid, …)
+
+No per-agent OpenCode plugin: the background server often has no `/dev/tty`, so a plugin cannot reliably register as policy UI. Use the same paths as any non-OMP agent:
+
+- **`policy.autoSpawnPolicyUi`** (default **true**) — policyd runs `agent-sandbox-ui` as the sandbox user when no UI is connected (`/dev/tty` or **kdialog** / Qt).
+- **OMP extension** — if you use OMP for that session instead.
+- **Manual:** `agent-sandbox-ui` in a terminal.
+- **CLI:** `agent-sandbox-approve approve-host …`
+- **OpenCode slash command:** `~/.config/opencode/commands/agent-sandbox-network.md` (documentation only).
+
+Wrap `opencode` via `agent-sandbox.packages` in NixOS like other agents. OpenCode `permission` rules in `opencode.json` only gate tools (bash, read, edit), not the TCP proxy.
 
 ### Sudo shim
 
