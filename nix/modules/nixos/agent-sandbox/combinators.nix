@@ -48,13 +48,28 @@ let
     declare -A _asbx_bound=()
     _asbx_wants_store=0
     _asbx_pwd_root=""
+    _asbx_home_root=""
     if [[ -n "$PWD" ]] && [[ -d "$PWD" ]]; then
       _asbx_pwd_root=$(readlink -f "$PWD" 2>/dev/null) || _asbx_pwd_root=""
+    fi
+    if [[ -n "$HOME" ]] && [[ -d "$HOME" ]]; then
+      _asbx_home_root=$(readlink -f "$HOME" 2>/dev/null) || _asbx_home_root=""
     fi
     _asbx_under_pwd() {
       local p="$1"
       [[ -n "$_asbx_pwd_root" ]] || return 1
       [[ "$p" == "$_asbx_pwd_root" || "$p" == "$_asbx_pwd_root"/* ]]
+    }
+    _asbx_under_home() {
+      local p="$1"
+      [[ -n "$_asbx_home_root" ]] || return 1
+      [[ "$p" == "$_asbx_home_root" || "$p" == "$_asbx_home_root"/* ]]
+    }
+    _asbx_is_jail_tmpfs() {
+      local p="$1"
+      [[ "$p" == "/tmp" || "$p" == /tmp/* ]] && return 0
+      [[ "$p" == "/var/tmp" || "$p" == /var/tmp/* ]] && return 0
+      return 1
     }
     _asbx_note_path_entry() {
       local dir="$1"
@@ -65,7 +80,14 @@ let
       if ! _asbx_real=$(readlink -f "$dir" 2>/dev/null); then
         return 0
       fi
+      if _asbx_is_jail_tmpfs "$_asbx_real"; then
+        return 0
+      fi
       if _asbx_under_pwd "$_asbx_real"; then
+        return 0
+      fi
+      # Under $HOME only explicit home-*-mounts apply (~ is tmpfs otherwise).
+      if _asbx_under_home "$_asbx_real"; then
         return 0
       fi
       if [[ "$_asbx_real" == /nix/store/* ]]; then
@@ -101,6 +123,7 @@ let
       _asbx_val="''${_asbx_line#*=}"
       case "$_asbx_name" in
         *[!A-Za-z0-9_]*|"") continue ;;
+        TMPDIR|TEMP|TMP) continue ;;
       esac
       _asbx_scan_env_value "$_asbx_val"
       [[ "$_asbx_name" == "PATH" ]] && continue
