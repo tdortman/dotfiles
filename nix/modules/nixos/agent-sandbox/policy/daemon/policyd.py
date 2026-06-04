@@ -709,6 +709,9 @@ class PolicyStore:
         cwd: str | None,
         home: str | None,
         project_root: str | None = None,
+        *,
+        pid: int | None = None,
+        uid: int | None = None,
     ) -> dict[str, Any]:
         pending_id = f"elev:{uuid.uuid4().hex}"
         loop = asyncio.get_running_loop()
@@ -734,14 +737,18 @@ class PolicyStore:
             }
         )
         if not self.ui_clients:
-            uid: int | None = None
-            if home:
-                try:
-                    uid = pwd.getpwnam(self._user_for_home(home)).pw_uid
-                except KeyError:
-                    uid = None
+            spawn_uid = uid
+            if spawn_uid is None or spawn_uid <= 0:
+                if home:
+                    try:
+                        spawn_uid = pwd.getpwnam(self._user_for_home(home)).pw_uid
+                    except KeyError:
+                        spawn_uid = None
             self._maybe_spawn_ui(
-                uid=uid, home=home, cwd=cwd, project_root=project_root
+                uid=spawn_uid,
+                home=home,
+                cwd=cwd,
+                project_root=project_root,
             )
         if not self.ui_clients:
             ui_wait = min(60.0, self.args.approval_timeout)
@@ -1137,7 +1144,14 @@ class PolicyServer:
                 return {"ok": False, "error": "argv required (non-empty list of strings)"}
             if not all(isinstance(arg, str) for arg in argv):
                 return {"ok": False, "error": "argv must be strings"}
-            return await self.store.request_elevation(argv, cwd, home, project_root)
+            return await self.store.request_elevation(
+                argv,
+                cwd,
+                home,
+                project_root,
+                pid=_opt_int(req.get("pid")),
+                uid=_opt_uid(req.get("uid")),
+            )
         if op == "approve":
             return await self.store.approve(
                 str(req.get("id", "")),
