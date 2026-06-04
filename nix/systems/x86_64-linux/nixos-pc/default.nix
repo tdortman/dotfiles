@@ -125,6 +125,11 @@
   agent-sandbox = {
     enable = true;
     network.enable = true;
+    readonlyDirs = [
+      "~/.local/bin"
+      "/lib64"
+      "/usr/lib"
+    ];
     readwriteDirs = [
       "~/.agents"
       "~/.config/agent-sandbox"
@@ -132,6 +137,7 @@
     readonlyFiles = [
       "~/.gitconfig"
       "~/.1password/agent.sock"
+      "/usr/bin/env"
     ];
     packages =
       let
@@ -159,6 +165,12 @@
             "~/.config/opencode"
             "~/.local/share/opencode"
             "~/.local/state/opencode/"
+            "~/.local/share/zoxide"
+            "~/.cache/opencode"
+
+            # cursor-acp
+            "~/.opencode-cursor"
+            "~/.local/share/cursor-agent/"
           ];
           readonlyFiles = [
             "~/.config/cursor/auth.json" # For opencode-cursor
