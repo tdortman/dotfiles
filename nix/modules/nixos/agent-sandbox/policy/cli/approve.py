@@ -38,9 +38,10 @@ def main(argv: list[str] | None = None) -> int:
     approve_p.add_argument("id", help="Pending id from `pending` or policyd logs")
     approve_p.add_argument(
         "scope",
-        choices=["once"],
-        help="Elevation approvals always run once",
+        choices=["once", "session", "global", "project"],
+        help="Elevation approval scope",
     )
+    approve_p.add_argument("--session-id", default=None)
     approve_p.add_argument("--home", default=None)
     approve_p.add_argument("--cwd", default=None)
     approve_p.add_argument("--project-root", default=None)
@@ -63,6 +64,14 @@ def main(argv: list[str] | None = None) -> int:
 
     deny_p = sub.add_parser("deny", help="Deny a pending request by id")
     deny_p.add_argument("id")
+    deny_p.add_argument(
+        "scope",
+        nargs="?",
+        default="once",
+        choices=["once", "session", "global", "project"],
+        help="Deny scope (network only; elevation always once)",
+    )
+    deny_p.add_argument("--session-id", default=None)
 
     args = p.parse_args(argv)
     base: dict[str, Any] = {}
@@ -92,12 +101,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.cmd == "approve":
-        resp = asyncio.run(
-            policy_rpc(
-                {"op": "approve", "id": args.id, "scope": args.scope, **base},
-                args.socket,
-            )
-        )
+        payload = {"op": "approve", "id": args.id, "scope": args.scope, **base}
+        if args.session_id:
+            payload["session_id"] = args.session_id
+        resp = asyncio.run(policy_rpc(payload, args.socket))
     elif args.cmd == "approve-host":
         payload = {
             "op": "approve_host",
@@ -110,9 +117,10 @@ def main(argv: list[str] | None = None) -> int:
             payload["session_id"] = args.session_id
         resp = asyncio.run(policy_rpc(payload, args.socket))
     else:
-        resp = asyncio.run(
-            policy_rpc({"op": "deny", "id": args.id, **base}, args.socket)
-        )
+        payload: dict[str, Any] = {"op": "deny", "id": args.id, "scope": args.scope, **base}
+        if args.session_id:
+            payload["session_id"] = args.session_id
+        resp = asyncio.run(policy_rpc(payload, args.socket))
 
     print(json.dumps(resp, indent=2))
     return 0 if resp.get("ok") else 1
