@@ -267,7 +267,7 @@ class PolicyStoreOnceTests(unittest.TestCase):
                 )
             )
 
-    def test_suggest_approval_not_sent_when_denied(self) -> None:
+    def test_request_network_approval_not_sent_when_denied(self) -> None:
         async def run() -> None:
             with tempfile.TemporaryDirectory() as tmp:
                 tmp_path = Path(tmp)
@@ -301,7 +301,7 @@ class PolicyStoreOnceTests(unittest.TestCase):
                 )
                 notify = mock.AsyncMock()
                 with mock.patch.object(store, "notify_ui", notify):
-                    await store.suggest_approval(
+                    resp = await store.request_network_approval(
                         "blocked.example",
                         443,
                         "https",
@@ -311,6 +311,8 @@ class PolicyStoreOnceTests(unittest.TestCase):
                         project_root=str(project_dir),
                     )
                 notify.assert_not_awaited()
+                self.assertFalse(resp["allowed"])
+                self.assertEqual(resp["source"], "deny")
                 self.assertEqual(store.pending, {})
 
         asyncio.run(run())
@@ -607,13 +609,117 @@ class PolicyStoreOnceTests(unittest.TestCase):
             self.assertEqual(ctx["home"], "/home/tim")
             sc.clear_session_context()
 
-    def test_unknown_host_check_fails_fast_and_suggests(self) -> None:
+    def test_blocking_approve_once_does_not_auto_allow_next_check(self) -> None:
+        async def run() -> None:
+            with tempfile.TemporaryDirectory() as tmp:
+                tmp_path = Path(tmp)
+                declarative = tmp_path / "declarative.json"
+                declarative.write_text(
+                    '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                )
+                store = policyd.PolicyStore(
+                    argparse.Namespace(
+                        declarative=str(declarative),
+                        export_json=str(tmp_path / "export.json"),
+                        export_nix="",
+                        approval_timeout=30.0,
+                        interactive_approval=True,
+                    )
+                )
+                server = policyd.PolicyServer(store, Path("/tmp/policyd-test.sock"))
+                writer = mock.Mock()
+                writer.write = mock.Mock()
+                writer.drain = mock.AsyncMock(return_value=None)
+                store.start_ui_session(writer)
+                host = "once-race.test"
+
+                with mock.patch.object(policyd, "write_session_context"):
+                    first = asyncio.create_task(
+                        server._dispatch(
+                            {
+                                "op": "check",
+                                "host": host,
+                                "connect_host": host,
+                                "port": 443,
+                                "scheme": "https",
+                                "url": f"https://{host}:443",
+                                "cwd": "/tmp",
+                                "home": "/home/user",
+                            },
+                            mock.Mock(),
+                        )
+                    )
+                    await asyncio.sleep(0.05)
+                    pending_id = next(iter(store.pending))
+                    await store.approve(pending_id, "once", "/tmp", "/home/user")
+                    first_resp = await asyncio.wait_for(first, timeout=1.0)
+                    self.assertTrue(first_resp["allowed"])
+                    self.assertEqual(store.once_allow, set())
+
+                    second = asyncio.create_task(
+                        server._dispatch(
+                            {
+                                "op": "check",
+                                "host": host,
+                                "connect_host": host,
+                                "port": 443,
+                                "scheme": "https",
+                                "url": f"https://{host}:443",
+                                "cwd": "/tmp",
+                                "home": "/home/user",
+                            },
+                            mock.Mock(),
+                        )
+                    )
+                    await asyncio.sleep(0.05)
+                    self.assertEqual(len(store.pending), 1)
+                    second_id = next(iter(store.pending))
+                    store.deny(second_id)
+                    second_resp = await asyncio.wait_for(second, timeout=1.0)
+                    self.assertFalse(second_resp["allowed"])
+
+        asyncio.run(run())
+
+    def test_request_network_approval_waits_for_ui_connect(self) -> None:
+        async def run() -> None:
+            store = self._store()
+            host = "ui-wait.test"
+
+            async def register_and_approve() -> None:
+                await asyncio.sleep(0.15)
+                writer = mock.Mock()
+                writer.write = mock.Mock()
+                writer.drain = mock.AsyncMock(return_value=None)
+                store.start_ui_session(writer)
+                pending_id = next(iter(store.pending))
+                await store.approve(pending_id, "once", "/tmp", "/home/user")
+
+            ui_task = asyncio.create_task(register_and_approve())
+            resp = await store.request_network_approval(
+                host,
+                443,
+                "https",
+                f"https://{host}:443",
+                "/tmp",
+                "/home/user",
+            )
+            await ui_task
+            self.assertTrue(resp["allowed"])
+            self.assertEqual(resp.get("source"), "once")
+
+        asyncio.run(run())
+
+    def test_unknown_host_check_blocks_until_approved(self) -> None:
         async def run() -> None:
             store = self._store()
             server = policyd.PolicyServer(store, Path("/tmp/policyd-test.sock"))
-            notify = mock.AsyncMock()
-            with mock.patch.object(store, "notify_ui", notify):
-                resp = await asyncio.wait_for(
+            writer = mock.Mock()
+            writer.write = mock.Mock()
+            writer.drain = mock.AsyncMock(return_value=None)
+            store.start_ui_session(writer)
+
+            with mock.patch.object(policyd, "write_session_context"):
+                check_task = asyncio.create_task(
                     server._dispatch(
                         {
                             "op": "check",
@@ -626,18 +732,23 @@ class PolicyStoreOnceTests(unittest.TestCase):
                             "home": "/home/user",
                         },
                         mock.Mock(),
-                    ),
-                    timeout=0.2,
+                    )
                 )
-            self.assertTrue(resp["ok"])
-            self.assertFalse(resp["allowed"])
-            self.assertEqual(resp["source"], "blocked")
-            self.assertEqual(store.pending, {})
-            notify.assert_awaited_once()
-            payload = notify.await_args.args[0]
-            self.assertEqual(payload["type"], "approval_suggestion")
-            self.assertEqual(payload["host"], "example.com")
-            self.assertEqual(payload["port"], 443)
+                await asyncio.sleep(0.05)
+                pending_id = next(iter(store.pending))
+                self.assertTrue(pending_id.startswith("net:"))
+                approve_resp = await store.approve(
+                    pending_id,
+                    "once",
+                    "/tmp",
+                    "/home/user",
+                )
+                self.assertTrue(approve_resp["ok"])
+                resp = await asyncio.wait_for(check_task, timeout=1.0)
+                self.assertTrue(resp["ok"])
+                self.assertTrue(resp["allowed"])
+                self.assertEqual(resp["source"], "once")
+                self.assertEqual(store.pending, {})
 
         asyncio.run(run())
 
@@ -769,7 +880,7 @@ class PolicyStoreElevationTests(unittest.IsolatedAsyncioTestCase):
         store = self._store()
         result = await store.request_elevation(["id"], "/tmp", "/home/user")
         self.assertFalse(result["allowed"])
-        self.assertIn("no OMP UI registered", result["stderr"])
+        self.assertIn("no policy UI registered", result["stderr"])
 
 
 if __name__ == "__main__":
