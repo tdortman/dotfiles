@@ -36,6 +36,8 @@ Launchers run the real binary as `unsafe-<name>` inside bubblewrap. Mounts come 
 
 `inherit-shell-env` forwards the invoking shell’s environment and ro-binds absolute paths it finds; paths under `$HOME` are not auto-mounted unless listed in mount options. The jail shares the host **pid** namespace so the proxy can read `AGENT_SANDBOX_*` from `/proc/<pid>/environ`.
 
+**CUDA / GPU:** The jail uses `--tmpfs /dev` and re-binds all `/dev/nvidia*` plus `/dev/nvidia-caps/*` (needed when `nvidia-fs` is on). `LD_LIBRARY_PATH` is adjusted to prefer `/run/opengl-driver/lib` so `libcuda` matches the host driver. A devShell’s CUDA toolkit still runs inside OMP; if something still fails, add extra nodes via `devicePaths`.
+
 ## Network
 
 When `agent-sandbox.network.enable = true`, `agent-sandbox-enter` joins the `agent-sandbox` netns before bwrap. nftables drops egress by default and DNATs TCP 80/443 to the policy proxy on loopback inside the netns.
