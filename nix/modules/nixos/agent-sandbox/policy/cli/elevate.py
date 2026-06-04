@@ -40,15 +40,20 @@ def main() -> int:
         print("agent-sandbox: usage: sudo <command>", file=sys.stderr)
         return 1
 
-    resp = rpc(
-        {
-            "op": "elevate",
-            "argv": argv,
-            "cwd": os.environ.get("AGENT_SANDBOX_CWD"),
-            "home": os.environ.get("AGENT_SANDBOX_HOME"),
-            "project_root": os.environ.get("AGENT_SANDBOX_PROJECT_ROOT"),
-        }
-    )
+    req = {
+        "op": "elevate",
+        "argv": argv,
+        "cwd": os.environ.get("AGENT_SANDBOX_CWD"),
+        "home": os.environ.get("AGENT_SANDBOX_HOME") or os.environ.get("HOME"),
+        "project_root": os.environ.get("AGENT_SANDBOX_PROJECT_ROOT"),
+    }
+    uid = os.getuid()
+    if uid > 0:
+        req["uid"] = uid
+    pid = os.getpid()
+    if pid > 0:
+        req["pid"] = pid
+    resp = rpc(req)
 
     if not resp.get("ok"):
         err = str(resp.get("error", "policyd error"))
