@@ -23,23 +23,44 @@ type ElevationRequest = {
   project_root?: string;
 };
 
-const ELEVATION_OPTIONS = ["Allow once", "Deny"] as const;
-
-const APPROVAL_OPTIONS = [
-  "Allow once (single connection)",
+const NETWORK_APPROVAL_OPTIONS = [
+  "Allow once (this connection only)",
   "Allow for this session",
   "Allow for this project",
   "Allow globally (user config)",
-  "Deny",
+  "Deny once (this connection only)",
+  "Deny for this session",
+  "Deny for this project",
+  "Deny globally (user config)",
 ] as const;
 
-const SCOPE_BY_LABEL: Record<(typeof APPROVAL_OPTIONS)[number], string> = {
-  "Allow once (single connection)": "once",
+const SUDO_APPROVAL_OPTIONS = [
+  "Allow once (this command only)",
+  "Allow for this session",
+  "Allow for this project",
+  "Allow globally (user config)",
+  "Deny once (this command only)",
+  "Deny for this session",
+  "Deny for this project",
+  "Deny globally (user config)",
+] as const;
+
+const SCOPE_BY_LABEL: Record<string, string> = {
+  "Allow once (this connection only)": "once",
+  "Allow once (this command only)": "once",
   "Allow for this session": "session",
   "Allow for this project": "project",
   "Allow globally (user config)": "global",
-  Deny: "deny",
+  "Deny once (this connection only)": "once",
+  "Deny once (this command only)": "once",
+  "Deny for this session": "session",
+  "Deny for this project": "project",
+  "Deny globally (user config)": "global",
 };
+
+const DENY_LABELS = new Set(
+  Object.keys(SCOPE_BY_LABEL).filter((k) => k.startsWith("Deny ")),
+);
 
 const DEFAULT_SOCKET = "/run/agent-sandbox/policy.sock";
 
