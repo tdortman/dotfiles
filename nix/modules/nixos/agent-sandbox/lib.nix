@@ -42,12 +42,8 @@ let
     "/run/opengl-driver-32"
   ];
 
-  defaultDevicePaths = [
-    "/dev/nvidia0"
-    "/dev/nvidiactl"
-    "/dev/nvidia-uvm"
-    "/dev/nvidia-uvm-tools"
-  ];
+  # Extra device nodes (agent-sandbox-nvidia-gpu binds the standard NVIDIA set).
+  defaultDevicePaths = [ ];
 
   isHomeMountPath = path: path == "~" || lib.hasPrefix "~/" path;
 
@@ -137,7 +133,10 @@ let
       (agent-sandbox-sudo-guard sudoGuard)
     ]
     ++ map (arg: unsafe-add-raw-args arg) extraBwrapArgs
-    ++ lib.optionals (devicePaths != [ ]) (map (p: try-readonly p) devicePaths);
+    ++ [
+      agent-sandbox-nvidia-gpu
+    ]
+    ++ map (p: try-dev-bind p) devicePaths;
 
 in
 rec {
