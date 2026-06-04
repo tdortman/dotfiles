@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import asyncio
 import contextlib
-import functools
 import json
 import os
 import shutil
@@ -19,8 +18,8 @@ from typing import Any
 from graphical_env import (
     _kdialog_lock,
     format_elevation_prompt,
-    graphical_confirm,
     graphical_session_env,
+    kdialog_menu_geometry,
     resolve_kdialog,
 )
 
@@ -50,21 +49,43 @@ def _tool_path(env_key: str, binary: str) -> str | None:
         return explicit
     return shutil.which(binary)
 
-APPROVAL_OPTIONS = [
-    "Allow once (single connection)",
+NETWORK_APPROVAL_OPTIONS = [
+    "Allow once (this connection only)",
     "Allow for this session",
     "Allow for this project",
     "Allow globally (user config)",
-    "Deny",
+    "Deny once (this connection only)",
+    "Deny for this session",
+    "Deny for this project",
+    "Deny globally (user config)",
+]
+SUDO_APPROVAL_OPTIONS = [
+    "Allow once (this command only)",
+    "Allow for this session",
+    "Allow for this project",
+    "Allow globally (user config)",
+    "Deny once (this command only)",
+    "Deny for this session",
+    "Deny for this project",
+    "Deny globally (user config)",
 ]
 SCOPE_BY_LABEL = {
-    "Allow once (single connection)": "once",
+    "Allow once (this connection only)": "once",
+    "Allow once (this command only)": "once",
     "Allow for this session": "session",
     "Allow for this project": "project",
     "Allow globally (user config)": "global",
-    "Deny": "deny",
+    "Deny once (this connection only)": "once",
+    "Deny once (this command only)": "once",
+    "Deny for this session": "session",
+    "Deny for this project": "project",
+    "Deny globally (user config)": "global",
 }
-ELEVATION_OPTIONS = ["Allow once", "Deny"]
+DENY_LABELS = frozenset(
+    label
+    for label in SCOPE_BY_LABEL
+    if label.startswith("Deny ")
+)
 
 
 class TtyUnavailable(Exception):
@@ -104,13 +125,18 @@ def graphical_select(title: str, options: list[str]) -> str | None:
         return None
     ui_log(f"opening kdialog menu via {kdialog}")
     try:
-        menu_args: list[str] = [
-            kdialog,
-            "--title",
-            "agent-sandbox",
-            "--menu",
-            title,
-        ]
+        menu_args: list[str] = [kdialog]
+        geometry = kdialog_menu_geometry(len(options))
+        if geometry:
+            menu_args.extend(["--geometry", geometry])
+        menu_args.extend(
+            [
+                "--title",
+                "agent-sandbox",
+                "--menu",
+                title,
+            ]
+        )
         for i, label in enumerate(options, start=1):
             menu_args.extend([str(i), label])
         # Piping stdout breaks GUI on Wayland/Qt; write to a temp file instead.
@@ -250,26 +276,30 @@ class PolicyUiClient:
             pass
         return out
 
-    async def _deny(self, req: dict[str, Any]) -> None:
-        await policy_rpc({"op": "deny", "id": req["id"], **self._ctx(req)}, self.socket_path)
+    async def _deny(self, req: dict[str, Any], scope: str) -> None:
+        body: dict[str, Any] = {"op": "deny", "id": req["id"], "scope": scope, **self._ctx(req)}
+        if scope == "session" and self.session_id:
+            body["session_id"] = self.session_id
+        await policy_rpc(body, self.socket_path)
 
     async def _pick(self, title: str, options: list[str]) -> str | None:
         return await asyncio.to_thread(pick_option, title, options)
 
-    async def _handle_network(self, req: dict[str, Any]) -> None:
-        host = req.get("host", "")
-        port = req.get("port", 0)
-        url = req.get("url") or f"{req.get('scheme', 'https')}://{host}:{port}"
-        choice = await self._pick(
-            f"agent-sandbox: allow {url}?",
-            list(APPROVAL_OPTIONS),
-        )
+    async def _resolve_scoped_choice(
+        self, req: dict[str, Any], choice: str | None
+    ) -> None:
         if choice is None:
             ui_log("no prompt available; request left pending")
             return
         scope = SCOPE_BY_LABEL.get(choice)
-        if scope == "deny":
-            await self._deny(req)
+        if choice in DENY_LABELS:
+            if scope == "session" and not self.session_id:
+                print(
+                    "agent-sandbox: session deny unavailable (policy UI not connected).",
+                    file=sys.stderr,
+                )
+                return
+            await self._deny(req, scope or "once")
             return
         if scope == "session" and not self.session_id:
             print(
@@ -294,6 +324,16 @@ class PolicyUiClient:
         elif scope == "project" and resp.get("path"):
             print(f"Project policy saved to {resp['path']}.", file=sys.stderr)
 
+    async def _handle_network(self, req: dict[str, Any]) -> None:
+        host = req.get("host", "")
+        port = req.get("port", 0)
+        url = req.get("url") or f"{req.get('scheme', 'https')}://{host}:{port}"
+        choice = await self._pick(
+            f"agent-sandbox: allow {url}?",
+            list(NETWORK_APPROVAL_OPTIONS),
+        )
+        await self._resolve_scoped_choice(req, choice)
+
     def _graphical_env(self) -> dict[str, str]:
         env = os.environ.copy()
         try:
@@ -313,62 +353,9 @@ class PolicyUiClient:
     async def _handle_elevation(self, req: dict[str, Any]) -> None:
         argv = req.get("argv") or []
         cwd = str(req.get("cwd") or self.cwd or "?")
-        title, message = format_elevation_prompt(argv, cwd)
-        cmd = " ".join(str(a) for a in argv)
-        env = self._graphical_env()
-
-        if prefer_graphical_prompt():
-            allowed = await asyncio.to_thread(
-                functools.partial(
-                    graphical_confirm,
-                    title,
-                    message,
-                    env,
-                    warning=True,
-                )
-            )
-            if allowed is not None:
-                if allowed:
-                    ui_log(f"elevation approved via kdialog: {cmd}")
-                else:
-                    await self._deny(req)
-                    return
-                resp = await policy_rpc(
-                    {
-                        "op": "approve",
-                        "id": req["id"],
-                        "scope": "once",
-                        **self._ctx(req),
-                    },
-                    self.socket_path,
-                )
-                if not resp.get("ok"):
-                    ui_log(
-                        f"elevation approval failed ({resp.get('error', 'unknown')})"
-                    )
-                return
-            ui_log("kdialog yes/no unavailable; trying menu or /dev/tty")
-
-        choice = await self._pick(title, list(ELEVATION_OPTIONS))
-        if choice is None:
-            ui_log("no elevation prompt available; request left pending")
-            return
-        if choice == "Deny":
-            await self._deny(req)
-            return
-        resp = await policy_rpc(
-            {
-                "op": "approve",
-                "id": req["id"],
-                "scope": "once",
-                **self._ctx(req),
-            },
-            self.socket_path,
-        )
-        if not resp.get("ok"):
-            ui_log(
-                f"elevation approval failed ({resp.get('error', 'unknown')})"
-            )
+        title, _message = format_elevation_prompt(argv, cwd)
+        choice = await self._pick(title, list(SUDO_APPROVAL_OPTIONS))
+        await self._resolve_scoped_choice(req, choice)
 
     async def _prompt_worker_loop(self) -> None:
         while True:
@@ -397,7 +384,12 @@ class PolicyUiClient:
         reader, writer = await asyncio.open_unix_connection(self.socket_path)
         try:
             writer.write(
-                (json.dumps({"op": "register_ui", **self._ctx()}) + "\n").encode()
+                (
+                    json.dumps(
+                        {"op": "register_ui", "ui_client": "standalone", **self._ctx()}
+                    )
+                    + "\n"
+                ).encode()
             )
             await writer.drain()
             self.session_id = None
@@ -416,7 +408,11 @@ class PolicyUiClient:
                 if msg.get("type") in ("network_request", "elevation_request"):
                     self._enqueue(msg)
                     continue
-                raise RuntimeError(msg.get("error") or "register_ui failed")
+                err = str(msg.get("error") or "register_ui failed")
+                if "OMP policy UI is active" in err:
+                    ui_log("OMP extension owns prompts; exiting standalone UI")
+                    raise SystemExit(0)
+                raise RuntimeError(err)
 
             while True:
                 line = await reader.readline()
