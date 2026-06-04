@@ -162,9 +162,9 @@ in
       default = "approve";
       description = ''
         How sandboxed agents may invoke sudo. ``deny`` blocks elevation.
-        ``approve`` replaces sudo with a shim that requests OMP approval via policyd,
+        ``approve`` replaces sudo with a shim that requests policy UI approval via policyd,
         then runs the approved command as root on the host (not inside bubblewrap).
-        Requires OMP with the agent-sandbox extension loaded. v1: ``sudo <cmd> [args…]``
+        OMP extension or ``agent-sandbox-ui``. v1: ``sudo <cmd> [args…]``
         only; ``-u`` / ``-E`` and similar flags are not supported.
       '';
     };

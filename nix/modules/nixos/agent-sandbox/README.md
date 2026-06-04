@@ -48,17 +48,34 @@ When `agent-sandbox.network.enable = true`, `agent-sandbox-enter` joins the `age
 
 Sandboxes use `nameserver 169.254.100.1` (`/etc/agent-sandbox/resolv.conf`). `transparentRedirect` (default true) catches apps that ignore proxy env; `injectProxyEnv` (default true) sets `HTTP_PROXY` for clients that honor it.
 
-Unknown hosts block until a UI client allows or denies (when `policy.interactiveApproval` is true). Scopes: `once`, `session`, `project`, `global`. Project **deny** beats in-memory grants. `agent-sandbox-approve approve-host` can pre-allow before a request.
+Unknown hosts block until a UI client allows or denies (when `policy.interactiveApproval` is true). Allow/deny scopes: `once`, `session`, `project`, `global` (written to `network.allow` / `network.deny`). Project **deny** beats in-memory grants. `agent-sandbox-approve approve-host` can pre-allow before a request.
+
+Sudo uses the same scopes; approvals persist to `sudo.allow` / `sudo.deny`. Policy `sudo.allow` runs without a prompt; `sudo.deny` rejects immediately.
 
 ## Policy layers
 
+```json
+{
+    "network": {
+        "allow": [{ "host": "example.com", "port": 443 }],
+        "deny": []
+    },
+    "sudo": {
+        "allow": [{ "argv": ["systemctl", "restart"] }],
+        "deny": [{ "argv": ["rm"] }]
+    }
+}
+```
+
+Sudo `argv` uses prefix matching (`["systemctl"]` matches `systemctl restart nginx`).
+
 Merged lowest → highest:
 
-| Layer       | Source                                                             |
-| ----------- | ------------------------------------------------------------------ |
-| Declarative | `/etc/agent-sandbox/declarative.json` (`network.declarativeAllow`) |
-| Global      | `~/.config/agent-sandbox/policy.json`                              |
-| Project     | `<repo>/.agent-sandbox/policy.json`                                |
+| Layer       | Source                                                                         |
+| ----------- | ------------------------------------------------------------------------------ |
+| Declarative | `/etc/agent-sandbox/declarative.json` (`declarativeAllow` / `declarativeDeny`) |
+| Global      | `~/.config/agent-sandbox/policy.json`                                          |
+| Project     | `<repo>/.agent-sandbox/policy.json`                                            |
 
 `AGENT_SANDBOX_PROJECT_ROOT` is set at launch (git toplevel of cwd, or cwd). policyd writes `/var/lib/agent-sandbox/exported-policy.json` for inspection only; it is not loaded back into the merge stack.
 
@@ -66,14 +83,16 @@ Merged lowest → highest:
 
 One long-lived client registers with policyd (`register_ui`) and handles `network_request` and `elevation_request` messages.
 
-| Path                                          | When to use                                                                   |
-| --------------------------------------------- | ----------------------------------------------------------------------------- |
-| **OMP extension**                             | `~/.omp/agent/extensions/agent-sandbox` in `config.yml` `extensions`          |
-| **`agent-sandbox-ui`**                        | OpenCode, codex, droid, etc. — kdialog on Plasma/Wayland, `/dev/tty` fallback |
-| **`policy.autoSpawnPolicyUi`** (default true) | policyd spawns `agent-sandbox-ui` via `runuser -p` when nothing is connected  |
-| **`agent-sandbox-approve`**                   | Scripting; `approve-host`, `pending`, approve/deny by id                      |
+| Path                                          | When to use                                                                                |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **OMP extension**                             | `~/.omp/agent/extensions/agent-sandbox` in `config.yml` — exclusive prompts when connected |
+| **`agent-sandbox-ui`**                        | OpenCode, codex, droid, etc. — kdialog on Plasma/Wayland, `/dev/tty` fallback              |
+| **`policy.autoSpawnPolicyUi`** (default true) | Spawns `agent-sandbox-ui` only when no UI is connected and OMP is not registered           |
+| **`agent-sandbox-approve`**                   | Scripting; `approve-host`, `pending`, approve/deny by id                                   |
 
 Spawn log: `/run/user/<uid>/agent-sandbox-ui.log`. Service log: `journalctl -u agent-sandbox-policy`.
+
+kdialog menus are sized for eight options (`--geometry`, default `580x382`). Override with `AGENT_SANDBOX_KDIALOG_GEOMETRY=640x480` on the UI process if you want taller/wider.
 
 ## Sudo
 
