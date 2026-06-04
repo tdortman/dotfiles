@@ -933,16 +933,83 @@ class PolicyStoreElevationTests(unittest.IsolatedAsyncioTestCase):
             interactive_approval=True,
         )
         Path(args.declarative).write_text(
-            '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+            '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
         )
         return policyd.PolicyStore(args)
 
-    def _register_ui(self, store: policyd.PolicyStore) -> mock.Mock:
+    def _register_ui(
+        self, store: policyd.PolicyStore, *, ui_client: str = "standalone"
+    ) -> mock.Mock:
         writer = mock.Mock()
         writer.write = mock.Mock()
         writer.drain = mock.AsyncMock(return_value=None)
-        store.start_ui_session(writer)
+        store.start_ui_session(writer, ui_client=ui_client)
         return writer
+
+    def test_omp_ui_disconnects_standalone(self) -> None:
+        store = self._store()
+        standalone = self._register_ui(store, ui_client="standalone")
+        omp = self._register_ui(store, ui_client="omp")
+        self.assertNotIn(standalone, store.ui_clients)
+        self.assertEqual(store._ui_notification_targets(), [omp])
+
+    @mock.patch("asyncio.create_subprocess_exec")
+    async def test_sudo_allow_in_policy_auto_executes(self, mock_exec: mock.Mock) -> None:
+        store = self._store()
+        proc = mock.Mock()
+        proc.returncode = 0
+        proc.communicate = mock.AsyncMock(return_value=(b"ok\n", b""))
+        mock_exec.return_value = proc
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "proj"
+            project.mkdir()
+            policy = project / ".agent-sandbox" / "policy.json"
+            policy.parent.mkdir(parents=True)
+            policy.write_text(
+                json.dumps(
+                    {
+                        "network": {"allow": [], "deny": []},
+                        "sudo": {"allow": [{"argv": ["whoami"]}], "deny": []},
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            result = await store.request_elevation(
+                ["whoami"],
+                str(project),
+                "/home/user",
+                project_root=str(project),
+            )
+        self.assertTrue(result["allowed"])
+        self.assertEqual(result["exit_code"], 0)
+        mock_exec.assert_called_once()
+
+    async def test_sudo_deny_in_policy_blocks_without_ui(self) -> None:
+        store = self._store()
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "proj"
+            project.mkdir()
+            policy = project / ".agent-sandbox" / "policy.json"
+            policy.parent.mkdir(parents=True)
+            policy.write_text(
+                json.dumps(
+                    {
+                        "network": {"allow": [], "deny": []},
+                        "sudo": {"allow": [], "deny": [{"argv": ["rm"]}]},
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            result = await store.request_elevation(
+                ["rm", "-rf", "/"],
+                str(project),
+                "/home/user",
+                project_root=str(project),
+            )
+        self.assertFalse(result["allowed"])
+        self.assertEqual(store.pending, {})
 
     @mock.patch("asyncio.create_subprocess_exec")
     async def test_elevation_approve_runs_subprocess(self, mock_exec: mock.Mock) -> None:
