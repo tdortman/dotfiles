@@ -253,6 +253,40 @@ in
       (set-env "NO_PROXY" "127.0.0.1,169.254.100.1,localhost,::1")
     ];
 
+  # GPU device nodes need --dev-bind (rw). try-readonly breaks NVML/CUDA ioctls.
+  try-dev-bind =
+    path:
+    add-runtime ''
+      if [[ -e "${path}" ]]; then
+        RUNTIME_ARGS+=(--dev-bind "${path}" "${path}")
+      fi
+    '';
+
+  # Bind all host NVIDIA nodes (including nvidia-fs* when nvidia-fs is enabled).
+  # Must run after inherit-shell-env so LD_LIBRARY_PATH can prefer /run/opengl-driver.
+  agent-sandbox-nvidia-gpu = add-runtime ''
+    for _gpu in /dev/nvidia*; do
+      [[ -e "$_gpu" ]] || continue
+      RUNTIME_ARGS+=(--dev-bind "$_gpu" "$_gpu")
+    done
+    if [[ -d /dev/nvidia-caps ]]; then
+      for _cap in /dev/nvidia-caps/*; do
+        [[ -e "$_cap" ]] || continue
+        RUNTIME_ARGS+=(--dev-bind "$_cap" "$_cap")
+      done
+    fi
+    if [[ -d /run/opengl-driver/lib ]]; then
+      _asbx_ld="/run/opengl-driver/lib"
+      if [[ -n "''${LD_LIBRARY_PATH:-}" ]]; then
+        case ":$LD_LIBRARY_PATH:" in
+          *":$_asbx_ld:"*) ;;
+          *) _asbx_ld="$_asbx_ld:$LD_LIBRARY_PATH" ;;
+        esac
+      fi
+      RUNTIME_ARGS+=(--setenv LD_LIBRARY_PATH "$_asbx_ld")
+    fi
+  '';
+
   agent-sandbox-sudo-guard = sudoPkg: compose [
     (add-runtime ''
       export PATH="${sudoPkg}/bin:$PATH"
