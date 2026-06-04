@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import os
+import shlex
 import shutil
 import subprocess
+import sys
+import threading
 from pathlib import Path
 from typing import Callable
 
@@ -221,3 +224,83 @@ def resolve_kdialog(env: dict[str, str]) -> str | None:
     if explicit and os.path.isfile(explicit) and os.access(explicit, os.X_OK):
         return explicit
     return shutil.which("kdialog", path=env.get("PATH"))
+
+
+def format_elevation_prompt(
+    argv: list[object],
+    cwd: str | None,
+) -> tuple[str, str]:
+    """Return (kdialog title, message) showing the full sudo command."""
+    argv_s = [str(a) for a in argv]
+    cmd = "sudo " + shlex.join(argv_s) if argv_s else "sudo"
+    title = "agent-sandbox — sudo"
+    if argv_s:
+        title_cmd = cmd if len(cmd) <= 56 else cmd[:53] + "..."
+        title = f"{title}: {title_cmd}"
+    parts = [cmd, "", "Allow this command to run as root on the host?"]
+    cwd_line = (cwd or "").strip()
+    if cwd_line:
+        parts.extend(["", f"Working directory:\n{cwd_line}"])
+    return title, "\n".join(parts)
+
+
+_kdialog_lock = threading.Lock()
+
+
+def _kdialog_log(message: str) -> None:
+    print(f"agent-sandbox-ui: {message}", file=sys.stderr, flush=True)
+
+
+def _kdialog_failed(stderr: bytes) -> bool:
+    text = stderr.decode(errors="replace").lower()
+    return any(
+        token in text
+        for token in (
+            "unknown option",
+            "missing value",
+            "could not connect",
+            "cannot connect",
+            "fatal",
+            "error:",
+        )
+    )
+
+
+def graphical_confirm(
+    title: str,
+    message: str,
+    env: dict[str, str],
+    *,
+    warning: bool = False,
+) -> bool | None:
+    """kdialog Yes/No for elevation (True=yes, False=no, None=failed/cancel)."""
+    kdialog = resolve_kdialog(env)
+    if not kdialog:
+        return None
+    # kdialog 26+ dropped --defaultno; passing it exits 1 and was misread as Deny.
+    flag = "--warningyesnocancel" if warning else "--yesnocancel"
+    args = [kdialog, "--title", title, flag, message]
+    try:
+        with _kdialog_lock:
+            proc = subprocess.run(
+                args,
+                env=env,
+                stdin=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                timeout=600,
+                check=False,
+            )
+        err = (proc.stderr or b"").decode(errors="replace").strip()
+        if err:
+            _kdialog_log(f"kdialog stderr: {err[:400]}")
+        if proc.returncode == 0:
+            return True
+        if proc.returncode == 1:
+            if _kdialog_failed(proc.stderr or b""):
+                return None
+            return False
+        if proc.returncode == 2:
+            return None
+    except (OSError, subprocess.SubprocessError) as exc:
+        _kdialog_log(f"kdialog error: {exc}")
+    return None
