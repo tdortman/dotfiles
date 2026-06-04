@@ -151,22 +151,30 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
     const url = req.url ?? `${req.scheme ?? "https"}://${req.host}:${req.port}`;
     const choice = await ctx.ui.select(
       `agent-sandbox: allow ${url}?`,
-      [...APPROVAL_OPTIONS],
+      [...NETWORK_APPROVAL_OPTIONS],
     );
     if (!choice) return;
 
-    const scope = SCOPE_BY_LABEL[choice as (typeof APPROVAL_OPTIONS)[number]];
+    const scope = SCOPE_BY_LABEL[choice];
     const { cwd: rpcCwd, home: rpcHome, project_root: rpcProjectRoot } =
       sandboxContext(req);
     const sessionId = policySessionId;
 
-    if (scope === "deny") {
+    if (DENY_LABELS.has(choice)) {
+      if (scope === "session" && !sessionId) {
+        ctx.ui.notify?.(
+          "agent-sandbox: session deny unavailable (policy UI not connected).",
+        );
+        return;
+      }
       const resp = await policyRpc(
         {
           op: "deny",
           id: req.id,
+          scope,
           cwd: rpcCwd,
           home: rpcHome,
+          ...(sessionId ? { session_id: sessionId } : {}),
           ...(rpcProjectRoot ? { project_root: rpcProjectRoot } : {}),
         },
         socketPath(),
@@ -175,6 +183,8 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
         ctx.ui.notify?.(
           `agent-sandbox: deny failed (${String(resp.error ?? "unknown")}).`,
         );
+      } else if (scope === "project" && resp.path) {
+        ctx.ui.notify?.(`Project policy saved to ${String(resp.path)}.`);
       }
       return;
     }
