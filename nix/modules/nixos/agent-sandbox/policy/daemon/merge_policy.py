@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import os
+import pwd
 import sys
 from pathlib import Path
 from typing import Any
@@ -46,13 +48,64 @@ def resolve_policy_write_path(path: Path) -> Path:
     return path
 
 
-def atomic_write_policy(path: Path, data: dict[str, Any]) -> None:
+def resolve_owner_uid(
+    path: Path,
+    *,
+    home: str | None = None,
+    uid: int | None = None,
+) -> int | None:
+    """Map a policy path to the owning user (policyd runs as root)."""
+    if uid is not None and uid > 0:
+        return uid
+    if home:
+        try:
+            return os.stat(home).st_uid
+        except OSError:
+            pass
+    try:
+        resolved = path.resolve()
+        parts = resolved.parts
+        if len(parts) >= 3 and parts[1] == "home":
+            return pwd.getpwnam(parts[2]).pw_uid
+    except (KeyError, OSError):
+        pass
+    return None
+
+
+def chown_policy_path(path: Path, uid: int) -> None:
+    """Ensure policy file and .agent-sandbox dir are owned by the sandbox user."""
+    if uid <= 0:
+        return
+    try:
+        gid = pwd.getpwuid(uid).pw_gid
+    except KeyError:
+        return
+    target = resolve_policy_write_path(path)
+    for entry in (target.parent, target):
+        if not entry.exists():
+            continue
+        try:
+            os.chown(entry, uid, gid)
+        except OSError:
+            pass
+
+
+def atomic_write_policy(
+    path: Path,
+    data: dict[str, Any],
+    *,
+    home: str | None = None,
+    owner_uid: int | None = None,
+) -> None:
     """Atomically write policy JSON, preserving symlinks (e.g. chezmoi-managed paths)."""
     target = resolve_policy_write_path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     tmp = target.with_name(f"{target.name}.tmp")
     tmp.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     tmp.replace(target)
+    uid = resolve_owner_uid(path, home=home, uid=owner_uid)
+    if uid is not None:
+        chown_policy_path(path, uid)
 
 
 def rule_key(rule: dict[str, Any]) -> tuple[str, int]:

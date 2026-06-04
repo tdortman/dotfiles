@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import tempfile
 import unittest
@@ -183,6 +184,19 @@ class MergeLayersTests(unittest.TestCase):
             self.assertTrue(link.is_symlink())
             loaded = json.loads(real_policy.read_text(encoding="utf-8"))
             self.assertEqual(loaded["allow"][0]["host"], "example.com")
+
+    def test_atomic_write_policy_chowns_to_owner(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = Path(tmp) / "project"
+            repo.mkdir()
+            policy_path = repo / ".agent-sandbox" / "policy.json"
+            merge_policy.atomic_write_policy(
+                policy_path,
+                {"version": 1, "allow": [], "deny": []},
+                owner_uid=os.getuid(),
+            )
+            self.assertEqual(policy_path.stat().st_uid, os.getuid())
+            self.assertEqual(policy_path.parent.stat().st_uid, os.getuid())
 
 
 if __name__ == "__main__":
