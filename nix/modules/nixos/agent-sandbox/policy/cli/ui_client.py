@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import contextlib
+import functools
 import json
 import os
 import shutil
@@ -15,7 +16,13 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from graphical_env import graphical_session_env, resolve_kdialog
+from graphical_env import (
+    _kdialog_lock,
+    format_elevation_prompt,
+    graphical_confirm,
+    graphical_session_env,
+    resolve_kdialog,
+)
 
 DEFAULT_SOCKET = "/run/agent-sandbox/policy.sock"
 
@@ -111,14 +118,15 @@ def graphical_select(title: str, options: list[str]) -> str | None:
         os.close(fd)
         try:
             with open(out_path, "w", encoding="utf-8") as stdout_file:
-                proc = subprocess.run(
-                    menu_args,
-                    env=env,
-                    stdout=stdout_file,
-                    stderr=subprocess.PIPE,
-                    timeout=600,
-                    check=False,
-                )
+                with _kdialog_lock:
+                    proc = subprocess.run(
+                        menu_args,
+                        env=env,
+                        stdout=stdout_file,
+                        stderr=subprocess.PIPE,
+                        timeout=600,
+                        check=False,
+                    )
             if proc.returncode != 0:
                 err = (proc.stderr or b"").decode(errors="replace").strip()
                 ui_log(f"kdialog failed (exit {proc.returncode}): {err[:300]}")
@@ -286,13 +294,64 @@ class PolicyUiClient:
         elif scope == "project" and resp.get("path"):
             print(f"Project policy saved to {resp['path']}.", file=sys.stderr)
 
+    def _graphical_env(self) -> dict[str, str]:
+        env = os.environ.copy()
+        try:
+            uid = os.getuid()
+            if uid > 0:
+                env.update(
+                    graphical_session_env(
+                        uid,
+                        _tool_path,
+                        home=os.environ.get("HOME"),
+                    )
+                )
+        except OSError:
+            pass
+        return env
+
     async def _handle_elevation(self, req: dict[str, Any]) -> None:
-        cmd = " ".join(req.get("argv") or [])
-        choice = await self._pick(
-            f"agent-sandbox: allow sudo {cmd}?",
-            list(ELEVATION_OPTIONS),
-        )
+        argv = req.get("argv") or []
+        cwd = str(req.get("cwd") or self.cwd or "?")
+        title, message = format_elevation_prompt(argv, cwd)
+        cmd = " ".join(str(a) for a in argv)
+        env = self._graphical_env()
+
+        if prefer_graphical_prompt():
+            allowed = await asyncio.to_thread(
+                functools.partial(
+                    graphical_confirm,
+                    title,
+                    message,
+                    env,
+                    warning=True,
+                )
+            )
+            if allowed is not None:
+                if allowed:
+                    ui_log(f"elevation approved via kdialog: {cmd}")
+                else:
+                    await self._deny(req)
+                    return
+                resp = await policy_rpc(
+                    {
+                        "op": "approve",
+                        "id": req["id"],
+                        "scope": "once",
+                        **self._ctx(req),
+                    },
+                    self.socket_path,
+                )
+                if not resp.get("ok"):
+                    ui_log(
+                        f"elevation approval failed ({resp.get('error', 'unknown')})"
+                    )
+                return
+            ui_log("kdialog yes/no unavailable; trying menu or /dev/tty")
+
+        choice = await self._pick(title, list(ELEVATION_OPTIONS))
         if choice is None:
+            ui_log("no elevation prompt available; request left pending")
             return
         if choice == "Deny":
             await self._deny(req)
@@ -307,9 +366,8 @@ class PolicyUiClient:
             self.socket_path,
         )
         if not resp.get("ok"):
-            print(
-                f"agent-sandbox: elevation approval failed ({resp.get('error', 'unknown')}).",
-                file=sys.stderr,
+            ui_log(
+                f"elevation approval failed ({resp.get('error', 'unknown')})"
             )
 
     async def _prompt_worker_loop(self) -> None:
