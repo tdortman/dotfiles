@@ -2,8 +2,9 @@ import type { ExtensionAPI, ExtensionContext } from "@oh-my-pi/pi-coding-agent";
 import * as net from "node:net";
 import { policyRpc } from "./policy-client";
 
-type ApprovalSuggestion = {
-  type: "approval_suggestion";
+type NetworkRequest = {
+  type: "network_request";
+  id: string;
   host: string;
   port: number;
   scheme?: string;
@@ -122,13 +123,13 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
     socket.destroy();
   }
 
-  async function handleApprovalSuggestion(
-    req: ApprovalSuggestion,
+  async function handleNetworkRequest(
+    req: NetworkRequest,
     ctx: ExtensionContext,
   ): Promise<void> {
     const url = req.url ?? `${req.scheme ?? "https"}://${req.host}:${req.port}`;
     const choice = await ctx.ui.select(
-      `agent-sandbox: blocked ${url}. Approve and retry?`,
+      `agent-sandbox: allow ${url}?`,
       [...APPROVAL_OPTIONS],
     );
     if (!choice) return;
@@ -138,7 +139,24 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
       sandboxContext(req);
     const sessionId = policySessionId;
 
-    if (scope === "deny") return;
+    if (scope === "deny") {
+      const resp = await policyRpc(
+        {
+          op: "deny",
+          id: req.id,
+          cwd: rpcCwd,
+          home: rpcHome,
+          ...(rpcProjectRoot ? { project_root: rpcProjectRoot } : {}),
+        },
+        socketPath(),
+      );
+      if (!resp.ok) {
+        ctx.ui.notify?.(
+          `agent-sandbox: deny failed (${String(resp.error ?? "unknown")}).`,
+        );
+      }
+      return;
+    }
 
     if (scope === "session" && !sessionId) {
       ctx.ui.notify?.(
@@ -149,9 +167,8 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
 
     const resp = await policyRpc(
       {
-        op: "approve_host",
-        host: req.host,
-        port: req.port,
+        op: "approve",
+        id: req.id,
         scope,
         cwd: rpcCwd,
         home: rpcHome,
@@ -169,13 +186,8 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
     }
 
     if (scope === "project" && resp.path) {
-      ctx.ui.notify?.(
-        `Project policy saved to ${String(resp.path)}. Retry ${url} now.`,
-      );
-      return;
+      ctx.ui.notify?.(`Project policy saved to ${String(resp.path)}.`);
     }
-
-    ctx.ui.notify?.(`Approved ${url} (${scope}). Retry now.`);
   }
 
   async function handleElevation(
@@ -237,8 +249,8 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
     } catch {
       return;
     }
-    if (msg.type === "approval_suggestion") {
-      void handleApprovalSuggestion(msg as ApprovalSuggestion, ctx);
+    if (msg.type === "network_request") {
+      void handleNetworkRequest(msg as NetworkRequest, ctx);
     } else if (msg.type === "elevation_request") {
       void handleElevation(msg as ElevationRequest, ctx);
     }
