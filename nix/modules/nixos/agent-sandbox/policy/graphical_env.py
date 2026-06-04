@@ -246,6 +246,22 @@ def format_elevation_prompt(
 
 _kdialog_lock = threading.Lock()
 
+# Default menu size for 8 policy options with long labels (override via env).
+_KDIALOG_MENU_WIDTH = 580
+_KDIALOG_MENU_ROW_PX = 34
+_KDIALOG_MENU_CHROME_PX = 110
+
+
+def kdialog_menu_geometry(num_options: int) -> str | None:
+    """WxH geometry for --menu so eight scoped options fit without scrolling."""
+    explicit = os.environ.get("AGENT_SANDBOX_KDIALOG_GEOMETRY", "").strip()
+    if explicit:
+        return explicit
+    if num_options <= 0:
+        return None
+    height = _KDIALOG_MENU_CHROME_PX + num_options * _KDIALOG_MENU_ROW_PX
+    return f"{_KDIALOG_MENU_WIDTH}x{height}"
+
 
 def _kdialog_log(message: str) -> None:
     print(f"agent-sandbox-ui: {message}", file=sys.stderr, flush=True)
