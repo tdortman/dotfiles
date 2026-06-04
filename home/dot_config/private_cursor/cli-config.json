@@ -105,7 +105,7 @@
   "privacyCache": {
     "ghostMode": true,
     "privacyMode": 2,
-    "updatedAt": 1780412672165
+    "updatedAt": 1780534078993
   },
   "serverConfigCache": {
     "backendUrl": "https://api2.cursor.sh",
@@ -116,7 +116,7 @@
     },
     "cliSandboxDefaultEnabled": false,
     "serverHttp2Config": 0,
-    "updatedAt": 1780014625726
+    "updatedAt": 1780534058166
   },
   "authInfo": {
     "email": "cursor@tdortman.com",
