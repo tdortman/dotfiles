@@ -12,6 +12,8 @@
 
   onepassword.enable = true;
 
+  programs.agent-sandbox.ompExtension.enable = true;
+
   services.wl-clip-persist = {
     enable = true;
     clipboardType = "regular";
