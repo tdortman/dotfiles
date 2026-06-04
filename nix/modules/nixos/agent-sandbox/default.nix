@@ -77,6 +77,10 @@ let
     devicePaths = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = agentSandboxLib.defaultDevicePaths;
+      description = ''
+        Extra device nodes to bind into the jail (rw). Standard NVIDIA devices
+        (including nvidia-fs when enabled) are bound automatically.
+      '';
     };
     blockEnvVars = lib.mkOption {
       type = lib.types.listOf lib.types.str;
