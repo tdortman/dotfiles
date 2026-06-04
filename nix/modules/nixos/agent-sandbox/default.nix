@@ -11,7 +11,9 @@ let
     jail-nix = inputs.jail-nix;
   };
 
-  policyPkg = pkgs.callPackage ./policy/package.nix { };
+  policyPkg = pkgs.callPackage ./policy/package.nix {
+    kdialog = pkgs.kdePackages.kdialog;
+  };
 
   isValidMountPath = path: path == "~" || lib.hasPrefix "~/" path || lib.hasPrefix "/" path;
 
@@ -185,14 +187,24 @@ in
         type = lib.types.bool;
         default = true;
         description = ''
-          When true, unknown hosts emit non-blocking OMP approval suggestions.
-          Connections still fail fast unless pre-allowed in policy JSON.
+          When true, unknown hosts block in policyd until the UI allows or denies
+          (same flow as elevation). OMP extension and/or ``agent-sandbox-ui``.
         '';
       };
       approvalTimeout = lib.mkOption {
         type = lib.types.float;
         default = 300.0;
-        description = "Max seconds to wait for elevation approval after UI is connected.";
+        description = ''
+          Max seconds to wait for OMP network or elevation approval after UI is connected.
+        '';
+      };
+      autoSpawnPolicyUi = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = ''
+          When no policy UI is connected, policyd spawns ``agent-sandbox-ui`` as the
+          requesting user (via runuser) so non-OMP agents still get prompts.
+        '';
       };
     };
 
@@ -304,7 +316,11 @@ in
       policyTimeout = lib.mkOption {
         type = lib.types.float;
         default = 35.0;
-        description = "Max seconds the policy proxy waits for policyd per connection check.";
+        description = ''
+          Max seconds the policy proxy waits for policyd per connection check.
+          When interactive approval is enabled, the proxy uses at least
+          ``agent-sandbox.policy.approvalTimeout`` so blocking prompts can complete.
+        '';
       };
 
       dnsForwardTarget = lib.mkOption {
@@ -320,7 +336,11 @@ in
   } // mountOptions;
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = map wrapOne cfg.packages;
+    environment.systemPackages =
+      (map wrapOne cfg.packages)
+      ++ [
+        policyPkg
+      ];
 
     nixpkgs.overlays = lib.mkAfter [
       (final: prev: {
