@@ -190,15 +190,24 @@ export default function agentSandboxExtension(pi: ExtensionAPI) {
     }
   }
 
+  function elevationPrompt(req: ElevationRequest): string {
+    const cmd =
+      req.argv.length > 0 ? `sudo ${req.argv.join(" ")}` : "sudo";
+    const cwd = req.cwd?.trim();
+    const lines = [cmd, "", "Allow this command to run as root on the host?"];
+    if (cwd) {
+      lines.push("", `Working directory:\n${cwd}`);
+    }
+    return lines.join("\n");
+  }
+
   async function handleElevation(
     req: ElevationRequest,
     ctx: ExtensionContext,
   ): Promise<void> {
-    const cmd = req.argv.join(" ");
-    const choice = await ctx.ui.select(
-      `agent-sandbox: allow sudo ${cmd}?`,
-      [...ELEVATION_OPTIONS],
-    );
+    const choice = await ctx.ui.select(elevationPrompt(req), [
+      ...ELEVATION_OPTIONS,
+    ]);
     if (!choice) return;
 
     const { cwd: rpcCwd, home: rpcHome, project_root: rpcProjectRoot } =
