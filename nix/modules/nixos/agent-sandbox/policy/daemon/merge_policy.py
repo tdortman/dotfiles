@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Merge agent-sandbox policy layers (later layers win for duplicate host:port)."""
+"""Merge agent-sandbox policy layers (later layers win on duplicate keys)."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import os
 import pwd
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 # Paths where a cwd does not identify a durable project (omp ! runner, nix-shell, etc.).
 _EPHEMERAL_MARKERS = (
@@ -20,9 +20,8 @@ _EPHEMERAL_MARKERS = (
 
 def _empty() -> dict[str, Any]:
     return {
-        "version": 1,
-        "allow": [],
-        "deny": [],
+        "network": {"allow": [], "deny": []},
+        "sudo": {"allow": [], "deny": []},
     }
 
 
@@ -35,10 +34,16 @@ def load_policy(path: Path | None) -> dict[str, Any]:
     data = json.loads(read_path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError(f"{read_path}: policy root must be an object")
-    data.setdefault("version", 1)
-    data.setdefault("allow", [])
-    data.setdefault("deny", [])
-    return data
+    out = _empty()
+    for section in ("network", "sudo"):
+        raw = data.get(section)
+        if not isinstance(raw, dict):
+            continue
+        for kind in ("allow", "deny"):
+            rules = raw.get(kind)
+            if isinstance(rules, list):
+                out[section][kind] = list(rules)
+    return out
 
 
 def resolve_policy_write_path(path: Path) -> Path:
@@ -108,32 +113,86 @@ def atomic_write_policy(
         chown_policy_path(path, uid)
 
 
-def rule_key(rule: dict[str, Any]) -> tuple[str, int]:
+def network_rule_key(rule: dict[str, Any]) -> tuple[str, int]:
     host = str(rule.get("host", "")).lower()
     port = int(rule["port"])
     return host, port
 
 
-def merge_layers(*layers: dict[str, Any]) -> dict[str, Any]:
-    allow: dict[tuple[str, int], dict[str, Any]] = {}
-    deny: dict[tuple[str, int], dict[str, Any]] = {}
+def sudo_rule_key(rule: dict[str, Any]) -> tuple[str, ...] | None:
+    argv = rule.get("argv")
+    if not isinstance(argv, list) or not argv:
+        return None
+    return tuple(str(a) for a in argv)
+
+
+def sudo_argv_matches(rule: dict[str, Any], argv: list[str]) -> bool:
+    """Exact argv match, or rule argv is a prefix of the command."""
+    rule_argv = rule.get("argv")
+    if not isinstance(rule_argv, list) or not rule_argv:
+        return False
+    left = [str(a) for a in rule_argv]
+    right = [str(a) for a in argv]
+    if len(left) > len(right):
+        return False
+    if len(left) == len(right):
+        return left == right
+    return right[: len(left)] == left
+
+
+def _merge_section(
+    layers: list[dict[str, Any]],
+    section: str,
+    key_fn: Callable[[dict[str, Any]], Any],
+    valid_fn: Callable[[dict[str, Any]], bool],
+) -> dict[str, list[dict[str, Any]]]:
+    allow: dict[Any, dict[str, Any]] = {}
+    deny: dict[Any, dict[str, Any]] = {}
 
     for layer in layers:
-        for rule in layer.get("deny", []):
-            if isinstance(rule, dict) and "host" in rule and "port" in rule:
-                key = rule_key(rule)
+        block = layer.get(section) or {}
+        for rule in block.get("deny", []):
+            if isinstance(rule, dict) and valid_fn(rule):
+                key = key_fn(rule)
+                if key is None:
+                    continue
                 allow.pop(key, None)
                 deny[key] = rule
-        for rule in layer.get("allow", []):
-            if isinstance(rule, dict) and "host" in rule and "port" in rule:
-                key = rule_key(rule)
+        for rule in block.get("allow", []):
+            if isinstance(rule, dict) and valid_fn(rule):
+                key = key_fn(rule)
+                if key is None:
+                    continue
                 deny.pop(key, None)
                 allow[key] = rule
 
+    if section == "network":
+        sort_key = lambda r: (str(r.get("host", "")), int(r.get("port", 0)))
+    else:
+        sort_key = lambda r: sudo_rule_key(r) or ()
+
     return {
-        "version": 1,
-        "allow": sorted(allow.values(), key=lambda r: (r["host"], r["port"])),
-        "deny": sorted(deny.values(), key=lambda r: (r["host"], r["port"])),
+        "allow": sorted(allow.values(), key=sort_key),
+        "deny": sorted(deny.values(), key=sort_key),
+    }
+
+
+def merge_layers(*layers: dict[str, Any]) -> dict[str, Any]:
+    if not layers:
+        return _empty()
+    return {
+        "network": _merge_section(
+            list(layers),
+            "network",
+            network_rule_key,
+            lambda r: "host" in r and "port" in r,
+        ),
+        "sudo": _merge_section(
+            list(layers),
+            "sudo",
+            sudo_rule_key,
+            lambda r: sudo_rule_key(r) is not None,
+        ),
     }
 
 
