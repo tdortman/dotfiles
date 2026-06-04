@@ -2,6 +2,8 @@
   python3,
   makeWrapper,
   stdenvNoCC,
+  kdialog,
+  lib,
 }:
 let
   src = ./.;
@@ -18,6 +20,8 @@ let
     "dns/dns_wire.py"
     "cli/approve.py"
     "cli/elevate.py"
+    "cli/ui_client.py"
+    "graphical_env.py"
   ];
 in
 stdenvNoCC.mkDerivation {
@@ -35,6 +39,11 @@ stdenvNoCC.mkDerivation {
         --add-flags $out/share/agent-sandbox-policy/$script.py \
         --prefix PYTHONPATH : $out/share/agent-sandbox-policy
     done
+    makeWrapper ${py}/bin/python3 $out/bin/agent-sandbox-ui \
+      --add-flags $out/share/agent-sandbox-policy/ui_client.py \
+      --prefix PYTHONPATH : $out/share/agent-sandbox-policy \
+      --prefix PATH : ${lib.makeBinPath [ kdialog ]} \
+      --set-default AGENT_SANDBOX_KDIALOG ${kdialog}/bin/kdialog
     makeWrapper ${py}/bin/python3 $out/bin/agent-sandbox-dns-proxy \
       --add-flags $out/share/agent-sandbox-policy/dns_proxy.py \
       --prefix PYTHONPATH : $out/share/agent-sandbox-policy
