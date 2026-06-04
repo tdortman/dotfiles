@@ -23,6 +23,31 @@
         "type": "github"
       }
     },
+    "agent-sandbox": {
+      "inputs": {
+        "jail-nix": "jail-nix",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay",
+        "snowfall-lib": [
+          "snowfall-lib"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780604628,
+        "narHash": "sha256-Dnflt1Yk/Wlz5niOkqI0AkW2o/ihA+aNqGyPNMwYmuE=",
+        "owner": "tdortman",
+        "repo": "agent-sandbox",
+        "rev": "4a2d4a784599e95c54cb62f85d56693ab08408ca",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tdortman",
+        "repo": "agent-sandbox",
+        "type": "github"
+      }
+    },
     "blueprint": {
       "inputs": {
         "nixpkgs": [
@@ -260,15 +285,15 @@
       "locked": {
         "lastModified": 1772137954,
         "narHash": "sha256-h4MGNbOo7L3RHi4uNFmsg5g17/DHXEfnv/xiG6BrNFQ=",
-        "ref": "refs/heads/main",
+        "owner": "~alexdavid",
+        "repo": "jail.nix",
         "rev": "42b355c38ca63dab4904acc5c0d95f17954a8c9b",
-        "revCount": 111,
-        "type": "git",
-        "url": "https://git.sr.ht/~alexdavid/jail.nix"
+        "type": "sourcehut"
       },
       "original": {
-        "type": "git",
-        "url": "https://git.sr.ht/~alexdavid/jail.nix"
+        "owner": "~alexdavid",
+        "repo": "jail.nix",
+        "type": "sourcehut"
       }
     },
     "llm-agents": {
@@ -458,9 +483,9 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "agent-sandbox": "agent-sandbox",
         "disko": "disko",
         "home-manager": "home-manager_2",
-        "jail-nix": "jail-nix",
         "llm-agents": "llm-agents",
         "nix-flatpak": "nix-flatpak",
         "nix-index-database": "nix-index-database",
@@ -473,6 +498,27 @@
         "snowfall-lib": "snowfall-lib",
         "spicetify-nix": "spicetify-nix",
         "voxtype": "voxtype"
+      }
+    },
+    "rust-overlay": {
+      "inputs": {
+        "nixpkgs": [
+          "agent-sandbox",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780543271,
+        "narHash": "sha256-oPJ7eJN1sM37v92Rp/eyQL7/rUm0BOvXEBAoq/zN0cM=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "c30ca201c5093540cf792f6982f81ba1aa0f3514",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
       }
     },
     "snowfall-lib": {

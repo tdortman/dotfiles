@@ -29,6 +29,7 @@
         disko.nixosModules.disko
         spicetify-nix.nixosModules.default
         home-manager.nixosModules.home-manager
+        agent-sandbox.nixosModules.agent-sandbox
       ];
 
       # Snowfall auto-imports nix/modules/nixos/* and invokes each module while
@@ -47,6 +48,7 @@
       homes.modules = with inputs; [
         plasma-manager.homeModules.plasma-manager
         voxtype.homeManagerModules.default
+        agent-sandbox.homeModules.agent-sandbox
       ];
 
       templates = {
@@ -151,6 +153,10 @@
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    jail-nix.url = "git+https://git.sr.ht/~alexdavid/jail.nix";
+    agent-sandbox = {
+      url = "github:tdortman/agent-sandbox";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.snowfall-lib.follows = "snowfall-lib";
+    };
   };
 }
