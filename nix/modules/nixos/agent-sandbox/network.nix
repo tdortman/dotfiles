@@ -132,15 +132,20 @@ lib.mkIf policyEnabled (
   lib.mkMerge [
     {
       environment.etc."agent-sandbox/declarative.json".text = builtins.toJSON {
-        version = 1;
-        allow = map (r: {
-          host = r.host;
-          port = r.port;
-        }) cfg.declarativeAllow;
-        deny = map (r: {
-          host = r.host;
-          port = r.port;
-        }) cfg.declarativeDeny;
+        network = {
+          allow = map (r: {
+            host = r.host;
+            port = r.port;
+          }) cfg.declarativeAllow;
+          deny = map (r: {
+            host = r.host;
+            port = r.port;
+          }) cfg.declarativeDeny;
+        };
+        sudo = {
+          allow = [ ];
+          deny = [ ];
+        };
       };
 
       systemd.services.agent-sandbox-policy = {
