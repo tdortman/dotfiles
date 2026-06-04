@@ -27,7 +27,7 @@ class PolicyStoreOnceTests(unittest.TestCase):
                 interactive_approval=True,
             )
             Path(args.declarative).write_text(
-                '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
             )
             return policyd.PolicyStore(args)
 
@@ -79,7 +79,7 @@ class PolicyStoreOnceTests(unittest.TestCase):
                 interactive_approval=True,
             )
             Path(args.declarative).write_text(
-                '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
             )
             store = policyd.PolicyStore(args)
             resp = asyncio.run(
@@ -96,7 +96,7 @@ class PolicyStoreOnceTests(unittest.TestCase):
             policy_file = repo / ".agent-sandbox" / "policy.json"
             self.assertTrue(policy_file.is_file())
             data = json.loads(policy_file.read_text(encoding="utf-8"))
-            self.assertEqual(data["allow"][0]["host"], "example.com")
+            self.assertEqual(data["network"]["allow"][0]["host"], "example.com")
 
     def test_approve_host_once_consumes_after_single_check(self) -> None:
         store = self._store()
@@ -124,20 +124,28 @@ class PolicyStoreOnceTests(unittest.TestCase):
             tmp_path = Path(tmp)
             declarative = tmp_path / "declarative.json"
             declarative.write_text(
-                '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
             )
             project_dir = tmp_path / "proj"
             project_dir.mkdir()
             project_policy = project_dir / ".agent-sandbox" / "policy.json"
             project_policy.parent.mkdir(parents=True)
             project_policy.write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [],
-                        "deny": [{"host": "blocked.example", "port": 443}],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [],
+                                                "deny": [
+                                                                        {
+                                                                                                "host": "blocked.example",
+                                                                                                "port": 443
+                                                                        }
+                                                ]
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -168,13 +176,21 @@ class PolicyStoreOnceTests(unittest.TestCase):
             tmp_path = Path(tmp)
             declarative = tmp_path / "declarative.json"
             declarative.write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [{"host": "example.com", "port": 443}],
-                        "deny": [],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [
+                                                                        {
+                                                                                                "host": "example.com",
+                                                                                                "port": 443
+                                                                        }
+                                                ],
+                                                "deny": []
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -183,13 +199,21 @@ class PolicyStoreOnceTests(unittest.TestCase):
             project_policy = project_dir / ".agent-sandbox" / "policy.json"
             project_policy.parent.mkdir(parents=True)
             project_policy.write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [],
-                        "deny": [{"host": "example.com", "port": 443}],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [],
+                                                "deny": [
+                                                                        {
+                                                                                                "host": "example.com",
+                                                                                                "port": 443
+                                                                        }
+                                                ]
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -202,8 +226,8 @@ class PolicyStoreOnceTests(unittest.TestCase):
             )
             store = policyd.PolicyStore(args)
             merged = store.merged_for(str(project_dir), None, project_root=str(project_dir))
-            self.assertEqual(merged.get("allow"), [])
-            self.assertEqual(len(merged.get("deny", [])), 1)
+            self.assertEqual(merged["network"]["allow"], [])
+            self.assertEqual(len(merged["network"]["deny"]), 1)
             self.assertFalse(
                 store.is_allowed("example.com", 443, str(project_dir), None, project_root=str(project_dir))
             )
@@ -217,20 +241,28 @@ class PolicyStoreOnceTests(unittest.TestCase):
             tmp_path = Path(tmp)
             declarative = tmp_path / "declarative.json"
             declarative.write_text(
-                '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
             )
             project_dir = tmp_path / "proj"
             project_dir.mkdir()
             project_policy = project_dir / ".agent-sandbox" / "policy.json"
             project_policy.parent.mkdir(parents=True)
             project_policy.write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [],
-                        "deny": [{"host": "blocked.example", "port": 443}],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [],
+                                                "deny": [
+                                                                        {
+                                                                                                "host": "blocked.example",
+                                                                                                "port": 443
+                                                                        }
+                                                ]
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -273,20 +305,28 @@ class PolicyStoreOnceTests(unittest.TestCase):
                 tmp_path = Path(tmp)
                 declarative = tmp_path / "declarative.json"
                 declarative.write_text(
-                    '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                    '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
                 )
                 project_dir = tmp_path / "proj"
                 project_dir.mkdir()
                 project_policy = project_dir / ".agent-sandbox" / "policy.json"
                 project_policy.parent.mkdir(parents=True)
                 project_policy.write_text(
-                    json.dumps(
-                        {
-                            "version": 1,
-                            "allow": [],
-                            "deny": [{"host": "blocked.example", "port": 443}],
+                    json.dumps({
+                        "network": {
+                                                "allow": [],
+                                                "deny": [
+                                                                        {
+                                                                                                "host": "blocked.example",
+                                                                                                "port": 443
+                                                                        }
+                                                ]
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
                         }
-                    )
+})
                     + "\n",
                     encoding="utf-8",
                 )
@@ -330,20 +370,28 @@ class PolicyStoreOnceTests(unittest.TestCase):
             tmp_path = Path(tmp)
             declarative = tmp_path / "declarative.json"
             declarative.write_text(
-                '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
             )
             project_dir = tmp_path / "proj"
             project_dir.mkdir()
             project_policy = project_dir / ".agent-sandbox" / "policy.json"
             project_policy.parent.mkdir(parents=True)
             project_policy.write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [],
-                        "deny": [{"host": "api.xiaomimimo.com", "port": 443}],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [],
+                                                "deny": [
+                                                                        {
+                                                                                                "host": "api.xiaomimimo.com",
+                                                                                                "port": 443
+                                                                        }
+                                                ]
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -377,20 +425,28 @@ class PolicyStoreOnceTests(unittest.TestCase):
             tmp_path = Path(tmp)
             declarative = tmp_path / "declarative.json"
             declarative.write_text(
-                '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
             )
             project_dir = tmp_path / "proj"
             project_dir.mkdir()
             project_policy = project_dir / ".agent-sandbox" / "policy.json"
             project_policy.parent.mkdir(parents=True)
             project_policy.write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [],
-                        "deny": [{"host": "api.xiaomimimo.com", "port": 443}],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [],
+                                                "deny": [
+                                                                        {
+                                                                                                "host": "api.xiaomimimo.com",
+                                                                                                "port": 443
+                                                                        }
+                                                ]
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -423,13 +479,21 @@ class PolicyStoreOnceTests(unittest.TestCase):
             config = home / ".config" / "agent-sandbox"
             config.mkdir(parents=True)
             (config / "policy.json").write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [{"host": "api.xiaomimimo.com", "port": 443}],
-                        "deny": [],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [
+                                                                        {
+                                                                                                "host": "api.xiaomimimo.com",
+                                                                                                "port": 443
+                                                                        }
+                                                ],
+                                                "deny": []
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -443,7 +507,7 @@ class PolicyStoreOnceTests(unittest.TestCase):
                 interactive_approval=True,
             )
             Path(args.declarative).write_text(
-                '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
             )
             store = policyd.PolicyStore(args)
             self.assertEqual(
@@ -459,13 +523,21 @@ class PolicyStoreOnceTests(unittest.TestCase):
             config = home / ".config" / "agent-sandbox"
             config.mkdir(parents=True)
             (config / "policy.json").write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [{"host": "api.xiaomimimo.com", "port": 443}],
-                        "deny": [],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [
+                                                                        {
+                                                                                                "host": "api.xiaomimimo.com",
+                                                                                                "port": 443
+                                                                        }
+                                                ],
+                                                "deny": []
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -477,7 +549,7 @@ class PolicyStoreOnceTests(unittest.TestCase):
                 interactive_approval=True,
             )
             Path(args.declarative).write_text(
-                '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
             )
             store = policyd.PolicyStore(args)
             with mock.patch.object(
@@ -501,26 +573,43 @@ class PolicyStoreOnceTests(unittest.TestCase):
             policy_dir = repo / ".agent-sandbox"
             policy_dir.mkdir(parents=True)
             (policy_dir / "policy.json").write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [],
-                        "deny": [{"host": "chatgpt.com", "port": 443}],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [],
+                                                "deny": [
+                                                                        {
+                                                                                                "host": "chatgpt.com",
+                                                                                                "port": 443
+                                                                        }
+                                                ]
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
             config = home / ".config" / "agent-sandbox"
             config.mkdir(parents=True)
             (config / "policy.json").write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [{"host": "chatgpt.com", "port": 443, "comment": "global"}],
-                        "deny": [],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [
+                                                                        {
+                                                                                                "host": "chatgpt.com",
+                                                                                                "port": 443,
+                                                                                                "comment": "global"
+                                                                        }
+                                                ],
+                                                "deny": []
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -532,13 +621,21 @@ class PolicyStoreOnceTests(unittest.TestCase):
                 interactive_approval=True,
             )
             Path(args.declarative).write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [{"host": "chatgpt.com", "port": 443}],
-                        "deny": [],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [
+                                                                        {
+                                                                                                "host": "chatgpt.com",
+                                                                                                "port": 443
+                                                                        }
+                                                ],
+                                                "deny": []
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -558,13 +655,21 @@ class PolicyStoreOnceTests(unittest.TestCase):
             policy_dir = repo / ".agent-sandbox"
             policy_dir.mkdir(parents=True)
             (policy_dir / "policy.json").write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [],
-                        "deny": [{"host": "chatgpt.com", "port": 443}],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [],
+                                                "deny": [
+                                                                        {
+                                                                                                "host": "chatgpt.com",
+                                                                                                "port": 443
+                                                                        }
+                                                ]
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -576,13 +681,21 @@ class PolicyStoreOnceTests(unittest.TestCase):
                 interactive_approval=True,
             )
             Path(args.declarative).write_text(
-                json.dumps(
-                    {
-                        "version": 1,
-                        "allow": [{"host": "chatgpt.com", "port": 443}],
-                        "deny": [],
-                    }
-                )
+                json.dumps({
+                        "network": {
+                                                "allow": [
+                                                                        {
+                                                                                                "host": "chatgpt.com",
+                                                                                                "port": 443
+                                                                        }
+                                                ],
+                                                "deny": []
+                        },
+                        "sudo": {
+                                                "allow": [],
+                                                "deny": []
+                        }
+})
                 + "\n",
                 encoding="utf-8",
             )
@@ -615,7 +728,7 @@ class PolicyStoreOnceTests(unittest.TestCase):
                 tmp_path = Path(tmp)
                 declarative = tmp_path / "declarative.json"
                 declarative.write_text(
-                    '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                    '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
                 )
                 store = policyd.PolicyStore(
                     argparse.Namespace(
@@ -779,15 +892,17 @@ class PolicyStoreOnceTests(unittest.TestCase):
             tmp_path = Path(tmp)
             declarative = tmp_path / "declarative.json"
             declarative.write_text(
-                '{"version":1,"allow":[],"deny":[]}\n', encoding="utf-8"
+                '{"network":{"allow":[],"deny":[]},"sudo":{"allow":[],"deny":[]}}\n', encoding="utf-8"
             )
             export = tmp_path / "export.json"
             export.write_text(
                 json.dumps(
                     {
-                        "version": 1,
-                        "allow": [{"host": "stale.example", "port": 443}],
-                        "deny": [],
+                        "network": {
+                            "allow": [{"host": "stale.example", "port": 443}],
+                            "deny": [],
+                        },
+                        "sudo": {"allow": [], "deny": []},
                     }
                 )
                 + "\n",
@@ -802,7 +917,7 @@ class PolicyStoreOnceTests(unittest.TestCase):
             )
             store = policyd.PolicyStore(args)
             merged = store.merged_for(None, None)
-            self.assertEqual(merged.get("allow"), [])
+            self.assertEqual(merged["network"]["allow"], [])
             self.assertFalse(store.is_allowed("stale.example", 443, None, None))
 
 
