@@ -1,65 +1,66 @@
-modelRoles:
+modelRoles: 
   default: cursor/composer-2.5
   commit: cursor/composer-2.5
   vision: cursor/gemini-3-flash
-  plan: cursor/gpt-5.3-codex-xhigh
+  plan: openai-codex/gpt-5.4:xhigh
   smol: deepseek/deepseek-v4-flash
   task: deepseek/deepseek-v4-flash
-  slow: cursor/gpt-5.3-codex-xhigh
-startup:
+  slow: openai-codex/gpt-5.4:xhigh
+startup: 
   checkUpdate: false
 symbolPreset: nerd
-stt:
+stt: 
   enabled: false
   modelName: base.en
-theme:
+theme: 
   dark: dark-one
-statusLine:
+statusLine: 
   preset: default
   separator: powerline-thin
   sessionAccent: true
   showHookStatus: true
-terminal:
+terminal: 
   showImages: true
-images:
+images: 
   autoResize: true
   blockImages: false
-display:
+display: 
   shimmer: classic
   showTokenUsage: false
   tabWidth: 2
-compaction:
+compaction: 
   strategy: handoff
   thresholdPercent: 80
   thresholdTokens: -1
   handoffSaveToDisk: false
-memory:
+memory: 
   backend: local
-edit:
+edit: 
   mode: hashline
-lsp:
+lsp: 
   formatOnWrite: true
-calc:
+calc: 
   enabled: true
-inspect_image:
+inspect_image: 
   enabled: true
-checkpoint:
+checkpoint: 
   enabled: true
-task:
-  isolation:
+task: 
+  isolation: 
     mode: none
     merge: patch
     commits: ai
   eager: false
   enableLsp: true
-secrets:
+secrets: 
   enabled: true
-contextPromotion:
+contextPromotion: 
   enabled: true
-renderMermaid:
+renderMermaid: 
   enabled: true
-providers:
+providers: 
   webSearch: auto
+  image: auto
 setupVersion: 1
-extensions:
+extensions: 
   - ./extensions/agent-sandbox
