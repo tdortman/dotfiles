@@ -35,7 +35,7 @@ in
       settings.Resolve = {
         Domains = [ "~." ];
       }
-      // lib.optionalAttrs (config.services.avahi.enable) {
+      // lib.optionalAttrs config.services.avahi.enable {
         MulticastDNS = false;
       };
     };

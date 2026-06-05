@@ -1,6 +1,6 @@
-{ ... }:
+_:
 
-final: prev: {
+_: prev: {
   rtl8761b-firmware = prev.rtl8761b-firmware.overrideAttrs (oldAttrs: {
     installPhase = (oldAttrs.installPhase or "") + ''
       mkdir -p $out/lib/firmware/rtl_bt

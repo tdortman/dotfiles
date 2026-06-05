@@ -61,7 +61,7 @@ in
   config = lib.mkIf cfg.enable {
     services.qbittorrent = {
       enable = true;
-      package = cfg.package;
+      inherit (cfg) package;
       webuiPort = cfg.webui.port;
       openFirewall = true;
       serverConfig = {

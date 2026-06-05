@@ -322,7 +322,7 @@ in
         };
 
         appChains = lib.mapAttrsToList mkAppChain cfg.appCategories;
-        mainLoopbacks = map (name: mkMainLoopback name) (lib.attrNames cfg.appCategories);
+        mainLoopbacks = map mkMainLoopback (lib.attrNames cfg.appCategories);
 
         inputIsMono = cfg.inputChannels == "mono";
 
@@ -389,12 +389,14 @@ in
                     "node.name" = "MicRaw";
                     "node.description" = "HW Mic (Raw Input)";
                     "media.class" = "Audio/Sink";
-                  } // micCaptureStreamProps;
+                  }
+                  // micCaptureStreamProps;
                   "playback.props" = {
                     "node.name" = "MicProcessed";
                     "node.description" = "HW Mic (Processed)";
                     "media.class" = "Audio/Source";
-                  } // micFilterPlaybackStreamProps;
+                  }
+                  // micFilterPlaybackStreamProps;
                   "filter.graph" = {
                     nodes = [
                       {
@@ -429,7 +431,8 @@ in
                   "capture.props"."node.target" = cfg.input;
                   "playback.props" = {
                     "node.target" = "MicRaw";
-                  } // lib.optionalAttrs inputIsMono monoStreamProps;
+                  }
+                  // lib.optionalAttrs inputIsMono monoStreamProps;
                 };
               }
             ]
@@ -444,7 +447,8 @@ in
                     "node.name" = "MicProcessed";
                     "node.description" = "Hardware Mic (Passthrough)";
                     "media.class" = "Audio/Source";
-                  } // micPassthroughPlaybackStreamProps;
+                  }
+                  // micPassthroughPlaybackStreamProps;
                 };
               }
             ];

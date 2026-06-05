@@ -27,17 +27,17 @@ in
   config = lib.mkIf cfg.enable {
     services.sonarr = {
       enable = true;
-      openFirewall = cfg.openFirewall;
+      inherit (cfg) openFirewall;
     };
 
     services.prowlarr = {
       enable = true;
-      openFirewall = cfg.openFirewall;
+      inherit (cfg) openFirewall;
     };
 
     services.flaresolverr = {
       enable = true;
-      openFirewall = cfg.openFirewall;
+      inherit (cfg) openFirewall;
     };
   };
 }

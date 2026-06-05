@@ -24,7 +24,7 @@
 
     in
     {
-      devShells.${system}.default = pkgs.mkShell.override { stdenv = llvm.stdenv; } {
+      devShells.${system}.default = pkgs.mkShell {
 
         inherit buildInputs nativeBuildInputs;
 

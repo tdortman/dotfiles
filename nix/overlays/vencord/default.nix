@@ -1,6 +1,6 @@
-{ ... }:
+_:
 
-final: prev: {
+final: _: {
   # vencord = prev.vencord.overrideAttrs (
   #   finalAttrs: oldAttrs: {
   #     version = "1.14.11";
@@ -23,5 +23,5 @@ final: prev: {
   #     };
   #   }
   # );
-  vencord = final.master.vencord;
+  inherit (final.master) vencord;
 }

@@ -1,6 +1,6 @@
-{ ... }:
+_:
 
-final: prev: {
+_: prev: {
   libfprint = prev.libfprint.overrideAttrs (oldAttrs: {
     src = prev.fetchFromGitLab {
       domain = "gitlab.freedesktop.org";

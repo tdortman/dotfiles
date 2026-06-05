@@ -54,7 +54,7 @@ in
 
     services.restic.backups.gdrive = {
       repository = "rclone:gdrive:backups/desktop";
-      passwordFile = cfg.passwordFile;
+      inherit (cfg) passwordFile;
 
       paths =
         (map (p: "/home/${cfg.user}/${p}") [

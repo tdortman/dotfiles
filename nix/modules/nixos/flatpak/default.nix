@@ -36,7 +36,7 @@ in
   config = lib.mkIf cfg.enable {
     services.flatpak = {
       enable = true;
-      packages = cfg.packages;
+      inherit (cfg) packages;
       update.auto = {
         enable = true;
         onCalendar = "weekly";

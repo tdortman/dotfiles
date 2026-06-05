@@ -19,7 +19,7 @@
             config.allowUnfree = true;
           };
 
-          lib = pkgs.lib;
+          inherit (pkgs) lib;
           cudaPkgs = pkgs.cudaPackages_13_2;
           llvmPkgs = pkgs.llvmPackages_22;
 
