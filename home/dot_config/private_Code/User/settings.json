@@ -745,4 +745,5 @@
     "python.defaultInterpreterPath": "/home/tim/.local/bin/python3.14",
     "window.autoDetectColorScheme": false,
     "workbench.agentsWindowButton.enabled": false,
+    "todo-tree.ripgrep.ripgrep": "/run/current-system/sw/bin/rg"
 }
