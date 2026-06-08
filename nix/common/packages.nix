@@ -113,6 +113,8 @@
       rclone
       atool
       ookla-speedtest
+      deadnix
+      statix
 
       # Documentation
       man-pages
