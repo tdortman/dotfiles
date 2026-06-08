@@ -21,10 +21,11 @@
     ];
 
     secrets = {
-      login-password.file = inputs.self + /nix/secrets/login-password.age;
+      login-password.file = "${inputs.self}/nix/secrets/login-password.age";
     };
   };
 
+  nix.package = pkgs.lixPackageSets.latest.lix;
   nix.settings = {
     extra-substituters = [
       "https://nix-community.cachix.org"
@@ -45,6 +46,7 @@
       "nix-command"
       "flakes"
     ];
+    http3 = true;
   };
 
   fonts = {
