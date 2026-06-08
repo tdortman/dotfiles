@@ -2,6 +2,11 @@
   "network": {
     "allow": [
       {
+        "host": "api.xiaomimimo.com",
+        "port": 443,
+        "comment": "global"
+      },
+      {
         "host": "ab.chatgpt.com",
         "port": 443,
         "comment": "global"
@@ -12,7 +17,7 @@
         "comment": "global"
       },
       {
-        "host": "api.xiaomimimo.com",
+        "host": "releases.nixos.org",
         "port": 443,
         "comment": "global"
       }
