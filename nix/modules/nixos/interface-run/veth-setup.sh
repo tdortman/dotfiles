@@ -104,6 +104,24 @@ use_dns_bridge() {
     [[ "$dns_ip" == 127.* ]]
 }
 
+ensure_interface_ready() {
+    local if_id i
+    local timeout=10
+    if_id=$(ip -d link show "$INTERFACE" 2>/dev/null | grep -oP 'xfrm if_id \K\S+' || true)
+    [[ -n "$if_id" ]] || return 0
+
+    log "Waiting for XFRM interface $INTERFACE (if_id $if_id) to become ready..."
+    for i in $(seq 1 50); do
+        if ip xfrm policy 2>/dev/null | grep -q "if_id ${if_id}"; then
+            log "XFRM interface $INTERFACE ready"
+            return 0
+        fi
+        sleep 0.2
+    done
+    log "WARNING: XFRM interface $INTERFACE not ready after ${timeout}s — VPN tunnel may be down. DNS and traffic may fail."
+    return 0
+}
+
 setup_is_healthy() {
     local state_file want_iface saved_veth=""
     state_file=$(state_file)
@@ -257,6 +275,7 @@ setup() {
         source "$state_file" || true
         log "Namespace '$NAMESPACE' already set up (veth: ${saved_veth:-$veth_host}, interface: $INTERFACE)"
         ensure_dns_bridge
+        ensure_interface_ready
         return 0
     fi
 
@@ -274,6 +293,7 @@ setup() {
     log "Route table: $route_table_id, rule priority: $rule_priority"
 
     ip link show "$INTERFACE" >/dev/null 2>&1 || error "Interface '$INTERFACE' not found"
+    ensure_interface_ready
 
     ip netns add "$NAMESPACE" || error "Failed to create namespace '$NAMESPACE'"
     ip link add "$veth_host" type veth peer name "$veth_ns"
