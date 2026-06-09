@@ -46,7 +46,6 @@
       "nix-command"
       "flakes"
     ];
-    http3 = true;
   };
 
   fonts = {
