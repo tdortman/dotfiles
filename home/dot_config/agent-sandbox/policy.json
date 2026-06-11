@@ -2,7 +2,27 @@
   "network": {
     "allow": [
       {
+        "host": "www.googleapis.com",
+        "port": 443,
+        "comment": "global"
+      },
+      {
+        "host": "releases.nixos.org",
+        "port": 443,
+        "comment": "global"
+      },
+      {
+        "host": "daily-cloudcode-pa.sandbox.googleapis.com",
+        "port": 443,
+        "comment": "global"
+      },
+      {
         "host": "api.xiaomimimo.com",
+        "port": 443,
+        "comment": "global"
+      },
+      {
+        "host": "integrate.api.nvidia.com",
         "port": 443,
         "comment": "global"
       },
@@ -12,12 +32,22 @@
         "comment": "global"
       },
       {
+        "host": "oauth2.googleapis.com",
+        "port": 443,
+        "comment": "global"
+      },
+      {
         "host": "channels.nixos.org",
         "port": 443,
         "comment": "global"
       },
       {
-        "host": "releases.nixos.org",
+        "host": "auth.openai.com",
+        "port": 443,
+        "comment": "global"
+      },
+      {
+        "host": "cloudcode-pa.googleapis.com",
         "port": 443,
         "comment": "global"
       }
