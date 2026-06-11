@@ -2,12 +2,7 @@
   "network": {
     "allow": [
       {
-        "host": "integrate.api.nvidia.com",
-        "port": 443,
-        "comment": "global"
-      },
-      {
-        "host": "oauth2.googleapis.com",
+        "host": "auth.openai.com",
         "port": 443,
         "comment": "global"
       },
@@ -17,27 +12,12 @@
         "comment": "global"
       },
       {
-        "host": "www.googleapis.com",
+        "host": "ab.chatgpt.com",
         "port": 443,
         "comment": "global"
       },
       {
-        "host": "channels.nixos.org",
-        "port": 443,
-        "comment": "global"
-      },
-      {
-        "host": "releases.nixos.org",
-        "port": 443,
-        "comment": "global"
-      },
-      {
-        "host": "daily-cloudcode-pa.googleapis.com",
-        "port": 443,
-        "comment": "global"
-      },
-      {
-        "host": "xmake.io",
+        "host": "integrate.api.nvidia.com",
         "port": 443,
         "comment": "global"
       },
@@ -47,17 +27,42 @@
         "comment": "global"
       },
       {
-        "host": "auth.openai.com",
+        "host": "xmake.io",
         "port": 443,
         "comment": "global"
       },
       {
-        "host": "ab.chatgpt.com",
+        "host": "releases.nixos.org",
+        "port": 443,
+        "comment": "global"
+      },
+      {
+        "host": "oauth2.googleapis.com",
+        "port": 443,
+        "comment": "global"
+      },
+      {
+        "host": "channels.nixos.org",
         "port": 443,
         "comment": "global"
       },
       {
         "host": "api.xiaomimimo.com",
+        "port": 443,
+        "comment": "global"
+      },
+      {
+        "host": "specifications.freedesktop.org",
+        "port": 443,
+        "comment": "global"
+      },
+      {
+        "host": "www.googleapis.com",
+        "port": 443,
+        "comment": "global"
+      },
+      {
+        "host": "daily-cloudcode-pa.googleapis.com",
         "port": 443,
         "comment": "global"
       }
