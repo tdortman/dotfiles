@@ -1,7 +1,7 @@
 modelRoles: 
   default: cursor/composer-2.5
   commit: cursor/composer-2.5
-  vision: cursor/gemini-3-flash
+  vision: google-antigravity/gemini-3.1-pro-low
   plan: openai-codex/gpt-5.4:xhigh
   smol: deepseek/deepseek-v4-flash
   task: deepseek/deepseek-v4-flash
