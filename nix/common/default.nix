@@ -99,7 +99,7 @@
   environment.sessionVariables.NH_FLAKE = "$HOME/dotfiles";
 
   environment.shellAliases = {
-    nix-shell = "nix-shell --command zsh";
+    nix-shell = ''command nix-shell --command "''${SHELL:-bash}"'';
 
     nixos-switch = "nh os switch";
     nixos-boot = "nh os boot";
