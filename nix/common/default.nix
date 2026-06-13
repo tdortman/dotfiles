@@ -142,7 +142,7 @@
 
   nix.optimise = {
     automatic = true;
-    dates = [ "03:00" ];
+    dates = [ "00:00" ];
   };
 
   programs.nano = {
