@@ -21,6 +21,23 @@ in
 
     programs.kdeconnect.enable = true;
 
+    environment.plasma6.excludePackages = with pkgs.kdePackages; [
+      plasma-browser-integration
+      kwin-x11
+    ];
+
+    nixpkgs.overlays = [
+      (final: prev: {
+        kdePackages = prev.kdePackages.overrideScope (
+          _: kprev: {
+            spectacle = kprev.spectacle.override {
+              tesseractLanguages = [ "all" ];
+            };
+          }
+        );
+      })
+    ];
+
     environment.systemPackages = with pkgs.kdePackages; [
       kcalc
       kcharselect
