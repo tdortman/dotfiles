@@ -155,6 +155,17 @@
 
   hardware.keyboard.qmk.enable = true;
 
+  services.kmscon = {
+    enable = true;
+    useXkbConfig = true;
+    config = {
+      hwaccel = true;
+      font-name = "JetBrainsMono Nerd Font Mono";
+      font-size = 26;
+      font-dpi = 256;
+    };
+  };
+
   services.xserver.xkb = {
     layout = "us,de";
     variant = "altgr-intl,";
