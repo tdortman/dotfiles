@@ -228,6 +228,13 @@
 
   services.lact.enable = true;
 
+  services.kmscon.config = {
+    hwaccel = true;
+    font-name = "JetBrainsMono Nerd Font Mono";
+    font-size = 26;
+    font-dpi = 256;
+  };
+
   services.printing = {
     enable = true;
     drivers = with pkgs; [
