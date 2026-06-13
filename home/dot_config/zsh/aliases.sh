@@ -136,7 +136,20 @@ skills-add() {
 }
 
 omp-commit() {
-    omp "$@" "generate granular commits using the git-surgeon skill at $HOME/.agents/skills/git-surgeon/SKILL.md"
+    omp "$@" "$(
+        cat <<EOF
+generate granular commits using the git-surgeon skill at
+$HOME/.agents/skills/git-surgeon/SKILL.md.
+
+Body lines must not exceed 70 characters.
+Keep the title to 50 characters or less.
+Do not start any line with #.
+Do not use emojis or other special characters.
+Do not use em-dashes or semicolons.
+Each commit message must be set using a single -m flag.
+Use a bash heredoc to set the exact commit message.
+EOF
+    )"
 }
 
 create_man_wrapper
