@@ -11,7 +11,8 @@
       "Shell(git ls-tree)",
       "Shell(rg)",
       "Shell(git show)",
-      "Shell(echo)"
+      "Shell(echo)",
+      "Shell(git-surgeon)"
     ],
     "deny": []
   },
@@ -24,10 +25,10 @@
   "rewind": true,
   "suggestNextPrompt": false,
   "model": {
-    "modelId": "gpt-5.4",
-    "displayModelId": "gpt-5.4",
-    "displayName": "GPT-5.4 272K High",
-    "displayNameShort": "GPT-5.4 272K High",
+    "modelId": "composer-2.5",
+    "displayModelId": "composer-2.5",
+    "displayName": "Composer 2.5",
+    "displayNameShort": "Composer 2.5",
     "aliases": [],
     "maxMode": false
   },
@@ -86,16 +87,8 @@
     ]
   },
   "selectedModel": {
-    "modelId": "gpt-5.4",
+    "modelId": "composer-2.5",
     "parameters": [
-      {
-        "id": "context",
-        "value": "272k"
-      },
-      {
-        "id": "reasoning",
-        "value": "high"
-      },
       {
         "id": "fast",
         "value": "false"
