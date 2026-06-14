@@ -146,8 +146,8 @@ Keep the title to 50 characters or less.
 Do not start any line with #.
 Do not use emojis or other special characters.
 Do not use em-dashes or semicolons.
-Each commit message must be set using a single -m flag.
-Use a bash heredoc to set the exact commit message.
+Each commit must contain EXACTLY ONE -m flag because
+otherwise there will be an empty line between each body line.
 EOF
     )"
 }
