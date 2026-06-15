@@ -1632,6 +1632,36 @@
         },
         "claude-4-sonnet-thinking": {
           "name": "Sonnet 4 Thinking"
+        },
+        "claude-fable-5-low": {
+          "name": "Fable 5 1M Low (NO ZDR)"
+        },
+        "claude-fable-5-medium": {
+          "name": "Fable 5 1M Medium (NO ZDR)"
+        },
+        "claude-fable-5-high": {
+          "name": "Fable 5 1M (NO ZDR)"
+        },
+        "claude-fable-5-xhigh": {
+          "name": "Fable 5 1M Extra High (NO ZDR)"
+        },
+        "claude-fable-5-max": {
+          "name": "Fable 5 1M Max (NO ZDR)"
+        },
+        "claude-fable-5-thinking-low": {
+          "name": "Fable 5 1M Low Thinking (NO ZDR)"
+        },
+        "claude-fable-5-thinking-medium": {
+          "name": "Fable 5 1M Medium Thinking (NO ZDR)"
+        },
+        "claude-fable-5-thinking-high": {
+          "name": "Fable 5 1M Thinking (NO ZDR)"
+        },
+        "claude-fable-5-thinking-xhigh": {
+          "name": "Fable 5 1M Extra High Thinking (NO ZDR)"
+        },
+        "claude-fable-5-thinking-max": {
+          "name": "Fable 5 1M Max Thinking (NO ZDR)"
         }
       }
     }
