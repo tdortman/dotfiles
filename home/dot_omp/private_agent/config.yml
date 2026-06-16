@@ -52,6 +52,7 @@ task:
     commits: ai
   eager: true
   enableLsp: true
+  maxRecursionDepth: 2
 secrets: 
   enabled: true
 contextPromotion: 
