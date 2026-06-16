@@ -29,12 +29,12 @@ display:
   showTokenUsage: false
   tabWidth: 2
 compaction: 
-  strategy: handoff
+  strategy: context-full
   thresholdPercent: 80
   thresholdTokens: -1
-  handoffSaveToDisk: false
+  handoffSaveToDisk: true
 memory: 
-  backend: local
+  backend: mnemopi
 edit: 
   mode: hashline
 lsp: 
