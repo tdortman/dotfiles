@@ -63,3 +63,9 @@ providers:
   webSearch: auto
   image: auto
 setupVersion: 1
+bashInterceptor: 
+  enabled: true
+python: 
+  kernelMode: session
+dev: 
+  autoqa: false
