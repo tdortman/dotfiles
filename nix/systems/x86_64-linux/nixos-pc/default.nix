@@ -30,7 +30,8 @@
 
     localBackup = {
       enable = true;
-      device = "/dev/disk/by-uuid/a3a7b7be-a330-42ac-a90c-6f724db4d401";
+      device = "/dev/disk/by-uuid/dfbdb886-3344-4e83-8403-f5ea43187f61";
+      fsType = "btrfs";
       timer = "*-*-* 18:00:00";
     };
   };
