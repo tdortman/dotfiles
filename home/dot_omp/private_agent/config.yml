@@ -50,7 +50,7 @@ task:
     mode: none
     merge: patch
     commits: ai
-  eager: true
+  eager: always
   enableLsp: true
   maxRecursionDepth: 2
 secrets: 
@@ -64,7 +64,7 @@ providers:
   image: auto
 setupVersion: 1
 bashInterceptor: 
-  enabled: true
+  enabled: false
 python: 
   kernelMode: session
 dev: 
