@@ -742,8 +742,13 @@
     "ltex.language": "en-GB",
     "extensions.autoUpdate": false,
     "extensions.autoCheckUpdates": true,
-    "python.defaultInterpreterPath": "/home/tim/.local/bin/python3.14",
+    "python.defaultInterpreterPath": "/run/current-system/sw/bin/python",
     "window.autoDetectColorScheme": false,
     "workbench.agentsWindowButton.enabled": false,
-    "todo-tree.ripgrep.ripgrep": "/run/current-system/sw/bin/rg"
+    "todo-tree.ripgrep.ripgrep": "/run/current-system/sw/bin/rg",
+    "cursor.cpp.disabledLanguages": [
+        "plaintext",
+        "markdown",
+        "scminput"
+    ]
 }

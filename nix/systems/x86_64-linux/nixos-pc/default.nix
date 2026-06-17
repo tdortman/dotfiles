@@ -25,6 +25,14 @@
     librewolfProfile = "f9ugjznf.default";
     flatpakApps = [ "com.core447.StreamController" ];
     passwordFile = config.age.secrets.restic-password.path;
+
+    snapshots.enable = true;
+
+    localBackup = {
+      enable = true;
+      device = "/dev/disk/by-uuid/a3a7b7be-a330-42ac-a90c-6f724db4d401";
+      timer = "*-*-* 18:00:00";
+    };
   };
 
   onepassword = {
