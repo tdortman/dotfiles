@@ -9,20 +9,79 @@
 let
   cfg = config.backups;
 
-  # Large, regenerable home content that never belongs in any backup.
-  # Bare names match any path component at any depth in restic's matcher,
-  # so every target below inherits the same exclusions.
+  # Large, regenerable home content that generally does not belong in backups.
+  #
+  # Restic patterns without "/" match complete path components at any depth.
+  # For case-insensitive cache matching, use commonExtraBackupArgs below instead
+  # of putting "**/*cache*" here, because this list is passed as case-sensitive
+  # --exclude-file patterns by the NixOS restic module.
   commonExcludes = [
+    # Generic temporary files
     "*.tmp"
+    "*.temp"
     "*.log"
+    "*.bak"
+    "*.swp"
+    "*~"
+
+    # Generic cache/temp dirs
     ".cache"
+    "tmp"
+    "temp"
+
+    # Common build/dependency dirs
     "node_modules"
     "target"
-    "Downloads"
-    "data"
-    "models"
-    "3rd-party"
+    "dist"
+    "build"
+    ".next"
+    ".nuxt"
+    ".turbo"
+    ".vite"
+
+    # Python
+    "__pycache__"
+    "*.pyc"
+    ".pytest_cache"
+    ".mypy_cache"
+    ".ruff_cache"
+    ".tox"
+    ".nox"
+    ".venv"
+    "venv"
+
+    # Rust / Cargo
     ".rustup"
+    ".cargo/registry"
+    ".cargo/git"
+
+    # JVM / Gradle
+    ".gradle/caches"
+    ".gradle/daemon"
+
+    # CMake / Meson
+    "CMakeFiles"
+    "CMakeCache.txt"
+    "cmake-build-*"
+    "builddir"
+    "meson-private"
+    "meson-logs"
+
+    # Linux desktop junk
+    ".local/share/Trash"
+    ".local/share/recently-used.xbel"
+    ".thumbnails"
+  ];
+
+  commonExtraBackupArgs = [
+    # Exclude dirs marked with CACHEDIR.TAG.
+    "--exclude-caches"
+
+    # Manual opt-out marker for arbitrary large/regenerable dirs.
+    "--exclude-if-present=.nobackup"
+
+    # Case-insensitive catch-all for Cache, cache, Code Cache, GPUCache, etc.
+    "--iexclude=**/*cache*"
   ];
 
   # snapper config name, derived from the snapshotted subvolume path.
@@ -86,6 +145,7 @@ in
         default = "/mnt/backup";
         description = "Mountpoint for the local backup disk.";
       };
+
       timer = lib.mkOption {
         type = lib.types.str;
         default = "daily";
@@ -142,6 +202,8 @@ in
               "Documents/NVIDIA Nsight Compute"
               "Documents/NVIDIA Nsight Systems"
             ];
+
+          extraBackupArgs = commonExtraBackupArgs;
 
           environmentFile = toString (
             pkgs.writeText "gdrive-rclone-env" ''
@@ -232,9 +294,21 @@ in
 
           exclude = commonExcludes ++ [
             ".snapshots"
-            ".local/share/Trash"
+
+            "/home/${cfg.user}/Downloads"
+            "/home/${cfg.user}/3rd-party"
+            "/home/${cfg.user}/.lmstudio/models"
+
+            # Exclude any directory named "data" below ~/projects, but not arbitrary
+            # "data" directories elsewhere in the home directory.
+            "/home/${cfg.user}/projects/data"
+            "/home/${cfg.user}/projects/**/data"
+
+            # Large, reinstallable game content.
             "/home/${cfg.user}/.local/share/Steam/steamapps"
           ];
+
+          extraBackupArgs = commonExtraBackupArgs;
 
           timerConfig = {
             OnCalendar = cfg.localBackup.timer;
