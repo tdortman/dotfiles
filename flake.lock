@@ -409,13 +409,29 @@
         "type": "github"
       }
     },
-    "nixpkgs-master": {
+    "nixpkgs-librewolf": {
       "locked": {
-        "lastModified": 1781646399,
-        "narHash": "sha256-D31hZhNznRrxU9FvR6IAxYmOKz4dyYgG0TsN181bGmw=",
+        "lastModified": 1781454065,
+        "narHash": "sha256-d2xfDjnfRuf/xYGdu9VVRHiav/2w5hDL/5cw2TuVAXw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "75d48208436c9d00e2c58a5d01a41afeb354f109",
+        "rev": "9eac87a12312b8f60dd52e1c6e1a265f6fc7f5fc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "9eac87a12312b8f60dd52e1c6e1a265f6fc7f5fc",
+        "type": "github"
+      }
+    },
+    "nixpkgs-master": {
+      "locked": {
+        "lastModified": 1781719119,
+        "narHash": "sha256-2i4vKjhskecPu7WZygUEDS8ou4g1uCyQxvTzrO0g24w=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "73fff57558b343d68fcae518e147a61df2765365",
         "type": "github"
       },
       "original": {
@@ -492,6 +508,7 @@
         "nixos-wsl": "nixos-wsl",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-flox": "nixpkgs-flox",
+        "nixpkgs-librewolf": "nixpkgs-librewolf",
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-temp": "nixpkgs-temp",
         "plasma-manager": "plasma-manager",
