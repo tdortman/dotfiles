@@ -141,6 +141,10 @@ omp-commit() {
 generate granular commits using the git-surgeon skill at
 $HOME/.agents/skills/git-surgeon/SKILL.md.
 
+Explain what changed and why.
+Focus on the most important changes.
+Use present tense.
+Use a semantic commit prefix.
 Body lines must not exceed 70 characters.
 Keep the title to 50 characters or less.
 Do not start any line with #.
