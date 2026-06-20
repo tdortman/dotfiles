@@ -145,8 +145,9 @@ Explain what changed and why.
 Focus on the most important changes.
 Use present tense.
 Use a semantic commit prefix.
-Body lines must not exceed 70 characters.
 Keep the title to 50 characters or less.
+Keep an empty line between the title and body.
+Body lines must not exceed 70 characters.
 Do not start any line with #.
 Do not use emojis or other special characters.
 Do not use em-dashes or semicolons.
