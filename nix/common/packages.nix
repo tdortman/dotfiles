@@ -115,6 +115,7 @@
       ookla-speedtest
       deadnix
       statix
+      nftables
 
       # Documentation
       man-pages

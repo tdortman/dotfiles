@@ -1,36 +1,61 @@
 {
     "network": {
         "allow": [
-            { "host": "r.jina.ai", "port": 443, "comment": "global" },
-            { "host": "api.z.ai", "port": 443, "comment": "global" },
             { "host": "source.android.com", "port": 443, "comment": "global" },
             { "host": "developer.apple.com", "port": 443, "comment": "global" },
             { "host": "docs.developer.apple.com", "port": 443, "comment": "global" },
             { "host": "ab.chatgpt.com", "port": 443, "comment": "global" },
+            { "host": "specifications.freedesktop.org", "port": 443, "comment": "global" },
+            { "host": "www.freedesktop.org", "port": 443, "comment": "global" },
             { "host": "cloudcode-pa.googleapis.com", "port": 443, "comment": "global" },
             { "host": "daily-cloudcode-pa.googleapis.com", "port": 443, "comment": "global" },
             { "host": "oauth2.googleapis.com", "port": 443, "comment": "global" },
             { "host": "daily-cloudcode-pa.sandbox.googleapis.com", "port": 443, "comment": "global" },
             { "host": "storage.googleapis.com", "port": 443, "comment": "global" },
             { "host": "www.googleapis.com", "port": 443, "comment": "global" },
+            { "host": "r.jina.ai", "port": 443, "comment": "global" },
+            { "host": "*.kernel.org", "port": 443, "comment": "global" },
+            { "host": "lwn.net", "port": 443, "comment": "global" },
+            { "host": "man7.org", "port": 443, "comment": "global" },
             { "host": "wrapdb.mesonbuild.com", "port": 443, "comment": "global" },
+            { "host": "channels.nixos.org", "port": 443, "comment": "global" },
+            { "host": "releases.nixos.org", "port": 443, "comment": "global" },
             { "host": "integrate.api.nvidia.com", "port": 443, "comment": "global" },
             { "host": "auth.openai.com", "port": 443, "comment": "global" },
-            { "host": "api.xiaomimimo.com", "port": 443, "comment": "global" },
             { "host": "docs.podman.io", "port": 443, "comment": "global" },
+            { "host": "api.xiaomimimo.com", "port": 443, "comment": "global" },
             { "host": "xmake.io", "port": 443, "comment": "global" },
-            { "host": "lwn.net", "port": 443, "comment": "global" },
-            { "host": "specifications.freedesktop.org", "port": 443, "comment": "global" },
-            { "host": "www.freedesktop.org", "port": 443, "comment": "global" },
-            { "host": "*.kernel.org", "port": 443, "comment": "global" },
-            { "host": "man7.org", "port": 443, "comment": "global" },
-            { "host": "channels.nixos.org", "port": 443, "comment": "global" },
-            { "host": "releases.nixos.org", "port": 443, "comment": "global" }
+            { "host": "api.z.ai", "port": 443, "comment": "global" }
         ],
         "deny": []
     },
     "sudo": {
         "allow": [],
+        "deny": []
+    },
+    "filesystem": {
+        "allow": [
+            { "path": "~/.cache/bat", "access": "read", "comment": "global" },
+            { "path": "~/.cache/bun", "access": "read", "comment": "global" },
+            { "path": "~/.cache/oh-my-posh", "access": "read_write", "comment": "global" },
+            { "path": "~/.cache/zsh-snap", "access": "read", "comment": "global" },
+            { "path": "~/.codeium/windsurf/memories/global_rules.md", "access": "read", "comment": "global" },
+            { "path": "~/.codex/config.toml", "access": "read", "comment": "global" },
+            { "path": "~/.config/zsh", "access": "read", "comment": "global" },
+            { "path": "~/.cursor/.gitignore", "access": "read", "comment": "global" },
+            { "path": "~/.gemini/GEMINI.md", "access": "read", "comment": "global" },
+            { "path": "~/.zcompdump", "access": "read", "comment": "global" },
+            { "path": "~/.zshrc.zwc", "access": "read", "comment": "global" },
+            { "path": "~/3rd-party/znap", "access": "read", "comment": "global" },
+            { "path": "~/3rd-party/znap-plugins", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_agents/skills", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_config/opencode/opencode.json", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_cursor/mcp.json", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_gitignore_global", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_omp/private_agent/config.yml", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_omp/private_agent/rules", "access": "read", "comment": "global" },
+            { "path": "~/miniforge3/etc", "access": "read", "comment": "global" }
+        ],
         "deny": []
     }
 }

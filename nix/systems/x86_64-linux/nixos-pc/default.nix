@@ -134,6 +134,7 @@
   agent-sandbox = {
     enable = true;
     network.enable = true;
+    filesystem.dynamicApproval.enable = true;
     readonlyDirs = [
       "~/.local/bin"
       "/lib64"
@@ -176,6 +177,7 @@
             "~/.local/state/opencode/"
             "~/.local/share/zoxide"
             "~/.cache/opencode"
+            "~/.opencode"
 
             # cursor-acp
             "~/.opencode-cursor"
