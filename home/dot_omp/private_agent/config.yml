@@ -2,10 +2,10 @@ modelRoles:
   default: cursor/composer-2.5
   commit: cursor/composer-2.5
   vision: google-antigravity/gemini-3.1-pro-low
-  plan: openai-codex/gpt-5.5:xhigh
+  plan: openai-codex/gpt-5.5:high
   smol: deepseek/deepseek-v4-flash
   task: deepseek/deepseek-v4-flash
-  slow: openai-codex/gpt-5.5:xhigh
+  slow: openai-codex/gpt-5.5:low
 startup: 
   checkUpdate: false
 symbolPreset: nerd
