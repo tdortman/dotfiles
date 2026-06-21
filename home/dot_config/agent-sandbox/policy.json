@@ -59,7 +59,7 @@
             { "path": "~/dotfiles/home/dot_config/opencode/opencode.json", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_cursor/mcp.json", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_gitignore_global", "access": "read", "comment": "global" },
-            { "path": "~/dotfiles/home/dot_omp/private_agent/config.yml", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_omp/private_agent/config.yml", "access": "read_write", "comment": "global" },
             { "path": "~/dotfiles/home/dot_omp/private_agent/rules", "access": "read", "comment": "global" },
             { "path": "~/miniforge3/etc", "access": "read", "comment": "global" }
         ],
