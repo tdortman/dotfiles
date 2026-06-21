@@ -56,11 +56,16 @@
             { "path": "~/3rd-party/znap", "access": "read", "comment": "global" },
             { "path": "~/3rd-party/znap-plugins", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_agents/skills", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_config/bat/config", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_config/opencode/opencode.json", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_config/zsh", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_cursor/mcp.json", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_gitignore_global", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_omp/private_agent/config.yml", "access": "read_write", "comment": "global" },
             { "path": "~/dotfiles/home/dot_omp/private_agent/rules", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_zprofile", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_zshenv", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_zshrc", "access": "read", "comment": "global" },
             { "path": "~/miniforge3/etc", "access": "read", "comment": "global" }
         ],
         "deny": []
