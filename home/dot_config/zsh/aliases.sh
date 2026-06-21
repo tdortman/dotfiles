@@ -149,6 +149,7 @@ Keep the title to 50 characters or less.
 Keep an empty line between the title and body.
 Body lines must not exceed 70 characters.
 Do not start any line with #.
+Wrap code symbols in backticks.
 Do not use emojis or other special characters.
 Do not use em-dashes or semicolons.
 Each commit must contain EXACTLY ONE -m flag because
