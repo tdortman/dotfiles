@@ -568,11 +568,11 @@
         "systems": "systems_4"
       },
       "locked": {
-        "lastModified": 1781424593,
-        "narHash": "sha256-L7Onz9xaCFFWTS16omlbad1kayhOq7voK6bdltUoH18=",
+        "lastModified": 1782030114,
+        "narHash": "sha256-EK79KPR/hvkkP9fLEPOqU+pHL3x/YsDWEWb0jVW7/HQ=",
         "owner": "tdortman",
         "repo": "spicetify-nix",
-        "rev": "b74378655c7c35d5284f3391a33d617efef9297c",
+        "rev": "d5f693e016a9aad5f5ded13011f3e36b705276ec",
         "type": "github"
       },
       "original": {
