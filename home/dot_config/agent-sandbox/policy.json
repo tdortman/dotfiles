@@ -11,7 +11,13 @@
             { "host": "chatgpt.com", "port": 443, "comment": "global" },
             { "host": "ab.chatgpt.com", "port": 443, "comment": "global" },
             { "host": "api2.cursor.sh", "port": 443, "comment": "global" },
+            { "host": "api3.cursor.sh", "port": 443, "comment": "global" },
+            { "host": "agentn.global.api5.cursor.sh", "port": 443, "comment": "global" },
+            { "host": "repo42.cursor.sh", "port": 443, "comment": "global" },
             { "host": "api.deepseek.com", "port": 443, "comment": "global" },
+            { "host": "api.factory.ai", "port": 443, "comment": "global" },
+            { "host": "docs.factory.ai", "port": 443, "comment": "global" },
+            { "host": "downloads.factory.ai", "port": 443, "comment": "global" },
             { "host": "specifications.freedesktop.org", "port": 443, "comment": "global" },
             { "host": "www.freedesktop.org", "port": 443, "comment": "global" },
             { "host": "github.com", "port": 443, "comment": "global" },
@@ -40,7 +46,9 @@
             { "host": "xmake.io", "port": 443, "comment": "global" },
             { "host": "api.z.ai", "port": 443, "comment": "global" }
         ],
-        "deny": []
+        "deny": [
+            { "host": "telemetry.factory.ai", "port": 443, "comment": "global" }
+        ]
     },
     "sudo": {
         "allow": [],
@@ -54,6 +62,7 @@
             { "path": "/var/tmp", "access": "read", "comment": "global" },
             { "path": "~/.cache/bat", "access": "read", "comment": "global" },
             { "path": "~/.cache/bun", "access": "read", "comment": "global" },
+            { "path": "~/.cache/cursor-compile-cache", "access": "read", "comment": "global" },
             { "path": "~/.cache/oh-my-posh", "access": "read_write", "comment": "global" },
             { "path": "~/.cache/zsh-snap", "access": "read", "comment": "global" },
             { "path": "~/.cargo/.global-cache", "access": "read_write", "comment": "global" },
@@ -63,9 +72,17 @@
             { "path": "~/.cargo/registry", "access": "read_write", "comment": "global" },
             { "path": "~/.codeium/windsurf/memories/global_rules.md", "access": "read", "comment": "global" },
             { "path": "~/.codex/config.toml", "access": "read", "comment": "global" },
+            { "path": "~/.config/gh/config.yml", "access": "read", "comment": "global" },
+            { "path": "~/.config/gh/hosts.yml", "access": "read", "comment": "global" },
             { "path": "~/.config/zsh", "access": "read", "comment": "global" },
             { "path": "~/.cursor/.gitignore", "access": "read", "comment": "global" },
+            { "path": "~/.factory/bin/rg", "access": "execute", "comment": "global" },
             { "path": "~/.gemini/GEMINI.md", "access": "read", "comment": "global" },
+            { "path": "~/.npm/_cacache", "access": "read", "comment": "global" },
+            { "path": "~/.npm/_logs", "access": "read", "comment": "global" },
+            { "path": "~/.npm/_npx", "access": "all", "comment": "global" },
+            { "path": "~/.npm/_update-notifier-last-checked", "access": "read", "comment": "global" },
+            { "path": "~/.ssh/config", "access": "read", "comment": "global" },
             { "path": "~/.zcompdump", "access": "read", "comment": "global" },
             { "path": "~/.zshrc.zwc", "access": "read", "comment": "global" },
             { "path": "~/3rd-party/znap", "access": "read", "comment": "global" },
