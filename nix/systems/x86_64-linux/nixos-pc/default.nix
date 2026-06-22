@@ -139,10 +139,10 @@
       "~/.local/bin"
       "/lib64"
       "/usr/lib"
+      "~/.config/agent-sandbox"
     ];
     readwriteDirs = [
       "~/.agents"
-      "~/.config/agent-sandbox"
     ];
     readonlyFiles = [
       "~/.gitconfig"

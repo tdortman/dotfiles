@@ -52,7 +52,10 @@
     },
     "sudo": {
         "allow": [],
-        "deny": []
+        "deny": [
+            { "argv": ["mount"], "comment": "global" },
+            { "argv": ["rm"], "comment": "global" }
+        ]
     },
     "filesystem": {
         "allow": [
