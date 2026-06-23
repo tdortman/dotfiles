@@ -19,6 +19,7 @@
             { "host": "www.freedesktop.org", "port": 443, "comment": "global" },
             { "host": "github.com", "port": 443, "comment": "global" },
             { "host": "api.github.com", "port": 443, "comment": "global" },
+            { "host": "api.individual.githubcopilot.com", "port": 443, "comment": "global" },
             { "host": "raw.githubusercontent.com", "port": 443, "comment": "global" },
             { "host": "cloudcode-pa.googleapis.com", "port": 443, "comment": "global" },
             { "host": "daily-cloudcode-pa.googleapis.com", "port": 443, "comment": "global" },
@@ -44,7 +45,8 @@
             { "host": "api.z.ai", "port": 443, "comment": "global" }
         ],
         "deny": [
-            { "host": "telemetry.factory.ai", "port": 443, "comment": "global" }
+            { "host": "telemetry.factory.ai", "port": 443, "comment": "global" },
+            { "host": "telemetry.individual.githubcopilot.com", "port": 443, "comment": "global" }
         ]
     },
     "sudo": {
@@ -78,6 +80,7 @@
             { "path": "~/.cursor/.gitignore", "access": "read", "comment": "global" },
             { "path": "~/.factory/bin/rg", "access": "execute", "comment": "global" },
             { "path": "~/.gemini/GEMINI.md", "access": "read", "comment": "global" },
+            { "path": "~/.local/share/zsh/site-functions", "access": "read", "comment": "global" },
             { "path": "~/.npm/_cacache", "access": "read", "comment": "global" },
             { "path": "~/.npm/_logs", "access": "read", "comment": "global" },
             { "path": "~/.npm/_npx", "access": "all", "comment": "global" },
