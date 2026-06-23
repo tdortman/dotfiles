@@ -12,13 +12,20 @@
       "Shell(rg)",
       "Shell(git show)",
       "Shell(echo)",
-      "Shell(git-surgeon)"
+      "Shell(git-surgeon)",
+      "WebFetch(github.com)"
     ],
     "deny": []
   },
   "version": 1,
   "editor": {
     "vimMode": false
+  },
+  "display": {
+    "showLineNumbers": false,
+    "showThinkingBlocks": true,
+    "showStatusIndicators": false,
+    "showStatusLineRunningTime": false
   },
   "notifications": true,
   "hints": true,
@@ -98,7 +105,7 @@
   "privacyCache": {
     "ghostMode": true,
     "privacyMode": 2,
-    "updatedAt": 1780792284394
+    "updatedAt": 1782174419458
   },
   "serverConfigCache": {
     "backendUrl": "https://api2.cursor.sh",
@@ -109,7 +116,7 @@
     },
     "cliSandboxDefaultEnabled": false,
     "serverHttp2Config": 0,
-    "updatedAt": 1780677761162
+    "updatedAt": 1782174415147
   },
   "authInfo": {
     "email": "cursor@tdortman.com",
