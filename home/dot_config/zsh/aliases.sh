@@ -118,7 +118,8 @@ age-toggle() {
 }
 
 create_man_wrapper() {
-    local man_path=$(command -v man)
+    local man_path
+    man_path=$(command -v man)
     eval "
     man() {
         $man_path \"\$@\" | bat --language=Manpage --style=plain
@@ -162,7 +163,8 @@ create_man_wrapper
 
 create_mold_wrapper() {
     local tool=$1
-    local tool_path=$(command -v "$tool")
+    local tool_path
+    tool_path=$(command -v "$tool")
     case "$tool" in
     make)
         eval "
