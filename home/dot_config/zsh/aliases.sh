@@ -137,6 +137,34 @@ skills-add() {
 }
 
 omp-commit() {
+    local snap root backup
+    snap="pre-omp-$(date +%s%N)-$$"
+    command -v rsync >/dev/null || {
+        echo "rsync required for omp-commit" >&2
+        return 1
+    }
+    root=$(git rev-parse --show-toplevel 2>/dev/null) || {
+        echo "not a git repo" >&2
+        return 1
+    }
+    backup="$HOME/.local/state/omp-backups/$snap"
+    mkdir -p "$backup" || {
+        echo "mkdir failed" >&2
+        return 1
+    }
+    git tag "$snap" HEAD || {
+        rm -rf "$backup"
+        echo "tag failed" >&2
+        return 1
+    }
+    cp -a --reflink=auto "$root/." "$backup/" || {
+        rm -rf "$backup"
+        git tag -d "$snap" >/dev/null 2>&1
+        echo "copy failed" >&2
+        return 1
+    }
+    rm -rf "$backup/.git"
+
     omp "$@" "$(
         cat <<EOF
 generate granular commits using the git-surgeon skill at
@@ -157,6 +185,28 @@ Each commit must contain EXACTLY ONE -m flag because
 otherwise there will be an empty line between each body line.
 EOF
     )"
+    echo
+    echo "agent commits since $snap:"
+    git log --oneline "$snap..HEAD" 2>/dev/null | sed 's/^/  /'
+    echo "worktree status:"
+    git status -s 2>/dev/null | sed 's/^/  /'
+    read -r -q "REPLY?Restore from backup ($backup)? [y/N] "
+    echo
+    if [[ $REPLY == y ]]; then
+        if git reset --hard "$snap" &&
+            rsync -a --delete --exclude=.git "$backup/" "$root/" &&
+            rm -rf "$backup" &&
+            git tag -d "$snap" >/dev/null 2>&1; then
+            echo "restored"
+        else
+            echo "restore failed (state may be partial); backup still at $backup"
+            return 1
+        fi
+    else
+        echo "kept agent's changes; backup at $backup"
+        printf "  recover: git reset --hard %q && rsync -a --delete --exclude='.git' %q/ %q/\n" "$snap" "$backup" "$root"
+        printf "  cleanup: rm -rf %q\n" "$backup"
+    fi
 }
 
 create_man_wrapper
