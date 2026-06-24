@@ -27,13 +27,35 @@
 
     settings = {
       hotkey.enabled = false;
+      audio.max_duration_secs = 600;
       whisper = {
-        language = "auto";
+        language = [
+          "en"
+          "de"
+        ];
         on_demand_loading = true;
         gpu_isolation = true;
       };
+      parakeet = {
+        model = "parakeet-tdt-0.6b-v3";
+        model_type = "tdt";
+        streaming = false;
+        on_demand_loading = true;
+      };
       text = {
-        spoke_punctuation = true;
+        spoken_punctuation = true;
+        replacements = {
+          "HTTP too" = "HTTP/2";
+        };
+      };
+      output = {
+        mode = "type";
+        type_delay_ms = 0;
+        pre_type_delay_ms = 0;
+        fallback_to_clipboard = true;
+      };
+      osd = {
+        enabled = false;
       };
     };
   };
