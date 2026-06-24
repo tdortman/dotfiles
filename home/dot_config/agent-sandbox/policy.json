@@ -101,6 +101,7 @@
             { "path": "~/3rd-party/znap-plugins", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/.agent-sandbox/policy.json", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_agents/skills", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_bashrc", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_config/agent-sandbox/policy.json", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_config/agent-sandbox/policy.json (deleted)", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_config/bat/config", "access": "read", "comment": "global" },
