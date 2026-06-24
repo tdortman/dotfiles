@@ -62,12 +62,14 @@
     "filesystem": {
         "allow": [
             { "path": "/etc/group", "access": "read", "comment": "global" },
+            { "path": "/etc/machine-id", "access": "read", "comment": "global" },
             { "path": "/etc/passwd", "access": "read", "comment": "global" },
             { "path": "/run/systemd/resolve/stub-resolv.conf", "access": "read", "comment": "global" },
             { "path": "/var/tmp", "access": "read", "comment": "global" },
             { "path": "~/.cache/bat", "access": "read", "comment": "global" },
             { "path": "~/.cache/bun", "access": "read", "comment": "global" },
             { "path": "~/.cache/cursor-compile-cache", "access": "read", "comment": "global" },
+            { "path": "~/.cache/fontconfig", "access": "read", "comment": "global" },
             { "path": "~/.cache/oh-my-posh", "access": "read_write", "comment": "global" },
             { "path": "~/.cache/zsh-snap", "access": "read", "comment": "global" },
             { "path": "~/.cargo/.global-cache", "access": "read_write", "comment": "global" },
