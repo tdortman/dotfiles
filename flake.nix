@@ -48,7 +48,6 @@
       homes.modules = with inputs; [
         plasma-manager.homeModules.plasma-manager
         voxtype.homeManagerModules.default
-        agent-sandbox.homeModules.agent-sandbox
       ];
 
       templates = {
