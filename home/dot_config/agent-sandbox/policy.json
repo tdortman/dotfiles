@@ -2,9 +2,12 @@
     "network": {
         "allow": [
             { "host": "127.0.0.1", "port": 1234, "comment": "lm studio" },
+            { "host": "127.0.0.1", "port": 6000, "comment": "x11" },
             { "host": "127.0.0.1", "port": 8080, "comment": "llama.cpp" },
             { "host": "127.0.0.1", "port": 11434, "comment": "ollama" },
             { "host": "127.0.0.1", "port": 32124, "comment": "opencode-cursor" },
+            { "host": "169.254.100.1", "port": 53, "comment": "dns forwarder" },
+            { "host": "::1", "port": 6000, "comment": "x11" },
             { "host": "source.android.com", "port": 443, "comment": "global" },
             { "host": "developer.apple.com", "port": 443, "comment": "global" },
             { "host": "docs.developer.apple.com", "port": 443, "comment": "global" },
