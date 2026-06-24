@@ -64,6 +64,7 @@ renderMermaid:
 providers: 
   webSearch: auto
   image: auto
+  memoryModel: online
 setupVersion: 1
 bashInterceptor: 
   enabled: false
@@ -71,3 +72,24 @@ python:
   kernelMode: session
 dev: 
   autoqa: false
+advisor: 
+  enabled: true
+  subagents: true
+completion: 
+  notify: "on"
+features: 
+  unexpectedStopDetection: true
+snapcompact: 
+  toolResults: true
+  systemPrompt: none
+  shape: auto
+tools: 
+  format: auto
+autolearn: 
+  enabled: true
+mnemopi: 
+  llmMode: smol
+github: 
+  enabled: true
+plan: 
+  defaultOnStartup: false
