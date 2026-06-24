@@ -48,12 +48,13 @@ checkpoint:
   enabled: true
 task: 
   isolation: 
-    mode: none
+    mode: auto
     merge: patch
     commits: ai
   eager: always
   enableLsp: true
-  maxRecursionDepth: 2
+  maxRecursionDepth: -1
+  showResolvedModelBadge: true
 secrets: 
   enabled: true
 contextPromotion: 
