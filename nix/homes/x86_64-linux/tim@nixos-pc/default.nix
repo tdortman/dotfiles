@@ -60,6 +60,30 @@
     };
   };
 
+  systemd.user.services.voxtype.Service.Environment = lib.mkAfter (
+    let
+      cudaLibPath = lib.makeLibraryPath (
+        with pkgs.cudaPackages_12_9;
+        [
+          cuda_cudart
+          cuda_nvrtc
+          cudnn
+          libcublas
+        ]
+      );
+    in
+    [
+      "LD_LIBRARY_PATH=${cudaLibPath}"
+      "LD_PRELOAD=${pkgs.cudaPackages_12_9.cuda_nvrtc.lib}/lib/libnvrtc.so"
+
+      "DOTOOL_XKB_LAYOUT=de"
+      "DOTOOL_XKB_VARIANT="
+      "XKB_DEFAULT_LAYOUT=de"
+      "XKB_DEFAULT_VARIANT="
+      "XKB_DEFAULT_OPTIONS="
+    ]
+  );
+
   programs.plasma = {
     enable = true;
     overrideConfig = true;
