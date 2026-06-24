@@ -133,7 +133,9 @@
 
   agent-sandbox = {
     enable = true;
+    sudoPolicy = "approve";
     network.enable = true;
+    syscallGate.enable = true;
     filesystem.dynamicApproval.enable = true;
     readonlyDirs = [
       "~/.local/bin"
