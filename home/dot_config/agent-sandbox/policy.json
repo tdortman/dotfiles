@@ -96,6 +96,7 @@
             { "path": "~/.local/share/fonts", "access": "read", "comment": "global" },
             { "path": "~/.local/share/zsh/site-functions", "access": "read", "comment": "global" },
             { "path": "~/.local/state/nix-output-monitor", "access": "read", "comment": "global" },
+            { "path": "~/.local/state/omp-backups/last", "access": "read", "comment": "global" },
             { "path": "~/.npm/_cacache", "access": "read", "comment": "global" },
             { "path": "~/.npm/_logs", "access": "read", "comment": "global" },
             { "path": "~/.npm/_npx", "access": "all", "comment": "global" },
