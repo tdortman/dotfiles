@@ -145,8 +145,8 @@ _omp_commit_save_state() {
 
 _omp_commit_load_state() {
     [[ -f "$_omp_commit_state_file" ]] || return 1
-    snap="" 
-    backup="" 
+    snap=""
+    backup=""
     root=""
     # shellcheck disable=SC1090
     source "$_omp_commit_state_file" || return 1
@@ -195,7 +195,6 @@ omp-commit-cleanup() {
         _omp_commit_clear_state &&
         echo "cleaned up"
 }
-
 
 omp-commit() {
     local snap root backup
