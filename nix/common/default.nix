@@ -78,6 +78,7 @@
       "kvm"
       "libvirtd"
       "plugdev"
+      "ydotool"
     ];
     hashedPasswordFile = config.age.secrets."login-password".path;
   };
@@ -87,6 +88,8 @@
     enable = true;
     usbmon.enable = true;
   };
+
+  programs.ydotool.enable = true;
 
   hardware.enableRedistributableFirmware = true;
 

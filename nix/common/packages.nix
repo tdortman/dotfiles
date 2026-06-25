@@ -52,6 +52,7 @@
       oha
       shfmt
       ruff
+      dotool
 
       # System / CLI utilities
       curl
