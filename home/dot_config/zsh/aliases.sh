@@ -170,23 +170,6 @@ _omp_commit_show_recovery() {
     echo
     print -r -- "$recover"
     print -r -- "$cleanup"
-    if _omp_commit_clip "${recover}"$'\n'"${cleanup}"; then
-        echo
-        echo "(commands copied to clipboard)"
-    fi
-}
-
-_omp_commit_clip() {
-    local text=$1
-    if command -v clip.exe >/dev/null 2>&1; then
-        printf '%s' "$text" | clip.exe
-    elif command -v wl-copy >/dev/null 2>&1; then
-        printf '%s' "$text" | wl-copy
-    elif command -v xclip >/dev/null 2>&1; then
-        printf '%s' "$text" | xclip -selection clipboard
-    else
-        return 1
-    fi
 }
 
 omp-commit-restore() {
