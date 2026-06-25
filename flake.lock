@@ -35,11 +35,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782310200,
-        "narHash": "sha256-28N5cIgHLwaJC3Urhp8IDSVq1eSWM9Phn58ZJchGjW4=",
+        "lastModified": 1782354256,
+        "narHash": "sha256-CfUhwMtcHh6CzG/hXw8wPxn6ttlCm2caS3dZ8oLXo0w=",
         "owner": "tdortman",
         "repo": "agent-sandbox",
-        "rev": "36de6138b6fe87afe1a6b568e9da893c9e0bf878",
+        "rev": "df3031b85660f6a8055154c7ebf18102b57fd53d",
         "type": "github"
       },
       "original": {
@@ -268,11 +268,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782233665,
-        "narHash": "sha256-h/xOtrByoA/Ak1lWHn0O1lVZz4qWYbwOSLQ8YSwQO0I=",
+        "lastModified": 1782351518,
+        "narHash": "sha256-Zpru9rHGAKqssZm/HxXgPdEDywNXchYBCuoJ6ZXYgdw=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "062581938b4a378a82dfbb294b494808157153a1",
+        "rev": "a9232b8b1004a4fca3f188951a53dc6322303659",
         "type": "github"
       },
       "original": {
@@ -306,11 +306,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1782280168,
-        "narHash": "sha256-VjXPtEjoUNoBWXHmsC+TarsozLXqgbIvAFBYq09Pqmk=",
+        "lastModified": 1782351819,
+        "narHash": "sha256-IcIjgdZzZbq6jnpVjlaqGpdEgIjAwOoY+9zDTefOxiQ=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "3c9586476ad8afad108db3b6586384685ce85747",
+        "rev": "c157b8faa2860792ccaee1aa33dd476b095ce974",
         "type": "github"
       },
       "original": {
@@ -427,11 +427,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1782309738,
-        "narHash": "sha256-bdFiwS8ZvejYTQ9j38yo/TQGIE05tkKPiXal5rjgLME=",
+        "lastModified": 1782353606,
+        "narHash": "sha256-rRJF0E04a2d7viL+42fErW5VtKH18ijboxcTObU+tGo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "93bcacf01dbf4fe80e018997df5aed409ae3743d",
+        "rev": "c16606cea90016dd074a890bc8abf04af74f9d0a",
         "type": "github"
       },
       "original": {
@@ -707,11 +707,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1782226188,
-        "narHash": "sha256-fMXQkcojE2pmC46wXVYaGj/6AGBU6UDAU5WVIltCAnY=",
+        "lastModified": 1782311621,
+        "narHash": "sha256-K8mog5N+Qv01VyM5n74sOeXCn+2OYgrSZnVDAKQ33zc=",
         "owner": "peteonrails",
         "repo": "voxtype",
-        "rev": "b3fedd1b2deb482f15aff3dd705aecc34c54b337",
+        "rev": "31b7f38c4e22c4ce75d6350945729e5db001cb9a",
         "type": "github"
       },
       "original": {
