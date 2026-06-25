@@ -136,6 +136,84 @@ skills-add() {
     chezmoi add ~/.agents/skills
 }
 
+_omp_commit_state_file="$HOME/.local/state/omp-backups/last"
+
+_omp_commit_save_state() {
+    mkdir -p "${_omp_commit_state_file:h}"
+    printf 'snap=%q\nbackup=%q\nroot=%q\n' "$1" "$2" "$3" >"$_omp_commit_state_file"
+}
+
+_omp_commit_load_state() {
+    [[ -f "$_omp_commit_state_file" ]] || return 1
+    snap="" 
+    backup="" 
+    root=""
+    # shellcheck disable=SC1090
+    source "$_omp_commit_state_file" || return 1
+    [[ -n $snap && -n $backup && -n $root ]] || return 1
+}
+
+_omp_commit_clear_state() {
+    rm -f "$_omp_commit_state_file"
+}
+
+_omp_commit_show_recovery() {
+    local snap=$1 backup=$2 root=$3 recover cleanup
+    recover="git reset --hard $(printf %q "$snap") && rsync -a --delete --exclude='.git' $(printf %q "$backup/") $(printf %q "$root/")"
+    cleanup="rm -rf $(printf %q "$backup")"
+
+    _omp_commit_save_state "$snap" "$backup" "$root"
+    echo "kept agent's changes; backup at $backup"
+    echo
+    echo "restore:  omp-commit-restore"
+    echo "cleanup:  omp-commit-cleanup"
+    echo
+    print -r -- "$recover"
+    print -r -- "$cleanup"
+    if _omp_commit_clip "${recover}"$'\n'"${cleanup}"; then
+        echo
+        echo "(commands copied to clipboard)"
+    fi
+}
+
+_omp_commit_clip() {
+    local text=$1
+    if command -v clip.exe >/dev/null 2>&1; then
+        printf '%s' "$text" | clip.exe
+    elif command -v wl-copy >/dev/null 2>&1; then
+        printf '%s' "$text" | wl-copy
+    elif command -v xclip >/dev/null 2>&1; then
+        printf '%s' "$text" | xclip -selection clipboard
+    else
+        return 1
+    fi
+}
+
+omp-commit-restore() {
+    _omp_commit_load_state || {
+        echo "no omp-commit backup state" >&2
+        return 1
+    }
+    git reset --hard "$snap" &&
+        rsync -a --delete --exclude=.git "$backup/" "$root/" &&
+        rm -rf "$backup" &&
+        git tag -d "$snap" >/dev/null 2>&1 &&
+        _omp_commit_clear_state &&
+        echo "restored"
+}
+
+omp-commit-cleanup() {
+    _omp_commit_load_state || {
+        echo "no omp-commit backup state" >&2
+        return 1
+    }
+    rm -rf "$backup" &&
+        git tag -d "$snap" >/dev/null 2>&1 &&
+        _omp_commit_clear_state &&
+        echo "cleaned up"
+}
+
+
 omp-commit() {
     local snap root backup
     snap="pre-omp-$(date +%s%N)-$$"
@@ -197,15 +275,16 @@ EOF
             rsync -a --delete --exclude=.git "$backup/" "$root/" &&
             rm -rf "$backup" &&
             git tag -d "$snap" >/dev/null 2>&1; then
+            _omp_commit_clear_state
             echo "restored"
         else
             echo "restore failed (state may be partial); backup still at $backup"
+            echo
+            _omp_commit_show_recovery "$snap" "$backup" "$root"
             return 1
         fi
     else
-        echo "kept agent's changes; backup at $backup"
-        printf "  recover: git reset --hard %q && rsync -a --delete --exclude='.git' %q/ %q/\n" "$snap" "$backup" "$root"
-        printf "  cleanup: rm -rf %q\n" "$backup"
+        _omp_commit_show_recovery "$snap" "$backup" "$root"
     fi
 }
 
