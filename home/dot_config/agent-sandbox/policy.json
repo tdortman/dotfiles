@@ -78,6 +78,8 @@
             { "path": "~/.cargo/.global-cache-journal", "access": "read_write", "comment": "global" },
             { "path": "~/.cargo/.package-cache", "access": "read", "comment": "global" },
             { "path": "~/.cargo/.package-cache-mutate", "access": "read", "comment": "global" },
+            { "path": "~/.cargo/git/checkouts", "access": "read", "comment": "global" },
+            { "path": "~/.cargo/git/db", "access": "read", "comment": "global" },
             { "path": "~/.cargo/registry", "access": "read_write", "comment": "global" },
             { "path": "~/.codeium/windsurf/memories/global_rules.md", "access": "read", "comment": "global" },
             { "path": "~/.codex/config.toml", "access": "read", "comment": "global" },
