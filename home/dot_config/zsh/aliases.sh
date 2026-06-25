@@ -144,7 +144,7 @@ _omp_commit_excludes=(
     node_modules .pnpm-store target .venv venv .tox .nox __pycache__
     .pytest_cache .mypy_cache .ruff_cache .next .nuxt .svelte-kit .turbo
     .vite .parcel-cache .cache dist build coverage .pixi .zig-cache .zig-out
-    zig-cache zig-out
+    zig-cache zig-out result
 )
 
 _omp_commit_save_state() {
