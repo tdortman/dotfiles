@@ -49,10 +49,11 @@
         };
       };
       output = {
-        mode = "type";
-        type_delay_ms = 0;
-        pre_type_delay_ms = 0;
+        mode = "paste";
+        paste_keys = "ctrl+shift+v";
         fallback_to_clipboard = true;
+        append_text = " ";
+        shift_enter_newlines = true;
       };
       osd = {
         enabled = false;
