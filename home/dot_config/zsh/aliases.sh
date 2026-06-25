@@ -138,6 +138,15 @@ skills-add() {
 
 _omp_commit_state_file="$HOME/.local/state/omp-backups/last"
 
+# Regenerable build/dependency artifacts excluded from backups (at any depth).
+# Add entries here as needed.
+_omp_commit_excludes=(
+    node_modules .pnpm-store target .venv venv .tox .nox __pycache__
+    .pytest_cache .mypy_cache .ruff_cache .next .nuxt .svelte-kit .turbo
+    .vite .parcel-cache .cache dist build coverage .pixi .zig-cache .zig-out
+    zig-cache zig-out
+)
+
 _omp_commit_save_state() {
     mkdir -p "${_omp_commit_state_file:h}"
     printf 'snap=%q\nbackup=%q\nroot=%q\n' "$1" "$2" "$3" >"$_omp_commit_state_file"
@@ -158,11 +167,11 @@ _omp_commit_clear_state() {
 }
 
 _omp_commit_show_recovery() {
-    local snap=$1 backup=$2 root=$3 recover cleanup
-    recover="git reset --hard $(printf %q "$snap") && rsync -a --delete --exclude='.git' $(printf %q "$backup/") $(printf %q "$root/")"
+    local -a _xflags=(--exclude=.git "${_omp_commit_excludes[@]/#/--exclude=}")
+    local snap=$1 backup=$2 root=$3 recover cleanup xflags="${_xflags[*]}"
+    recover="git reset --hard $(printf %q "$snap") && rsync -a --delete $xflags $(printf %q "$backup/") $(printf %q "$root/")"
     cleanup="rm -rf $(printf %q "$backup")"
 
-    _omp_commit_save_state "$snap" "$backup" "$root"
     echo "kept agent's changes; backup at $backup"
     echo
     echo "restore:  omp-commit-restore"
@@ -178,7 +187,7 @@ omp-commit-restore() {
         return 1
     }
     git reset --hard "$snap" &&
-        rsync -a --delete --exclude=.git "$backup/" "$root/" &&
+        rsync -a --delete --exclude=.git "${_omp_commit_excludes[@]/#/--exclude=}" "$backup/" "$root/" &&
         rm -rf "$backup" &&
         git tag -d "$snap" >/dev/null 2>&1 &&
         _omp_commit_clear_state &&
@@ -217,13 +226,13 @@ omp-commit() {
         echo "tag failed" >&2
         return 1
     }
-    cp -a --reflink=auto "$root/." "$backup/" || {
+    rsync -a --exclude=.git "${_omp_commit_excludes[@]/#/--exclude=}" "$root/" "$backup/" || {
         rm -rf "$backup"
         git tag -d "$snap" >/dev/null 2>&1
         echo "copy failed" >&2
         return 1
     }
-    rm -rf "$backup/.git"
+    _omp_commit_save_state "$snap" "$backup" "$root"
 
     omp "$@" "$(
         cat <<EOF
@@ -254,7 +263,7 @@ EOF
     echo
     if [[ $REPLY == y ]]; then
         if git reset --hard "$snap" &&
-            rsync -a --delete --exclude=.git "$backup/" "$root/" &&
+            rsync -a --delete --exclude=.git "${_omp_commit_excludes[@]/#/--exclude=}" "$backup/" "$root/" &&
             rm -rf "$backup" &&
             git tag -d "$snap" >/dev/null 2>&1; then
             _omp_commit_clear_state
