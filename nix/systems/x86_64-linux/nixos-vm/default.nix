@@ -8,7 +8,6 @@
   imports = [
     ./hardware-configuration.nix
     ./disko.nix
-    ../../../common
   ];
 
   kde.enable = true;

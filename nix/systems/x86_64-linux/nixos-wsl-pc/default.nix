@@ -7,7 +7,6 @@
 {
   imports = [
     ./services.nix
-    ../../../common
   ];
 
   nvidia.cuda.enable = true;
