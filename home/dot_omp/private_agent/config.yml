@@ -93,3 +93,4 @@ github:
   enabled: true
 plan: 
   defaultOnStartup: false
+defaultThinkingLevel: low
