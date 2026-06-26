@@ -367,13 +367,6 @@
 
   programs.thunderbird.enable = true;
 
-  nixpkgs.overlays = [
-    (final: prev: {
-      librewolf = inputs.nixpkgs-librewolf.legacyPackages.${system}.librewolf;
-      librewolf-unwrapped = inputs.nixpkgs-librewolf.legacyPackages.${system}.librewolf-unwrapped;
-    })
-  ];
-
   environment.systemPackages = with pkgs; [
     ntfs3g
     ghostty
