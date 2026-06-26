@@ -55,6 +55,10 @@ in
       signond
       signon-kwallet-extension
       kdepim-addons
+
+      oxygen
+      oxygen-icons
+      oxygen-sounds
     ];
   };
 }
