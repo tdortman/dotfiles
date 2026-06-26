@@ -22,6 +22,22 @@ znap eval omp "oh-my-posh init zsh --config $HOME/powerline_custom.omp.json" &> 
 znap eval zoxide "zoxide init --cmd cd zsh"
 znap eval atuin "atuin init --disable-up-arrow zsh"
 
+znap_fpath_once() {
+  local name=$1
+  shift
+
+  local dir="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/site-functions"
+  [[ -s "$dir/$name" ]] || znap fpath "$name" "$*"
+}
+
+command -v omp    >/dev/null && znap_fpath_once _omp    'omp completions zsh'
+command -v docker >/dev/null && znap_fpath_once _docker 'docker completion zsh'
+command -v podman >/dev/null && znap_fpath_once _podman 'podman completion zsh'
+command -v atuin  >/dev/null && znap_fpath_once _atuin  'atuin gen-completions --shell zsh'
+command -v volta  >/dev/null && znap_fpath_once _volta  'volta completions zsh'
+command -v bat    >/dev/null && znap_fpath_once _bat    'bat --completion zsh'
+
+
 source $ZSH/aliases.sh
 source $ZSH/hooks.sh
 
