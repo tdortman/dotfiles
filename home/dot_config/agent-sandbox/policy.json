@@ -125,6 +125,7 @@
             { "path": "~/dotfiles/home/dot_gitignore_global", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_omp/private_agent/config.yml", "access": "read_write", "comment": "global" },
             { "path": "~/dotfiles/home/dot_omp/private_agent/rules", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_profile", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_zprofile", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_zshenv", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_zshrc", "access": "read", "comment": "global" },
