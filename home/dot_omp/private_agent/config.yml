@@ -1,12 +1,14 @@
 modelRoles: 
   default: cursor/composer-2.5
-  commit: cursor/composer-2.5
+  commit: zai/glm-5.2:low
   vision: google-antigravity/gemini-3.1-pro-low
   plan: openai-codex/gpt-5.5:high
   smol: opencode-go/deepseek-v4-flash
-  task: cursor/composer-2.5
+  task: opencode-go/deepseek-v4-flash
   slow: openai-codex/gpt-5.5:low
   advisor: openai-codex/gpt-5.5:medium
+  tiny: opencode-go/deepseek-v4-flash:low
+  designer: zai/glm-5.2:medium
 startup: 
   checkUpdate: false
 symbolPreset: nerd
