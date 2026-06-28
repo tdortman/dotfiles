@@ -96,3 +96,5 @@ github:
 plan: 
   defaultOnStartup: false
 defaultThinkingLevel: low
+codexResets: 
+  autoRedeem: "no"
