@@ -181,6 +181,7 @@
         "**/meson.build": "meson",
         "**/meson_options.txt": "meson",
         "**/meson.options": "meson",
+        "_agent-sandbox-approve": "plaintext",
     },
     "haskell.formattingProvider": "brittany",
     "debug.onTaskErrors": "abort",
