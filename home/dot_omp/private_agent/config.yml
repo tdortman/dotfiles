@@ -76,7 +76,7 @@ dev:
   autoqa: false
 advisor: 
   enabled: true
-  subagents: true
+  subagents: false
 completion: 
   notify: "on"
 features: 
