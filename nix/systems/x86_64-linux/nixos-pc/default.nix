@@ -175,14 +175,14 @@
           readwriteDirs = [
             "~/.config/opencode"
             "~/.local/share/opencode"
-            "~/.local/state/opencode/"
+            "~/.local/state/opencode"
             "~/.local/share/zoxide"
             "~/.cache/opencode"
             "~/.opencode"
 
             # cursor-acp
             "~/.opencode-cursor"
-            "~/.local/share/cursor-agent/"
+            "~/.local/share/cursor-agent"
           ];
           readonlyFiles = [
             "~/.config/cursor/auth.json" # For opencode-cursor
