@@ -40,6 +40,7 @@
             { "host": "man7.org", "port": 443, "comment": "global" },
             { "host": "wrapdb.mesonbuild.com", "port": 443, "comment": "global" },
             { "host": "models.dev", "port": 443, "comment": "global" },
+            { "host": "api.neuralwatt.com", "port": 443, "comment": "global" },
             { "host": "channels.nixos.org", "port": 443, "comment": "global" },
             { "host": "releases.nixos.org", "port": 443, "comment": "global" },
             { "host": "registry.npmjs.org", "port": 443, "comment": "global" },
@@ -130,6 +131,18 @@
             { "path": "~/dotfiles/home/dot_zshenv", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_zshrc", "access": "read", "comment": "global" },
             { "path": "~/miniforge3/etc", "access": "read", "comment": "global" }
+        ],
+        "deny": []
+    },
+    "resources": {
+        "allow": [
+            { "kind": "unix_socket", "path": "/nix/var/nix/daemon-socket/socket", "access": "connect", "comment": "global" },
+            { "kind": "unix_socket", "path": "/run/nscd/socket", "access": "connect", "comment": "global" },
+            { "kind": "unix_socket", "path": "/run/user/1000/1Password-BrowserSupport.sock", "access": "connect", "comment": "global" },
+            { "kind": "unix_socket", "path": "/tmp/nvidia-mps/control", "access": "connect", "comment": "global" },
+            { "kind": "unix_socket", "path": "~/.1password/agent.sock", "access": "connect", "comment": "global" },
+            { "kind": "device", "path": "/dev/nvidia*", "access": "open_read_write", "comment": "global" },
+            { "kind": "device", "path": "/dev/shm/cuda_injection_path_shm", "access": "open_read_write", "comment": "global" }
         ],
         "deny": []
     }
