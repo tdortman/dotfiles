@@ -1,10 +1,10 @@
 modelRoles: 
   default: cursor/composer-2.5
-  commit: zai/glm-5.2:low
+  commit: neuralwatt/glm-5.2-short-fast:off
   vision: google-antigravity/gemini-3.1-pro-low
-  plan: openai-codex/gpt-5.5:high
+  plan: neuralwatt/glm-5.2:xhigh
   smol: opencode-go/deepseek-v4-flash
-  task: opencode-go/deepseek-v4-flash
+  task: neuralwatt/glm-5.2-short-fast:off
   slow: openai-codex/gpt-5.5:low
   advisor: openai-codex/gpt-5.5:medium
   tiny: opencode-go/deepseek-v4-flash:low
@@ -75,7 +75,7 @@ python:
 dev: 
   autoqa: false
 advisor: 
-  enabled: true
+  enabled: false
   subagents: false
 completion: 
   notify: "on"
@@ -95,6 +95,6 @@ github:
   enabled: true
 plan: 
   defaultOnStartup: false
-defaultThinkingLevel: low
+defaultThinkingLevel: auto
 codexResets: 
   autoRedeem: "no"
