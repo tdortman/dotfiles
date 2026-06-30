@@ -138,7 +138,7 @@
             { "path": "~/dotfiles/home/dot_config/bat/config", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_config/gdb/cuda-gdbinit", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_config/opencode/opencode.json", "access": "read_write", "comment": "global" },
-            { "path": "~/dotfiles/home/dot_config/private_cursor/cli-config.json", "access": "read", "comment": "global" },
+            { "path": "~/dotfiles/home/dot_config/private_cursor/cli-config.json", "access": "read_write", "comment": "global" },
             { "path": "~/dotfiles/home/dot_config/zsh", "access": "read", "comment": "global" },
             { "path": "~/dotfiles/home/dot_cursor/mcp.json", "access": "read_write", "comment": "global" },
             { "path": "~/dotfiles/home/dot_gitignore_global", "access": "read_write", "comment": "global" },
