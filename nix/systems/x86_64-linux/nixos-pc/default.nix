@@ -134,8 +134,11 @@
     enable = true;
     sudoPolicy = "approve";
     network.enable = true;
-    syscallGate.enable = true;
-    filesystem.dynamicApproval.enable = true;
+    gates = {
+      filesystem.enable = true;
+      resources.enable = true;
+      syscalls.enable = true;
+    };
     readonlyDirs = [
       "~/.local/bin"
       "/lib64"
