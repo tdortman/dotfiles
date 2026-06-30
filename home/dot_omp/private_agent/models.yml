@@ -6,23 +6,21 @@ providers:
     authHeader: true
 
     compat:
-      supportsDeveloperRole: false
       maxTokensField: max_tokens
       supportsReasoningEffort: true
       thinkingFormat: openai
       supportsStrictMode: true
-      thinkingLevelMap:
-        off: none
-        minimal: none
-        low: high
-        medium: high
-        high: high
-        xhigh: max
 
     models:
       - id: glm-5.2
         name: NeuralWatt GLM-5.2
         reasoning: true
+        thinking: &glm52_thinking
+          mode: effort
+          efforts: [high, xhigh]
+          defaultLevel: high
+          effortMap:
+            xhigh: max
         input: [text]
         contextWindow: 1048576
         maxTokens: 131072
@@ -47,6 +45,7 @@ providers:
       - id: glm-5.2-short
         name: NeuralWatt GLM-5.2 Short
         reasoning: true
+        thinking: *glm52_thinking
         input: [text]
         contextWindow: 195000
         maxTokens: 131072
