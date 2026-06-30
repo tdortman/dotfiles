@@ -167,6 +167,7 @@
           readwriteDirs = [
             "~/.cursor"
             "~/.config/cursor"
+            "~/.cache/cursor-compile-cache"
           ];
         }
         {
