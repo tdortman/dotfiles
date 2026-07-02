@@ -75,7 +75,7 @@ python:
 dev: 
   autoqa: false
 advisor: 
-  enabled: true
+  enabled: false
   subagents: false
 completion: 
   notify: "on"
