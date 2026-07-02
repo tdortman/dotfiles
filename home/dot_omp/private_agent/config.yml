@@ -1,10 +1,10 @@
 modelRoles: 
   default: cursor/composer-2.5
-  commit: neuralwatt/glm-5.2-short-fast:off
-  vision: google-antigravity/gemini-3.1-pro-low
+  commit: cursor/composer-2.5:off
+  vision: openai-codex/gpt-5.5:low
   plan: openai-codex/gpt-5.5:high
   smol: opencode-go/deepseek-v4-flash
-  task: neuralwatt/glm-5.2-short-fast:off
+  task: cursor/composer-2.5
   slow: openai-codex/gpt-5.5:low
   advisor: openai-codex/gpt-5.5:medium
   tiny: opencode-go/deepseek-v4-flash:low
