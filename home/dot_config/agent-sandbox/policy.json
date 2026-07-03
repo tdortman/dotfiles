@@ -195,6 +195,8 @@
             { "kind": "device", "path": "/dev/nvidia*", "access": "open_read_write", "comment": "global" },
             { "kind": "device", "path": "/dev/shm/cuda_injection_path_shm", "access": "open_read_write", "comment": "global" }
         ],
-        "deny": []
+        "deny": [
+            { "kind": "unix_socket", "path": "/run/user/*/systemd/private", "access": "connect", "comment": "global" }
+        ]
     }
 }
