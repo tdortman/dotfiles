@@ -60,13 +60,17 @@ task:
 secrets: 
   enabled: true
 contextPromotion: 
-  enabled: true
+  enabled: false
 renderMermaid: 
   enabled: true
 providers: 
   webSearch: auto
   image: auto
   memoryModel: online
+  maxInFlightRequests: 
+    neuralwatt: 3
+  tinyModel: online
+  tinyModelDevice: default
 setupVersion: 1
 bashInterceptor: 
   enabled: false
