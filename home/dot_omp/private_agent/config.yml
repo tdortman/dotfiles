@@ -104,3 +104,12 @@ plan:
 defaultThinkingLevel: auto
 codexResets: 
   autoRedeem: "no"
+hideThinkingBlock: false
+branchSummary: 
+  enabled: false
+ttsr: 
+  contextMode: discard
+readLineNumbers: true
+exa: 
+  enableResearcher: true
+  enableWebsets: true
