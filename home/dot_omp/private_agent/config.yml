@@ -95,6 +95,8 @@ autolearn:
   enabled: true
 mnemopi: 
   llmMode: smol
+  polyphonicRecall: true
+  enhancedRecall: true
 github: 
   enabled: true
 plan: 
