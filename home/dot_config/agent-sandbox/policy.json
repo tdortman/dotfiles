@@ -34,6 +34,8 @@
             { "host": "daily-cloudcode-pa.sandbox.googleapis.com", "port": 443, "comment": "global" },
             { "host": "storage.googleapis.com", "port": 443, "comment": "global" },
             { "host": "www.googleapis.com", "port": 443, "comment": "global" },
+            { "host": "*.cdn.hf.co", "port": 443, "comment": "global" },
+            { "host": "huggingface.co", "port": 443, "comment": "global" },
             { "host": "r.jina.ai", "port": 443, "comment": "global" },
             { "host": "*.kernel.org", "port": 443, "comment": "global" },
             { "host": "lwn.net", "port": 443, "comment": "global" },
@@ -53,7 +55,8 @@
             { "host": "api.workos.com", "port": 443, "comment": "global" },
             { "host": "api.xiaomimimo.com", "port": 443, "comment": "global" },
             { "host": "xmake.io", "port": 443, "comment": "global" },
-            { "host": "api.z.ai", "port": 443, "comment": "global" }
+            { "host": "api.z.ai", "port": 443, "comment": "global" },
+            { "host": "zenmux.ai", "port": 443, "comment": "global" }
         ],
         "deny": [
             { "host": "telemetry.factory.ai", "port": 443, "comment": "global" },
