@@ -35,7 +35,7 @@ compaction:
   strategy: snapcompact
   thresholdPercent: 80
   thresholdTokens: -1
-  handoffSaveToDisk: true
+  handoffSaveToDisk: false
 memory: 
   backend: mnemopi
 edit: 
