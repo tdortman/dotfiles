@@ -37,6 +37,7 @@
       systems.hosts = {
         nixos-pc.specialArgs.currentUsername = "tim";
         nixos-vm.specialArgs.currentUsername = "tim";
+        nixos-laptop.specialArgs.currentUsername = "tim";
         nixos-wsl-pc = {
           specialArgs.currentUsername = "tim";
           modules = with inputs; [
