@@ -14,26 +14,7 @@
   ];
 
   kde.enable = true;
-  gaming.enable = true;
-  openrgb.enable = true;
-  disableWakeFromHibernate.enable = true;
   spicetify.enable = true;
-
-  backups = {
-    enable = true;
-    librewolfProfile = "f9ugjznf.default";
-    flatpakApps = [ "com.core447.StreamController" ];
-    passwordFile = config.age.secrets.restic-password.path;
-
-    snapshots.enable = true;
-
-    localBackup = {
-      enable = true;
-      device = "/dev/disk/by-uuid/dfbdb886-3344-4e83-8403-f5ea43187f61";
-      fsType = "btrfs";
-      timer = "*-*-* 18:00:00";
-    };
-  };
 
   onepassword = {
     enable = true;
@@ -46,19 +27,6 @@
     inputChannels = "mono";
     output = "alsa_output.usb-Schiit_Audio_Schiit_Modi_Uber-00.analog-stereo";
     mutedInputs = [ "alsa_input.usb-046d_Brio_100_2602ZBR396W8-02.mono-fallback" ];
-
-    micProcess = {
-      enable = true;
-      vadThreshold = 50.0;
-
-      compressor = {
-        attackTime = 10.6;
-        releaseTime = 500;
-        threshold = -18.3;
-        ratio = 4.0;
-        makeupGain = 5.9;
-      };
-    };
 
     eq = {
       enable = true;
@@ -90,28 +58,10 @@
     fallbackCategory = "System";
   };
 
-  nvidia = {
-    cuda = {
-      enable = true;
-      nvidia-fs.enable = true;
-      packages = pkgs.cudaPackages_13_2;
-    };
-    driver = {
-      enable = true;
-      package = config.boot.kernelPackages.nvidiaPackages.latest;
-    };
-  };
-
-  hdr = {
-    enable = true;
-    defaultOutput = "DP-3";
-    extraScripts = true;
-  };
-
   nextdns = {
     enable = true;
     configFile = config.age.secrets."nextdns-resolved.conf".path;
-    hostName = "NixOS--PC";
+    hostName = "NixOS--Laptop";
   };
 
   vpn-run = {
@@ -196,29 +146,7 @@
           package = agents.droid;
           readwriteDirs = [ "~/.factory" ];
         }
-        {
-          package = agents.copilot-cli;
-          readwriteDirs = [
-            "~/.config/gh-copilot"
-            "~/.copilot"
-          ];
-          readonlyFiles = [
-            "/run/user/1000/wayland-0"
-            "/run/user/1000/bus"
-          ];
-        }
       ];
-  };
-
-  qbittorrent = {
-    enable = true;
-    port = 32882;
-    wireguard.interface = "wg0";
-    webui = {
-      port = 8080;
-      username = "admin";
-      hashedPassword = "@ByteArray(ld9tpxX1BfxpzgEImGXLJA==:yxC2mw6+EfF14jJNV9ppuS0sqNas7ENWXAccUu+gCVNP0h7NokJA1dgnkoWejmDfp5mq6OEFXEHPGkLJNUZNiw==)";
-    };
   };
 
   age.secrets = {
@@ -247,7 +175,7 @@
   services.kmscon.config = {
     hwaccel = true;
     font-name = "JetBrainsMono Nerd Font Mono";
-    font-size = 26;
+    font-size = 20;
     font-dpi = 256;
   };
 
@@ -313,15 +241,6 @@
     };
   };
 
-  arr-stack.enable = true;
-
-  programs.streamcontroller.enable = true;
-
-  services.udev.extraRules = ''
-    # StreamController text input
-    KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", TAG+="uaccess", GROUP="input", MODE="0660"
-  '';
-
   virtualisation = {
     containers.enable = true;
     podman = {
@@ -330,7 +249,6 @@
       defaultNetwork.settings.dns_enabled = true;
     };
   };
-  hardware.nvidia-container-toolkit.enable = true;
 
   flatpak = {
     enable = true;
@@ -343,7 +261,7 @@
     };
   };
 
-  networking.hostName = "nixos-pc";
+  networking.hostName = "nixos-laptop";
 
   mime.librewolf.enable = true;
 
@@ -358,10 +276,6 @@
     interval = "weekly";
     fileSystems = [ "/" ];
   };
-
-  hardware.firmware = with pkgs; [
-    rtl8761b-firmware
-  ];
 
   services.ratbagd.enable = true;
 
@@ -383,18 +297,9 @@
     glib
 
     inputs.agenix.packages."${system}".default
-    cuda.llama-cpp
-    cuda.lmstudio
-    dbeaver-bin
-    lsfg-vk-ui
-    lsfg-vk
-    winboat
 
-    libratbag
-    piper
     vlc
     libnotify
-    ghidra
     libreoffice-qt6
     nheko
 
@@ -421,24 +326,16 @@
     pkgs.llm-agents.git-surgeon
   ];
 
-  hardware.logitech.wireless.enable = true;
-
   xdg.portal.xdgOpenUsePortal = true;
 
   environment.variables = {
-    # nvidia_icd.x86_64.json -> nvidia_icd.json as of 595.71.05
-    VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
-    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
-
     NIXOS_OZONE_WL = "1";
 
     # Setting gfx.webrender.compositor.force-enabled to true breaks the direct backend
-    NVD_BACKEND = "direct";
     MOZ_ENABLE_WAYLAND = 1;
     MOZ_DISABLE_RDD_SANDBOX = 1;
-    GHIDRA_ROOT = "${pkgs.ghidra}";
   };
 
   programs.mtr.enable = true;
-  system.stateVersion = "25.05";
+  system.stateVersion = "26.11";
 }
