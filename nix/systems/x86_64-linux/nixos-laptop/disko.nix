@@ -4,7 +4,7 @@
   disko.devices.disk.main = {
     type = "disk";
 
-    device = "/dev/disk/by-uuid/cb73055c-201e-45ce-950b-66f5b8e5ad86";
+    device = "/dev/disk/by-uuid/0b989d86-90b8-4cd4-8634-ff21935632d3";
 
     content = {
       type = "luks";
