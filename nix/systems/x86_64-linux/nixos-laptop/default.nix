@@ -216,8 +216,6 @@
     openFirewall = true;
   };
 
-  services.lact.enable = true;
-
   services.kmscon.config = {
     hwaccel = true;
     font-name = "JetBrainsMono Nerd Font Mono";
