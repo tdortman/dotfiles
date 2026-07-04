@@ -89,8 +89,6 @@ let
 in
 {
   options.backups = {
-    enable = lib.mkEnableOption "home backups (Restic to GDrive, with optional local disk and btrfs snapshots)";
-
     user = lib.mkOption {
       type = lib.types.str;
       default = currentUsername;
@@ -101,6 +99,10 @@ in
       type = lib.types.path;
       example = lib.literalExpression "config.age.secrets.restic-password.path";
       description = "Path to the Restic repository password file";
+    };
+
+    remote = {
+      enable = lib.mkEnableOption "Google Drive Restic backup of selected home data";
     };
 
     librewolfProfile = lib.mkOption {
@@ -125,7 +127,7 @@ in
       };
     };
 
-    localBackup = {
+    local = {
       enable = lib.mkEnableOption "a local Restic backup of the home subvolume to a disk";
 
       device = lib.mkOption {
@@ -157,177 +159,175 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable (
-    lib.mkMerge [
-      {
-        # ---- Google Drive backup (Restic over rclone) ----
-        fileSystems."/mnt/gdrive" = {
-          device = "gdrive:";
-          fsType = "rclone";
-          options = [
-            "nodev"
-            "nofail"
-            "allow_other"
-            "args2env"
-            "vfs-cache-mode=full"
-            "config=/home/${cfg.user}/.config/rclone/rclone.conf"
-            "x-systemd.automount"
-            "x-systemd.idle-timeout=600"
-            "x-systemd.mount-timeout=30s"
-            "_netdev"
-          ];
-        };
+  config = lib.mkMerge [
+    (lib.mkIf cfg.remote.enable {
+      # ---- Google Drive backup (Restic over rclone) ----
+      fileSystems."/mnt/gdrive" = {
+        device = "gdrive:";
+        fsType = "rclone";
+        options = [
+          "nodev"
+          "nofail"
+          "allow_other"
+          "args2env"
+          "vfs-cache-mode=full"
+          "config=/home/${cfg.user}/.config/rclone/rclone.conf"
+          "x-systemd.automount"
+          "x-systemd.idle-timeout=600"
+          "x-systemd.mount-timeout=30s"
+          "_netdev"
+        ];
+      };
 
-        services.restic.backups.gdrive = {
-          repository = "rclone:gdrive:backups/desktop";
-          inherit (cfg) passwordFile;
+      services.restic.backups.gdrive = {
+        repository = "rclone:gdrive:backups/desktop";
+        inherit (cfg) passwordFile;
 
-          paths =
-            (map (p: "/home/${cfg.user}/${p}") [
-              "Documents"
-              "Pictures"
-              "Videos"
-              "Music"
-              ".librewolf/${cfg.librewolfProfile}"
-            ])
-            ++ [
-              "/var/lib/sonarr/.config/NzbDrone/Backups"
-              "/var/lib/private/prowlarr/Backups"
-            ]
-            ++ map (app: "/home/${cfg.user}/.var/app/${app}") cfg.flatpakApps;
+        paths =
+          (map (p: "/home/${cfg.user}/${p}") [
+            "Documents"
+            "Pictures"
+            "Videos"
+            "Music"
+            ".librewolf/${cfg.librewolfProfile}"
+          ])
+          ++ [
+            "/var/lib/sonarr/.config/NzbDrone/Backups"
+            "/var/lib/private/prowlarr/Backups"
+          ]
+          ++ map (app: "/home/${cfg.user}/.var/app/${app}") cfg.flatpakApps;
 
-          exclude =
-            commonExcludes
-            ++ map (p: "/home/${cfg.user}/${p}") [
-              "Documents/NVIDIA Nsight Compute"
-              "Documents/NVIDIA Nsight Systems"
-            ];
-
-          extraBackupArgs = commonExtraBackupArgs;
-
-          environmentFile = toString (
-            pkgs.writeText "gdrive-rclone-env" ''
-              RCLONE_CONFIG=/home/${cfg.user}/.config/rclone/rclone.conf
-            ''
-          );
-
-          timerConfig = {
-            OnCalendar = "daily";
-            Persistent = true;
-          };
-
-          pruneOpts = [
-            "--keep-daily 4"
-            "--keep-weekly 3"
-            "--keep-monthly 2"
+        exclude =
+          commonExcludes
+          ++ map (p: "/home/${cfg.user}/${p}") [
+            "Documents/NVIDIA Nsight Compute"
+            "Documents/NVIDIA Nsight Systems"
           ];
 
-          initialize = true;
+        extraBackupArgs = commonExtraBackupArgs;
 
-          rcloneOptions = {
-            drive-use-trash = false;
-          };
+        environmentFile = toString (
+          pkgs.writeText "gdrive-rclone-env" ''
+            RCLONE_CONFIG=/home/${cfg.user}/.config/rclone/rclone.conf
+          ''
+        );
 
-          createWrapper = true;
-
-          backupPrepareCommand = ''
-            echo "Starting Google Drive backup at $(date)"
-            echo "Backing up paths: ${pkgs.lib.concatStringsSep ", " config.services.restic.backups.gdrive.paths}"
-          '';
-
-          backupCleanupCommand = ''
-            echo "Google Drive backup completed at $(date)"
-          '';
-        };
-      }
-
-      (lib.mkIf cfg.snapshots.enable {
-        # ---- Local btrfs snapshots of /home via snapper ----
-        services.snapper.configs.${snapName} = {
-          SUBVOLUME = cfg.snapshots.subvolume;
-          FSTYPE = "btrfs";
-          ALLOW_USERS = [ cfg.user ];
-          TIMELINE_CREATE = true;
-          TIMELINE_CLEANUP = true;
-          TIMELINE_LIMIT_HOURLY = "7";
-          TIMELINE_LIMIT_DAILY = "7";
+        timerConfig = {
+          OnCalendar = "daily";
+          Persistent = true;
         };
 
-        # The NixOS snapper module only writes the config and timers. It does not
-        # create the .snapshots subvolume that snapper needs, so create it once
-        # before the timeline service is allowed to run.
-        systemd.services."snapper-${snapName}-init" = {
-          description = "Create btrfs .snapshots subvolume for snapper on ${cfg.snapshots.subvolume}";
-          wantedBy = [ "multi-user.target" ];
-          requires = [ "local-fs.target" ];
-          after = [ "local-fs.target" ];
-          before = [
-            "snapper-timeline.service"
-            "snapper-cleanup.service"
-          ];
-          unitConfig.ConditionPathExists = "!${cfg.snapshots.subvolume}/.snapshots";
-          serviceConfig = {
-            Type = "oneshot";
-            RemainAfterExit = true;
-            ExecStart = "${pkgs.btrfs-progs}/bin/btrfs subvolume create ${cfg.snapshots.subvolume}/.snapshots";
-          };
-        };
-      })
+        pruneOpts = [
+          "--keep-daily 4"
+          "--keep-weekly 3"
+          "--keep-monthly 2"
+        ];
 
-      (lib.mkIf cfg.localBackup.enable {
-        # ---- Local Restic backup to a dedicated disk ----
-        fileSystems.${cfg.localBackup.mountPoint} = {
-          device = cfg.localBackup.device;
-          fsType = cfg.localBackup.fsType;
-          options = [
-            "defaults"
-            "noatime"
-            "nofail"
-          ];
+        initialize = true;
+
+        rcloneOptions = {
+          drive-use-trash = false;
         };
 
-        services.restic.backups.local = {
-          repository = "${cfg.localBackup.mountPoint}/restic";
-          inherit (cfg) passwordFile;
+        createWrapper = true;
 
-          paths = [ cfg.snapshots.subvolume ];
+        backupPrepareCommand = ''
+          echo "Starting Google Drive backup at $(date)"
+          echo "Backing up paths: ${pkgs.lib.concatStringsSep ", " config.services.restic.backups.gdrive.paths}"
+        '';
 
-          exclude = commonExcludes ++ [
-            ".snapshots"
+        backupCleanupCommand = ''
+          echo "Google Drive backup completed at $(date)"
+        '';
+      };
+    })
 
-            "/home/${cfg.user}/Downloads"
-            "/home/${cfg.user}/3rd-party"
-            "/home/${cfg.user}/.lmstudio/models"
+    (lib.mkIf cfg.snapshots.enable {
+      # ---- Local btrfs snapshots of /home via snapper ----
+      services.snapper.configs.${snapName} = {
+        SUBVOLUME = cfg.snapshots.subvolume;
+        FSTYPE = "btrfs";
+        ALLOW_USERS = [ cfg.user ];
+        TIMELINE_CREATE = true;
+        TIMELINE_CLEANUP = true;
+        TIMELINE_LIMIT_HOURLY = "7";
+        TIMELINE_LIMIT_DAILY = "7";
+      };
 
-            # Exclude any directory named "data" below ~/projects, but not arbitrary
-            # "data" directories elsewhere in the home directory.
-            "/home/${cfg.user}/projects/data"
-            "/home/${cfg.user}/projects/**/data"
+      # The NixOS snapper module only writes the config and timers. It does not
+      # create the .snapshots subvolume that snapper needs, so create it once
+      # before the timeline service is allowed to run.
+      systemd.services."snapper-${snapName}-init" = {
+        description = "Create btrfs .snapshots subvolume for snapper on ${cfg.snapshots.subvolume}";
+        wantedBy = [ "multi-user.target" ];
+        requires = [ "local-fs.target" ];
+        after = [ "local-fs.target" ];
+        before = [
+          "snapper-timeline.service"
+          "snapper-cleanup.service"
+        ];
+        unitConfig.ConditionPathExists = "!${cfg.snapshots.subvolume}/.snapshots";
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "${pkgs.btrfs-progs}/bin/btrfs subvolume create ${cfg.snapshots.subvolume}/.snapshots";
+        };
+      };
+    })
 
-            # Large, reinstallable game content.
-            "/home/${cfg.user}/.local/share/Steam/steamapps"
-          ];
+    (lib.mkIf cfg.local.enable {
+      # ---- Local Restic backup to a dedicated disk ----
+      fileSystems.${cfg.local.mountPoint} = {
+        device = cfg.local.device;
+        fsType = cfg.local.fsType;
+        options = [
+          "defaults"
+          "noatime"
+          "nofail"
+        ];
+      };
 
-          extraBackupArgs = commonExtraBackupArgs;
+      services.restic.backups.local = {
+        repository = "${cfg.local.mountPoint}/restic";
+        inherit (cfg) passwordFile;
 
-          timerConfig = {
-            OnCalendar = cfg.localBackup.timer;
-            Persistent = true;
-          };
+        paths = [ cfg.snapshots.subvolume ];
 
-          pruneOpts = [
-            "--keep-daily 7"
-            "--keep-weekly 2"
-          ];
+        exclude = commonExcludes ++ [
+          ".snapshots"
 
-          initialize = true;
-          createWrapper = true;
+          "/home/${cfg.user}/Downloads"
+          "/home/${cfg.user}/3rd-party"
+          "/home/${cfg.user}/.lmstudio/models"
+
+          # Exclude any directory named "data" below ~/projects, but not arbitrary
+          # "data" directories elsewhere in the home directory.
+          "/home/${cfg.user}/projects/data"
+          "/home/${cfg.user}/projects/**/data"
+
+          # Large, reinstallable game content.
+          "/home/${cfg.user}/.local/share/Steam/steamapps"
+        ];
+
+        extraBackupArgs = commonExtraBackupArgs;
+
+        timerConfig = {
+          OnCalendar = cfg.local.timer;
+          Persistent = true;
         };
 
-        # Never let restic write into a stale mountpoint on the root filesystem:
-        # skip the backup entirely when the disk is not mounted.
-        systemd.services.restic-backups-local.unitConfig.RequiresMountsFor = cfg.localBackup.mountPoint;
-      })
-    ]
-  );
+        pruneOpts = [
+          "--keep-daily 7"
+          "--keep-weekly 2"
+        ];
+
+        initialize = true;
+        createWrapper = true;
+      };
+
+      # Never let restic write into a stale mountpoint on the root filesystem:
+      # skip the backup entirely when the disk is not mounted.
+      systemd.services.restic-backups-local.unitConfig.RequiresMountsFor = cfg.local.mountPoint;
+    })
+  ];
 }

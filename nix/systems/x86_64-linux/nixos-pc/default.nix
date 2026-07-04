@@ -20,14 +20,14 @@
   spicetify.enable = true;
 
   backups = {
-    enable = true;
+    remote.enable = true;
     librewolfProfile = "f9ugjznf.default";
     flatpakApps = [ "com.core447.StreamController" ];
     passwordFile = config.age.secrets.restic-password.path;
 
     snapshots.enable = true;
 
-    localBackup = {
+    local = {
       enable = true;
       device = "/dev/disk/by-uuid/dfbdb886-3344-4e83-8403-f5ea43187f61";
       fsType = "btrfs";
