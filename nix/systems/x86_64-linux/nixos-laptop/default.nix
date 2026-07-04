@@ -17,6 +17,15 @@
   spicetify.enable = true;
   fingerprint.enable = true;
 
+  # Let KDE PowerDevil own lid/power policy. logind should only watch the
+  # hardware events, not race PowerDevil with a second hibernate request.
+  services.logind.settings.Login = {
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchDocked = "ignore";
+    HandlePowerKey = "ignore";
+  };
+
   nixpkgs.overlays = [
     # Fingerprint reader needs fork (04f3:0c4c)
     (_: prev: {

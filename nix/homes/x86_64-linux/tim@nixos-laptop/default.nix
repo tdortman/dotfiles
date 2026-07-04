@@ -92,6 +92,7 @@
 
     kscreenlocker = {
       autoLock = false;
+      lockOnResume = false;
       appearance.showMediaControls = false;
     };
 
@@ -152,6 +153,7 @@
     powerdevil.battery = {
       powerButtonAction = "hibernate";
       whenLaptopLidClosed = "hibernate";
+      inhibitLidActionWhenExternalMonitorConnected = false;
       autoSuspend.idleTimeout = 600;
       autoSuspend.action = "hibernate";
       dimDisplay.enable = false;
@@ -162,7 +164,9 @@
     powerdevil.lowBattery = {
       powerButtonAction = "hibernate";
       whenLaptopLidClosed = "hibernate";
-      autoSuspend.action = "nothing";
+      inhibitLidActionWhenExternalMonitorConnected = false;
+      autoSuspend.idleTimeout = 600;
+      autoSuspend.action = "hibernate";
       whenSleepingEnter = "standbyThenHibernate";
       turnOffDisplay.idleTimeout = 300;
       dimDisplay = {
@@ -174,6 +178,7 @@
     powerdevil.AC = {
       powerButtonAction = "hibernate";
       whenLaptopLidClosed = "hibernate";
+      inhibitLidActionWhenExternalMonitorConnected = false;
       autoSuspend.action = "nothing";
       whenSleepingEnter = "standbyThenHibernate";
       turnOffDisplay.idleTimeout = "never";
@@ -216,6 +221,14 @@
 
       kded5rc.Module-browserintegrationreminder.autoload = false;
       kded6rc.PlasmaBrowserIntegration.shownCount = 1;
+
+      # Some laptop power buttons emit PowerDown rather than PowerOff.
+      # plasma-manager exposes PowerButtonAction, but not this Plasma 6 key.
+      powerdevilrc = {
+        "AC/SuspendAndShutdown".PowerDownAction = 2;
+        "Battery/SuspendAndShutdown".PowerDownAction = 2;
+        "LowBattery/SuspendAndShutdown".PowerDownAction = 2;
+      };
 
       kwinrulesrc = {
 
