@@ -18,9 +18,10 @@
   fingerprint.enable = true;
 
   nixpkgs.overlays = [
-    # Fingerprint reader needs fork
+    # Fingerprint reader needs fork (04f3:0c4c)
     (_: prev: {
       libfprint = prev.libfprint.overrideAttrs (oldAttrs: {
+        version = "1.49.9"; # This is a hack, it's actually 1.49.7 but pkg-config wants >= 1.49.9
         src = prev.fetchFromGitLab {
           domain = "gitlab.freedesktop.org";
           owner = "depau";
