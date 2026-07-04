@@ -21,6 +21,8 @@
     user = currentUsername;
   };
 
+  backups.snapshots.enable = true;
+
   audio = {
     enable = true;
     input = "alsa_input.usb-Antlion_Audio_Antlion_USB_adapter_20180707-00.mono-fallback";
