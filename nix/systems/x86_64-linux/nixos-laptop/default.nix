@@ -212,7 +212,7 @@
   services.kmscon.config = {
     hwaccel = true;
     font-name = "JetBrainsMono Nerd Font Mono";
-    font-size = 20;
+    font-size = 26;
     font-dpi = 256;
   };
 
