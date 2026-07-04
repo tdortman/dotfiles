@@ -31,7 +31,6 @@
 
   boot.loader = {
     efi.canTouchEfiVariables = true;
-    efi.efiSysMountPoint = "/boot";
 
     grub = {
       enable = true;
@@ -39,17 +38,9 @@
       efiSupport = true;
       font = "${pkgs.nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf";
       fontSize = 20;
-
-      extraEntries = ''
-        menuentry "Windows" {
-          insmod part_gpt
-          insmod fat
-          search --no-floppy --fs-uuid --set=root 4A77-6910
-          chainloader /EFI/Microsoft/Boot/bootmgfw.efi
-        }
-      '';
     };
   };
+
   networking.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
