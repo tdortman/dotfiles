@@ -2,8 +2,10 @@
   disko.devices.disk.esp = {
     type = "disk";
     device = "/dev/disk/by-uuid/4A77-6910";
+    destroy = false;
     content = {
       type = "filesystem";
+      format = "vfat";
       mountpoint = "/boot";
       mountOptions = [ "umask=0077" ];
     };
