@@ -28,6 +28,7 @@
           rev = "elanmoc2-working";
           hash = "sha256-uYT1qQK5Hv4AcX9AT9jc36oygiOnpoVh7W4bdsiXWog=";
         };
+        patches = [];
         buildInputs = oldAttrs.buildInputs ++ [ prev.nss ];
       });
     })
