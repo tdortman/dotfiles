@@ -10,37 +10,21 @@ let
 in
 {
   options.fingerprint = {
-    enable = lib.mkEnableOption "enable fingerprint scanning";
+    enable = lib.mkEnableOption "fingerprint scanning";
 
-    fprintd_package = lib.mkOption {
-      type = lib.types.package;
-      default = pkgs.fprintd;
-      defaultText = "pkgs.fprintd";
-      description = "Which package to use for fprintd";
-    };
-
-    libfprint_package = lib.mkOption {
-      type = lib.types.package;
-      default = pkgs.libfprint;
-      defaultText = "pkgs.libfprint";
-      description = "Which package to use for libfprint";
-    };
+    fprintPkg = lib.mkPackageOption pkgs "fprintd";
+    libfprintPkg = lib.mkPackageOption pkgs "libfprint";
   };
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [
-      cfg.fprintd_package
-      cfg.libfprint_package
+      cfg.fprintPkg
+      cfg.libfprintPkg
     ];
     services.fprintd.enable = true;
 
-    systemd.services.fprintd = {
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig.Type = "simple";
-    };
-
     services.fprintd.package = pkgs.fprintd.override {
-      libfprint = cfg.libfprint_package;
+      libfprint = cfg.libfprintPkg;
     };
 
     # If we want to manage fingerprints via the plasma GUI we need to allow this
@@ -51,7 +35,7 @@ in
           text = ''
             polkit.addRule(function(action, subject) {
               if (action.id.match(/^net\.reactivated\.fprint\.device\./)) {
-                  return polkit.Result.YES;
+                return polkit.Result.YES;
               }
             });
           '';
