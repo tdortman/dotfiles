@@ -22,6 +22,8 @@
 
   boot.kernelParams = [ ];
 
+  boot.resumeDevice = "/dev/mapper/crypted";
+
   powerManagement.enable = true;
 
   boot.kernel.sysctl = {
