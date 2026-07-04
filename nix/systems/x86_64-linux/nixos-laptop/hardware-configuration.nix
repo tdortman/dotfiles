@@ -20,7 +20,9 @@
     "kvm-intel"
   ];
 
-  boot.kernelParams = [ ];
+  boot.kernelParams = [ 
+    "resume_offset=533760"
+  ];
 
   boot.resumeDevice = "/dev/mapper/crypted";
 
