@@ -73,7 +73,7 @@
     "filesystem": {
         "allow": [
             { "path": "/etc/group", "access": "read_write", "comment": "global" },
-            { "path": "/etc/machine-id", "access": "read", "comment": "global" },
+            { "path": "/etc/machine-id", "access": "read_write", "comment": "global" },
             { "path": "/etc/passwd", "access": "read_write", "comment": "global" },
             { "path": "/nix/var/nix/db", "access": "read", "comment": "global" },
             { "path": "/run/systemd/resolve/stub-resolv.conf", "access": "read_write", "comment": "global" },
