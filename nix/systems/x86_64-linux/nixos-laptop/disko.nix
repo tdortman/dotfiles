@@ -1,4 +1,14 @@
 {
+  disko.devices.disk.esp = {
+    type = "disk";
+    device = "/dev/disk/by-uuid/4A77-6910";
+    content = {
+      type = "filesystem";
+      mountpoint = "/boot";
+      mountOptions = [ "umask=0077" ];
+    };
+  };
+
   disko.devices.disk.main = {
     type = "disk";
 

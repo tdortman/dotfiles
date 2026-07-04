@@ -29,14 +29,6 @@
     "fs.inotify.max_user_instances" = 2048;
   };
 
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/4A77-6910";
-    fsType = "vfat";
-    options = [
-      "umask=0077"
-    ];
-  };
-
   boot.loader = {
     efi.canTouchEfiVariables = true;
     efi.efiSysMountPoint = "/boot";
@@ -52,7 +44,7 @@
         menuentry "Windows" {
           insmod part_gpt
           insmod fat
-          search --no-floppy --fs-uuid --set=root 4477-6910
+          search --no-floppy --fs-uuid --set=root 4A77-6910
           chainloader /EFI/Microsoft/Boot/bootmgfw.efi
         }
       '';
