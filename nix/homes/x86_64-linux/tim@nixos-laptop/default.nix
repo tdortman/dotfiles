@@ -149,8 +149,31 @@
       "services/net.local.hdr-toggle.desktop"."_launch" = lib.mkIf osConfig.hdr.enable "Meta+Alt+B";
     };
 
+    powerdevil.battery = {
+      powerButtonAction = "hibernate";
+      whenLaptopLidClosed = "hibernate";
+      autoSuspend.idleTimeout = 600;
+      autoSuspend.action = "hibernate";
+      dimDisplay.enable = false;
+      whenSleepingEnter = "standbyThenHibernate";
+      turnOffDisplay.idleTimeout = "never";
+    };
+
+    powerdevil.lowBattery = {
+      powerButtonAction = "hibernate";
+      whenLaptopLidClosed = "hibernate";
+      autoSuspend.action = "nothing";
+      whenSleepingEnter = "standbyThenHibernate";
+      turnOffDisplay.idleTimeout = 300;
+      dimDisplay = {
+        enable = true;
+        idleTimeout = 60;
+      };
+    };
+
     powerdevil.AC = {
       powerButtonAction = "hibernate";
+      whenLaptopLidClosed = "hibernate";
       autoSuspend.action = "nothing";
       whenSleepingEnter = "standbyThenHibernate";
       turnOffDisplay.idleTimeout = "never";
