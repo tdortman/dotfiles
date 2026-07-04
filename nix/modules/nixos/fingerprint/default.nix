@@ -12,8 +12,8 @@ in
   options.fingerprint = {
     enable = lib.mkEnableOption "fingerprint scanning";
 
-    fprintPkg = lib.mkPackageOption pkgs "fprintd" {};
-    libfprintPkg = lib.mkPackageOption pkgs "libfprint" {};
+    fprintPkg = lib.mkPackageOption pkgs "fprintd" { };
+    libfprintPkg = lib.mkPackageOption pkgs "libfprint" { };
   };
 
   config = lib.mkIf cfg.enable {
