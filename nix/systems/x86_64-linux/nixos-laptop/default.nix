@@ -81,41 +81,18 @@
 
   backups.snapshots.enable = true;
 
-  audio = {
+  security.rtkit.enable = true;
+
+  services.pipewire = {
     enable = true;
-    input = "alsa_input.usb-Antlion_Audio_Antlion_USB_adapter_20180707-00.mono-fallback";
-    inputChannels = "mono";
-    output = "alsa_output.usb-Schiit_Audio_Schiit_Modi_Uber-00.analog-stereo";
-    mutedInputs = [ "alsa_input.usb-046d_Brio_100_2602ZBR396W8-02.mono-fallback" ];
+    alsa.enable = true;
+    pulse.enable = true;
+    jack.enable = true;
+    wireplumber.enable = true;
 
-    eq = {
-      enable = true;
-      file = "/home/${currentUsername}/.local/share/auto_eq/hd6xx_he-1_parametric.txt";
-    };
-
-    appCategories = {
-      Browser.appNames = [ "LibreWolf" ];
-      Music = {
-        limitThreshold = -12.0;
-        appNames = [
-          "spotify"
-          "foobar2000 Application"
-        ];
-      };
-      Discord = {
-        appNames = [
-          "Discord.*"
-          "Slack.*"
-        ];
-        binaries = [
-          ".Discord-wrapped"
-          "fluxer"
-        ];
-      };
-      System = { };
-    };
-
-    fallbackCategory = "System";
+    extraLadspaPackages = [
+      pkgs.ladspaPlugins
+    ];
   };
 
   nextdns = {
@@ -355,6 +332,7 @@
     gvfs
     samba
     glib
+    qpwgraph
 
     inputs.agenix.packages."${system}".default
 

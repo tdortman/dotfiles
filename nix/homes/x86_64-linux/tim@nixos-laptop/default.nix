@@ -49,7 +49,6 @@
                 "applications:org.kde.dolphin.desktop"
                 "applications:librewolf.desktop"
                 "applications:discord.desktop"
-                "applications:steam.desktop"
                 "applications:spotify.desktop"
               ];
             };
@@ -176,6 +175,11 @@
         XftSubPixel = "rgb";
       };
 
+      kcminputrc."Libinput/1267/12635/ELAN072D:00 04F3:315B Touchpad" = {
+        NaturalScroll = true;
+        ScrollFactor = 0.75;
+      };
+
       kwinrc = {
         # For some reason the workspace setting does not persist this setting
         # so we write it directly into the config file (disable middle click paste)
@@ -183,6 +187,8 @@
 
         # Disable overview when moving to top left corner
         "Effect-overview".BorderActivate = 9;
+
+        Xwayland.Scale = 1.25;
       };
 
       kded5rc.Module-browserintegrationreminder.autoload = false;
