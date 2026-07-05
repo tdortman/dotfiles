@@ -127,6 +127,7 @@
             { "path": "~/.cargo/git", "access": "read_write", "comment": "global" },
             { "path": "~/.cargo/registry", "access": "read_write", "comment": "global" },
             { "path": "~/.codeium/windsurf/memories/global_rules.md", "access": "read_write", "comment": "global" },
+            { "path": "~/.codex/AGENTS.md", "access": "read_write", "comment": "global" },
             { "path": "~/.codex/config.toml", "access": "read_write", "comment": "global" },
             { "path": "~/.config/1Password/settings/settings.json", "access": "read", "comment": "global" },
             { "path": "~/.config/dconf", "access": "read", "comment": "global" },
@@ -181,7 +182,9 @@
             { "path": "~/dotfiles/home/dot_zshrc", "access": "read", "comment": "global" },
             { "path": "~/miniforge3/etc", "access": "read", "comment": "global" }
         ],
-        "deny": []
+        "deny": [
+            { "path": "/home/.snapshots", "access": "all", "comment": "global" }
+        ]
     },
     "resources": {
         "allow": [
