@@ -72,6 +72,7 @@
     },
     "filesystem": {
         "allow": [
+            { "path": "/dev/shm/sem.*", "access": "read_write", "comment": "global" },
             { "path": "/etc/group", "access": "read_write", "comment": "global" },
             { "path": "/etc/machine-id", "access": "read_write", "comment": "global" },
             { "path": "/etc/passwd", "access": "read_write", "comment": "global" },
@@ -197,7 +198,8 @@
             { "kind": "unix_socket", "path": "~/.1password/agent.sock", "access": "connect", "comment": "global" },
             { "kind": "device", "path": "/dev/dri/render*", "access": "open_read_write", "comment": "global" },
             { "kind": "device", "path": "/dev/nvidia*", "access": "open_read_write", "comment": "global" },
-            { "kind": "device", "path": "/dev/shm/cuda_injection_path_shm", "access": "open_read_write", "comment": "global" }
+            { "kind": "device", "path": "/dev/shm/cuda_injection_path_shm", "access": "open_read_write", "comment": "global" },
+            { "kind": "device", "path": "/dev/shm/sem.*", "access": "open_read_write", "comment": "global" }
         ],
         "deny": [
             { "kind": "unix_socket", "path": "/run/user/*/systemd/private", "access": "connect", "comment": "global" }
