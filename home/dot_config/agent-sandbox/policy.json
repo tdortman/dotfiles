@@ -187,9 +187,7 @@
             { "path": "~/dotfiles/home/dot_zshrc", "access": "read", "comment": "global" },
             { "path": "~/miniforge3/etc", "access": "read", "comment": "global" }
         ],
-        "deny": [
-            { "path": "/home/.snapshots", "access": "all", "comment": "global" }
-        ]
+        "deny": []
     },
     "resources": {
         "allow": [
