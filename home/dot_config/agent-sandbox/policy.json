@@ -26,6 +26,7 @@
             { "host": "www.freedesktop.org", "port": 443, "comment": "global" },
             { "host": "github.com", "port": 443, "comment": "global" },
             { "host": "api.github.com", "port": 443, "comment": "global" },
+            { "host": "codeload.github.com", "port": 443, "comment": "global" },
             { "host": "api.individual.githubcopilot.com", "port": 443, "comment": "global" },
             { "host": "raw.githubusercontent.com", "port": 443, "comment": "global" },
             { "host": "cloudcode-pa.googleapis.com", "port": 443, "comment": "global" },
