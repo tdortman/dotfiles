@@ -1,14 +1,14 @@
 modelRoles: 
-  default: cursor/composer-2.5
-  commit: cursor/composer-2.5:off
+  default: openai-codex/gpt-5.4:medium
+  commit: openai-codex/gpt-5.5:medium
   vision: openai-codex/gpt-5.5:low
-  plan: openai-codex/gpt-5.5:high
-  smol: deepseek/deepseek-v4-flash
-  task: cursor/composer-2.5
-  slow: openai-codex/gpt-5.5:low
+  plan: openai-codex/gpt-5.5:xhigh
+  smol: openai-codex/gpt-5.4-mini:medium
+  task: openai-codex/gpt-5.4:low
+  slow: openai-codex/gpt-5.5:medium
   advisor: openai-codex/gpt-5.5:medium
-  designer: zai/glm-5.2:medium
-  tiny: deepseek/deepseek-v4-flash:off
+  designer: openai-codex/gpt-5.5:medium
+  tiny: openai-codex/gpt-5.4-nano:low
 startup: 
   checkUpdate: false
 symbolPreset: nerd
@@ -79,7 +79,7 @@ python:
 dev: 
   autoqa: false
 advisor: 
-  enabled: false
+  enabled: true
   subagents: false
 completion: 
   notify: "on"
