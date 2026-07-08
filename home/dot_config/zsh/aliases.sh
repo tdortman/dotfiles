@@ -250,8 +250,6 @@ Do not start any line with #.
 Wrap code symbols in backticks.
 Do not use emojis or other special characters.
 Do not use em-dashes or semicolons.
-Each commit must contain EXACTLY ONE -m flag because
-otherwise there will be an empty line between each body line.
 EOF
     )"
     echo
