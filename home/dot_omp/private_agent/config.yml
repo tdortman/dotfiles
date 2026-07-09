@@ -1,13 +1,13 @@
 modelRoles: 
-  default: openai-codex/gpt-5.4:medium
-  commit: openai-codex/gpt-5.5:medium
-  vision: openai-codex/gpt-5.5:low
-  plan: openai-codex/gpt-5.5:high
-  smol: openai-codex/gpt-5.4-mini:medium
-  task: openai-codex/gpt-5.4:low
-  slow: openai-codex/gpt-5.5:medium
-  advisor: openai-codex/gpt-5.5:medium
-  designer: openai-codex/gpt-5.5:medium
+  default: openai-codex/gpt-5.6-terra:medium
+  commit: openai-codex/gpt-5.6-sol:low
+  vision: openai-codex/gpt-5.6-sol:low
+  plan: openai-codex/gpt-5.6-sol:high
+  smol: openai-codex/gpt-5.6-luna:low
+  task: openai-codex/gpt-5.6-luna:medium
+  slow: openai-codex/gpt-5.6-sol:medium
+  advisor: openai-codex/gpt-5.6-sol:medium
+  designer: openai-codex/gpt-5.6-sol:medium
   tiny: openai-codex/gpt-5.4-nano:low
 startup: 
   checkUpdate: false
