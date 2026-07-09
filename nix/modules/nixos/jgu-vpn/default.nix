@@ -10,18 +10,47 @@ let
   haricaCa = ./HARICA-TLS-Root-2021-RSA.pem;
 
   dnsTarget = if cfg.dnsServers != [ ] then "${builtins.head cfg.dnsServers}:53" else "127.0.0.53:53";
+  xfrmIdPattern = "(${toString cfg.ifId}|0x${lib.toHexString cfg.ifId})";
 
   jguVpnRun = pkgs.writeShellApplication {
     name = "jgu-vpn-run";
     runtimeInputs = with pkgs; [
       coreutils
+      gnugrep
       iproute2
+      strongswan
       util-linux
     ];
     text = ''
       if ! ip link show "${cfg.interface}" >/dev/null 2>&1; then
-        echo "[jgu-vpn-run] XFRM interface ${cfg.interface} not found — is strongSwan running?" >&2
+        echo "[jgu-vpn-run] XFRM interface ${cfg.interface} not found. Is strongSwan running?" >&2
         exit 1
+      fi
+
+      xfrm_ready() {
+        ip xfrm state 2>/dev/null | grep -iE "if_id[[:space:]]+${xfrmIdPattern}([[:space:]]|$)" >/dev/null \
+          && ip xfrm policy 2>/dev/null | grep -iE "if_id[[:space:]]+${xfrmIdPattern}([[:space:]]|$)" >/dev/null
+      }
+
+      if ! xfrm_ready; then
+        echo "[jgu-vpn-run] XFRM state and policy for if_id ${toString cfg.ifId} are not ready. Initiating jgu-child." >&2
+        if ! timeout 10s swanctl --initiate --ike jgu --child jgu-child; then
+          echo "[jgu-vpn-run] swanctl initiation failed or timed out. Waiting for recovery." >&2
+        fi
+
+        ready=0
+        for attempt in $(seq 1 10); do
+          if xfrm_ready; then
+            ready=1
+            break
+          fi
+          echo "[jgu-vpn-run] Waiting for XFRM state and policy, attempt ''${attempt}/10." >&2
+          sleep 1
+        done
+        if [ "''${ready}" -ne 1 ]; then
+          echo "[jgu-vpn-run] XFRM CHILD SA for if_id ${toString cfg.ifId} is unavailable. Refusing to create VPN namespace." >&2
+          exit 1
+        fi
       fi
 
       export VPN_RUN_HOST_DNS_TARGET="${dnsTarget}"
@@ -170,6 +199,7 @@ in
         mobike = true;
         dpd_delay = "30s";
         dpd_timeout = "150s";
+        keyingtries = 0;
         remote_addrs = [ cfg.gateway ];
 
         proposals = [
@@ -198,6 +228,7 @@ in
           if_id_in = toString cfg.ifId;
           if_id_out = toString cfg.ifId;
           start_action = if cfg.autoStart then "start" else "trap";
+          dpd_action = "restart";
           esp_proposals = [
             "aes256-sha1"
             "aes256-sha256"
