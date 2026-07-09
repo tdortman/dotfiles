@@ -248,6 +248,21 @@ commit, I should be able to check it out and still have a functioning
 repo. Do not create commits where the build only works again after a
 later commit. If a safe split is not possible, keep the change together.
 
+After creating the commit series, verify that each commit leaves the
+repository in a functioning state.
+
+Prefer using temporary Git worktrees to test commits independently
+instead of repeatedly moving the main working tree. For each commit, check
+out that commit in a clean worktree and run the relevant build, tests, or
+checks for the project.
+
+If testing every commit is too expensive, test the commits most likely to
+break the build, such as commits that change APIs, move files, update
+dependencies, alter build configuration, or split a larger change across
+multiple commits.
+
+Remove temporary worktrees after testing them.
+
 Stage changes deliberately. Do not include unrelated edits in a commit.
 Use the smallest commit that still preserves a working state and a clear
 reason for the change.
