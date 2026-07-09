@@ -271,9 +271,34 @@ Each \`git commit\` command must contain exactly one \`-m\` flag. Use a
 single multi-line message argument instead of multiple \`-m\` flags, so
 Git does not insert extra blank lines between body lines.
 
+Wrap the entire commit message argument in single quotes, not double
+quotes, so shell command substitution does not run code symbols wrapped
+in backticks.
+
+Use this form:
+
+\`git commit -m 'feat: add parser guard
+
+Prevent invalid input from reaching \`parse_config\` before the caller has
+validated the file contents.'\`
+
+Do not use this form:
+
+\`git commit -m "feat: add parser guard
+
+Prevent invalid input from reaching \`parse_config\`."\`
+
+Double quotes allow the shell to execute text inside backticks. Single
+quotes preserve the backticks literally.
+
+Avoid apostrophes inside commit messages so the single-quoted argument
+does not need escaping. For example, write \`does not\` instead of
+\`doesn't\`.
+
 If the reason for a change is unclear, check the project's session
 history under \`$HOME/.omp/agent/sessions\` before writing the commit
 message.
+
 EOF
     )"
     echo
