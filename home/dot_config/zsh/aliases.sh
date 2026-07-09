@@ -279,8 +279,9 @@ commands. Do not fall back to broad manual Git commands when a
 Use \`git-surgeon\` to understand changed files, hunks, lines, untracked files,
 dependencies between changes, and safe staging boundaries. Build a commit
 plan that groups changes by intent. For each planned commit, identify the
-specific problem, constraint, bug, design pressure, or user-facing need that
-explains why the change exists.
+specific project problem, constraint, bug, design pressure, or user-facing
+need that explains why the repository needs the change.
+Keep agent workflow reasoning out of the commit message.
 
 Commit bodies must give a concrete rationale. Avoid vague explanations
 such as "improves maintainability", "cleans up the code", "updates logic",
@@ -288,10 +289,11 @@ or "makes things better" unless they are immediately followed by the
 specific reason this matters in the project.
 
 A good commit body should usually answer:
-- What problem or limitation made this change necessary?
-- Why is this approach the right boundary for the commit?
+- What project problem, limitation, or design pressure made this change
+  necessary?
+- Why is this implementation approach appropriate for the codebase?
 - What behaviour, API, workflow, or future change does this enable?
-- What risk was considered, and how was the commit validated?
+- What compatibility or migration constraint matters to future maintainers?
 
 If the change is mechanical, explain the non-mechanical reason it is
 needed, such as preparing for an API split, reducing duplicated state,
@@ -326,6 +328,26 @@ in commit messages. Keep that reasoning in the final summary instead.
 The commit body should explain why the repository needs the change from the
 project's perspective. It should not justify why the agent chose a
 particular commit boundary.
+
+Commit messages must describe the repository change from the project's
+perspective. Do not describe the agent's workflow, commit planning, series
+splitting, or validation process.
+
+Never include process phrases such as:
+- "validated earlier"
+- "before the series was split"
+- "this commit is kept as one boundary"
+- "this split is kept in one commit"
+- "the workspace would not compile otherwise"
+- "tested in a temporary worktree"
+- "validation checks"
+
+Keep validation details in the final response after the commits are
+created, not in the commit message body.
+
+It is acceptable to mention compile-time constraints only when they are a
+real architectural reason for the change, not as a justification for how
+the agent split the series.
 
 Bad body:
 "Updates parser handling and refactors helpers."
