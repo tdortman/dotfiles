@@ -2,7 +2,7 @@ modelRoles:
   default: openai-codex/gpt-5.4:medium
   commit: openai-codex/gpt-5.5:medium
   vision: openai-codex/gpt-5.5:low
-  plan: openai-codex/gpt-5.5:xhigh
+  plan: openai-codex/gpt-5.5:high
   smol: openai-codex/gpt-5.4-mini:medium
   task: openai-codex/gpt-5.4:low
   slow: openai-codex/gpt-5.5:medium
