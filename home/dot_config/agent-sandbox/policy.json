@@ -107,6 +107,7 @@
             { "path": "./Cargo.lock", "access": "read_write", "comment": "global" },
             { "path": "./Cargo.toml", "access": "read_write", "comment": "global" },
             { "path": "./README.md", "access": "read_write", "comment": "global" },
+            { "path": "./architecture-review-*-*.html", "access": "write", "comment": "global" },
             { "path": "./build", "access": "all", "comment": "global" },
             { "path": "./builddir", "access": "all", "comment": "global" },
             { "path": "./crates", "access": "read_write", "comment": "global" },
@@ -148,6 +149,7 @@
             { "path": "~/.config/gh/config.yml", "access": "read", "comment": "global" },
             { "path": "~/.config/gh/hosts.yml", "access": "read", "comment": "global" },
             { "path": "~/.config/google-chrome/Crash Reports", "access": "read", "comment": "global" },
+            { "path": "~/.config/google-chrome/Crash Reports/settings.dat", "access": "read_write", "comment": "global" },
             { "path": "~/.config/nix/nix.conf", "access": "read", "comment": "global" },
             { "path": "~/.config/op/config", "access": "read", "comment": "global" },
             { "path": "~/.config/user-dirs.dirs", "access": "read", "comment": "global" },
@@ -202,6 +204,7 @@
     "resources": {
         "allow": [
             { "kind": "unix_socket", "path": "/nix/var/nix/daemon-socket/socket", "access": "connect", "comment": "global" },
+            { "kind": "unix_socket", "path": "/run/agent-sandbox/sandbox-policy.sock", "access": "connect", "comment": "global" },
             { "kind": "unix_socket", "path": "/run/nscd/socket", "access": "connect", "comment": "global" },
             { "kind": "unix_socket", "path": "/run/user/1000/1Password-BrowserSupport.sock", "access": "connect", "comment": "global" },
             { "kind": "unix_socket", "path": "/run/user/1000/bus", "access": "connect", "comment": "global" },
