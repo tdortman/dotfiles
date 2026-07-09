@@ -236,20 +236,44 @@ omp-commit() {
 
     omp "$@" "$(
         cat <<EOF
-generate granular commits using the git-surgeon skill at
-$HOME/.agents/skills/git-surgeon/SKILL.md.
+Generate granular, atomic commits using the \`git-surgeon\` skill at
+\`$HOME/.agents/skills/git-surgeon/SKILL.md\`.
 
-Explain what changed and why.
-Focus on the most important changes.
-Use present tense.
-Use a semantic commit prefix.
-Keep the title to 50 characters or less.
-Keep an empty line between the title and body.
-Body lines must not exceed 70 characters.
-Do not start any line with #.
-Wrap code symbols in backticks.
-Do not use emojis or other special characters.
-Do not use em-dashes or semicolons.
+Do not over-split the work. Focus on the most important changes.
+Each commit should represent one coherent reason for change, not just
+one edited file or one mechanical diff chunk.
+
+Each commit must leave the repository in a valid state. After any
+commit, I should be able to check it out and still have a functioning
+repo. Do not create commits where the build only works again after a
+later commit. If a safe split is not possible, keep the change together.
+
+Stage changes deliberately. Do not include unrelated edits in a commit.
+Use the smallest commit that still preserves a working state and a clear
+reason for the change.
+
+For each commit message:
+
+- Use present tense.
+- Use a semantic commit prefix.
+- Keep the title to 50 characters or less.
+- Keep an empty line between the title and body.
+- Explain why the change was made, not just what changed.
+- Focus the body on the most important context.
+- Wrap code symbols in backticks.
+- Body lines must not exceed 70 characters.
+- Do not start any line with \`#\`.
+- Do not use emojis.
+- Do not use em dashes.
+- Do not use semicolons.
+
+Each \`git commit\` command must contain exactly one \`-m\` flag. Use a
+single multi-line message argument instead of multiple \`-m\` flags, so
+Git does not insert extra blank lines between body lines.
+
+If the reason for a change is unclear, check the project's session
+history under \`$HOME/.omp/agent/sessions\` before writing the commit
+message.
 EOF
     )"
     echo
