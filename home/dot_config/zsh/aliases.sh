@@ -239,6 +239,11 @@ omp-commit() {
 Generate granular, atomic commits using the \`git-surgeon\` skill at
 \`$HOME/.agents/skills/git-surgeon/SKILL.md\`.
 
+Prefer \`git-surgeon\` commands for inspection, staging, splitting,
+validation, and commit preparation. Use raw Git commands only when
+\`git-surgeon\` does not provide the needed operation, or when the prompt
+explicitly constrains the exact Git command format.
+
 Do not over-split the work. Focus on the most important changes.
 Each commit should represent one coherent reason for change, not just
 one edited file or one mechanical diff chunk.
@@ -254,67 +259,106 @@ repository in a functioning state.
 Prefer using temporary Git worktrees to test commits independently
 instead of repeatedly moving the main working tree. For each commit, check
 out that commit in a clean worktree and run the relevant build, tests, or
-checks for the project.
+checks for the project. Always ensure temporary worktrees are removed when
+testing completes, even if a test fails.
 
 If testing every commit is too expensive, test the commits most likely to
 break the build, such as commits that change APIs, move files, update
 dependencies, alter build configuration, or split a larger change across
 multiple commits.
 
-Remove temporary worktrees after testing them.
-
 Stage changes deliberately. Do not include unrelated edits in a commit.
 Use the smallest commit that still preserves a working state and a clear
 reason for the change.
 
-For each commit message:
+Before creating commits, inspect the full working tree using the
+\`git-surgeon\` workflow and its most appropriate granular inspection
+commands. Do not fall back to broad manual Git commands when a
+\`git-surgeon\` command exists for the task.
 
-- Use British English spelling and wording.
+Use \`git-surgeon\` to understand changed files, hunks, lines, untracked files,
+dependencies between changes, and safe staging boundaries. Build a commit
+plan that groups changes by intent. For each planned commit, identify the
+specific problem, constraint, bug, design pressure, or user-facing need that
+explains why the change exists.
+
+Commit bodies must give a concrete rationale. Avoid vague explanations
+such as "improves maintainability", "cleans up the code", "updates logic",
+or "makes things better" unless they are immediately followed by the
+specific reason this matters in the project.
+
+A good commit body should usually answer:
+- What problem or limitation made this change necessary?
+- Why is this approach the right boundary for the commit?
+- What behaviour, API, workflow, or future change does this enable?
+- What risk was considered, and how was the commit validated?
+
+If the change is mechanical, explain the non-mechanical reason it is
+needed, such as preparing for an API split, reducing duplicated state,
+making later validation possible, or keeping generated artefacts in sync.
+
+### Commit Message Constraints
+
+For each commit message, you must strictly adhere to these rules:
+- Use British English spelling and wording, for example \`optimise\`,
+  \`favour\`, \`colour\`, and \`behaviour\`.
 - Use present tense.
 - Use a semantic commit prefix.
-- Keep the title to 50 characters or less.
+- Title length: Maximum 50 characters.
+- Body line length: Maximum 70 characters.
 - Keep an empty line between the title and body.
 - Explain why the change was made, not just what changed.
+- For every commit body, explain the cause or pressure behind the change,
+  not merely the resulting code difference.
 - Focus the body on the most important context.
-- Wrap code symbols in backticks.
-- Body lines must not exceed 70 characters.
+- Wrap code symbols in \`backticks\`.
 - Do not start any line with \`#\`.
-- Do not use emojis.
-- Do not use em dashes.
-- Do not use semicolons.
+- Do not use emojis, em dashes, or semicolons.
+
+Commit bodies must not explain the agent's process, commit-planning
+decision, or validation workflow unless that information is directly useful
+to a future maintainer of the repository.
+
+Do not write phrases such as "this stays one commit", "this was split",
+"the risk is prompt drift", "validation checks", or similar process notes
+in commit messages. Keep that reasoning in the final summary instead.
+
+The commit body should explain why the repository needs the change from the
+project's perspective. It should not justify why the agent chose a
+particular commit boundary.
+
+Bad body:
+"Updates parser handling and refactors helpers."
+
+Good body:
+"The parser now accepts shared input paths from multiple call sites, so the
+normalisation step needs to live behind a single helper. Keeping the helper
+inside the parser avoids duplicating path handling before later callers are
+added."
+
+### Shell Formatting Safety
 
 Each \`git commit\` command must contain exactly one \`-m\` flag. Use a
-single multi-line message argument instead of multiple \`-m\` flags, so
-Git does not insert extra blank lines between body lines.
+single multi-line message argument instead of multiple \`-m\` flags.
 
 Wrap the entire commit message argument in single quotes, not double
-quotes, so shell command substitution does not run code symbols wrapped
-in backticks.
+quotes. If you must use an apostrophe inside the message, escape it safely
+for Bash using \`'\\''\`, for example \`don'\\''t\`. Otherwise, completely
+avoid apostrophes.
 
-Use this form:
+If there is even a sliver of uncertainty about the reason behind a change,
+check the project's session history under \`$HOME/.omp/agent/sessions\`
+before writing the commit message.
 
-\`git commit -m 'feat: add parser guard
+Do not invent rationale. If the reason for a change is unclear after
+inspecting the diff and session history, say so in the commit body using
+careful wording, or keep the body limited to the observable reason.
 
-Prevent invalid input from reaching \`parse_config\` before the caller has
-validated the file contents.'\`
-
-Do not use this form:
-
-\`git commit -m "feat: add parser guard
-
-Prevent invalid input from reaching \`parse_config\`."\`
-
-Double quotes allow the shell to execute text inside backticks. Single
-quotes preserve the backticks literally.
-
-Avoid apostrophes inside commit messages so the single-quoted argument
-does not need escaping. For example, write \`does not\` instead of
-\`doesn't\`.
-
-If the reason for a change is unclear, check the project's session
-history under \`$HOME/.omp/agent/sessions\` before writing the commit
-message.
-
+After creating the commit series, audit the commit messages using
+\`git-surgeon\`, Git history inspection, or an equivalent command. Verify
+that every commit message satisfies the title length, body line length,
+semantic prefix, British English, quoting, and formatting constraints. Fix
+any commit message that fails the audit.
 EOF
     )"
     echo
