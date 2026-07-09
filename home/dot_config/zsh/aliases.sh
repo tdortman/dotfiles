@@ -254,6 +254,7 @@ reason for the change.
 
 For each commit message:
 
+- Use British English spelling and wording.
 - Use present tense.
 - Use a semantic commit prefix.
 - Keep the title to 50 characters or less.
