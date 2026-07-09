@@ -1,0 +1,73 @@
+agent_notes            = true
+exclude_untracked      = false
+line_numbers           = true
+menu_bar               = true
+mode                   = "stack" # auto, split, stack
+transparent_background = false
+vcs                    = "git"   # git, jj, sl
+watch                  = false
+wrap_lines             = false
+
+theme = "custom"
+
+[custom_theme]
+base  = "one-dark-pro"
+label = "One Dark Pro Darker"
+
+background = "#090909"
+border     = "#2a2e38"
+panel      = "#090909"
+panelAlt   = "#0f1115"
+
+accent      = "#61afef"
+accentMuted = "#20344a"
+
+muted = "#525968"
+text  = "#abb2bf"
+
+contextBg        = "#090909"
+contextContentBg = "#111318"
+
+addedBg        = "#102a1b"
+movedAddedBg   = "#211936"
+movedRemovedBg = "#211936"
+removedBg      = "#321215"
+
+addedContentBg   = "#183f29"
+removedContentBg = "#4d1c22"
+
+addedSignColor   = "#98c379"
+removedSignColor = "#e06c75"
+
+lineNumberBg = "#0b0c0e"
+lineNumberFg = "#4b5263"
+
+selectedHunk = "#1b2230"
+
+badgeAdded   = "#98c379"
+badgeNeutral = "#525968"
+badgeRemoved = "#e06c75"
+
+fileDeleted   = "#e06c75"
+fileModified  = "#c678dd"
+fileNew       = "#98c379"
+fileRenamed   = "#d19a66"
+fileUntracked = "#56b6c2"
+
+noteBackground      = "#101216"
+noteBorder          = "#61afef"
+noteTitleBackground = "#1b2a3a"
+noteTitleText       = "#abb2bf"
+
+[custom_theme.syntax]
+comment     = "#5c6370"
+default     = "#abb2bf"
+function    = "#61afef"
+keyword     = "#c678dd"
+number      = "#d19a66"
+operator    = "#abb2bf"
+property    = "#e06c75"
+punctuation = "#abb2bf"
+string      = "#98c379"
+type        = "#e5c07b"
+variable    = "#e06c75"

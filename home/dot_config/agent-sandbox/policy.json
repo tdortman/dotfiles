@@ -8,6 +8,7 @@
             { "host": "127.0.0.1", "port": 11434, "comment": "ollama" },
             { "host": "127.0.0.1", "port": 32124, "comment": "opencode-cursor" },
             { "host": "169.254.100.1", "port": 53, "comment": "dns forwarder" },
+            { "host": "169.254.100.1", "port": 47657, "comment": "hunk daemon" },
             { "host": "::", "port": 1455, "comment": "omp oauth" },
             { "host": "::1", "port": 6000, "comment": "x11" },
             { "host": "source.android.com", "port": 443, "comment": "global" },

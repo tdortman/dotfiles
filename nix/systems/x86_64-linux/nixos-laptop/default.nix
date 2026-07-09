@@ -367,8 +367,6 @@
     custom.danbooru-rs
     custom.shiru
     custom.fluxer
-
-    pkgs.llm-agents.git-surgeon
   ];
 
   xdg.portal.xdgOpenUsePortal = true;

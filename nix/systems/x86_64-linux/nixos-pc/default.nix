@@ -417,8 +417,6 @@
     custom.danbooru-rs
     custom.shiru
     custom.fluxer
-
-    pkgs.llm-agents.git-surgeon
   ];
 
   hardware.logitech.wireless.enable = true;
@@ -437,7 +435,15 @@
     MOZ_ENABLE_WAYLAND = 1;
     MOZ_DISABLE_RDD_SANDBOX = 1;
     GHIDRA_ROOT = "${pkgs.ghidra}";
+
+    # Hunk inside agent-sandbox
+    HUNK_MCP_HOST = "169.254.100.1";
+    HUNK_MCP_PORT = 47657;
+    HUNK_MCP_UNSAFE_ALLOW_REMOTE = 1;
   };
+
+  # Hunk inside agent-sandbox
+  networking.firewall.interfaces.asbx-host.allowedTCPPorts = [ 47657 ];
 
   programs.mtr.enable = true;
   system.stateVersion = "25.05";

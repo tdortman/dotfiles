@@ -122,5 +122,9 @@
       man-pages
       man-pages-posix
     ]
-    ++ [ (if config.nvidia.driver.enable then pkgs.btop-cuda else pkgs.btop) ];
+    ++ [
+      (if config.nvidia.driver.enable then pkgs.btop-cuda else pkgs.btop)
+      pkgs.llm-agents.hunk
+      pkgs.llm-agents.git-surgeon
+    ];
 }
