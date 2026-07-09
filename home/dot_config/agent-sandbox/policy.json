@@ -51,6 +51,7 @@
             { "host": "releases.nixos.org", "port": 443, "comment": "global" },
             { "host": "registry.npmjs.org", "port": 443, "comment": "global" },
             { "host": "integrate.api.nvidia.com", "port": 443, "comment": "global" },
+            { "host": "my.omp.sh", "port": 443, "comment": "global" },
             { "host": "auth.openai.com", "port": 443, "comment": "global" },
             { "host": "opencode.ai", "port": 443, "comment": "global" },
             { "host": "docs.podman.io", "port": 443, "comment": "global" },
