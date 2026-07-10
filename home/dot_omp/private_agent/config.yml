@@ -42,6 +42,7 @@ edit:
   mode: hashline
 lsp: 
   formatOnWrite: true
+  diagnosticsOnEdit: true
 calc: 
   enabled: true
 inspect_image: 
@@ -78,6 +79,8 @@ python:
   kernelMode: session
 dev: 
   autoqa: false
+  autoqaPush: 
+    endpoint: ""
 advisor: 
   enabled: true
   subagents: false
@@ -113,3 +116,4 @@ readLineNumbers: true
 exa: 
   enableResearcher: true
   enableWebsets: true
+doubleEscapeAction: tree
