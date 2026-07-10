@@ -29,8 +29,8 @@ in
             (pkgs.fetchFromGitHub {
               owner = "41pha1";
               repo = "spicetify-extensions";
-              rev = "5015b9122a9c39274bdc7507e1de4fec0cc20f95";
-              hash = "sha256-JkkIs40Kp57kLTcb95WIgfHDoCP/LHZ3TmdP1w1e1OY=";
+              rev = "8f10fa3db610695033f46612d7ab4100f1eb65fe";
+              hash = "sha256-2mFk+tzFMc3o41DvelHFNykdk/DSfq+QOltNc8ON/t4=";
             })
             + "/romaji-lyrics";
           name = "romaji_lyrics.js";
@@ -40,8 +40,8 @@ in
             (pkgs.fetchFromGitHub {
               owner = "resxt";
               repo = "spicetify-extensions";
-              rev = "75bd17ba1c9a19730f14529fb18857d7b9c7c12e";
-              hash = "sha256-+Th5o00c3Y8U+Y/RGmRSkWWp97YCoCJmoESFLZf9dwM=";
+              rev = "fb94b32511b74f791ddeb025aec0c77928d6bd60";
+              hash = "sha256-SLu2+H5tdwPz0JrT61SuAx9uSW7Wfv2wLoA7d/AwmZQ=";
             })
             + "/startup-page/dist";
           name = "startup-page.js";
