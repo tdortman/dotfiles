@@ -415,6 +415,7 @@
     ghidra
     libreoffice-qt6
     nheko
+    podman-compose
 
     xdg-utils
     xdg-desktop-portal
