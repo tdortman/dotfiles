@@ -1,5 +1,5 @@
 modelRoles: 
-  default: openai-codex/gpt-5.6-terra:high
+  default: openai-codex/gpt-5.6-luna:xhigh
   commit: openai-codex/gpt-5.6-sol:low
   vision: openai-codex/gpt-5.6-sol:low
   plan: openai-codex/gpt-5.6-sol:high
