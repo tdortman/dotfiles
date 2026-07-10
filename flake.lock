@@ -425,13 +425,29 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
+    "nixpkgs-temp": {
       "locked": {
-        "lastModified": 1783224372,
-        "narHash": "sha256-8i/87eeoqiGE4yOTjwSA3Eh/ziJRQEmd/unYU+K27sk=",
+        "lastModified": 1783700079,
+        "narHash": "sha256-5WoV3bNEmmbCKBSwCgH9n5x8IKwq9D5mPswzbKNtUy0=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "d407951447dcd00442e97087bf374aad70c04cea",
+        "rev": "e80fd65a55406afd4807006f1a65cbc8b6c0e106",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "pull/540416/head",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1783522502,
+        "narHash": "sha256-iffAls3iaNTyJC2faYcUXSI+Gp02cDjYl+MygxKl2GI=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "0bb7ec54c8483066ec9d7720e780a5caa71f8612",
         "type": "github"
       },
       "original": {
@@ -477,6 +493,7 @@
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-flox": "nixpkgs-flox",
         "nixpkgs-master": "nixpkgs-master",
+        "nixpkgs-temp": "nixpkgs-temp",
         "plasma-manager": "plasma-manager",
         "snowfall-lib": "snowfall-lib",
         "spicetify-nix": "spicetify-nix",

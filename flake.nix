@@ -103,6 +103,8 @@
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
 
+    nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/540416/head";
+
     snowfall-lib = {
       url = "github:anntnzrb/snowfall-lib";
       inputs.nixpkgs.follows = "nixpkgs";
