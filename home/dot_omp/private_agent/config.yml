@@ -33,7 +33,7 @@ display:
   tabWidth: 2
 compaction: 
   strategy: snapcompact
-  thresholdPercent: 80
+  thresholdPercent: 70
   thresholdTokens: -1
   handoffSaveToDisk: false
 memory: 
