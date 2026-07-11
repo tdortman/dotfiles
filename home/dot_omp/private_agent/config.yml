@@ -54,10 +54,11 @@ task:
     mode: auto
     merge: patch
     commits: ai
-  eager: always
+  eager: preferred
   enableLsp: true
   maxRecursionDepth: -1
   showResolvedModelBadge: true
+  batch: true
 secrets: 
   enabled: true
 contextPromotion: 
