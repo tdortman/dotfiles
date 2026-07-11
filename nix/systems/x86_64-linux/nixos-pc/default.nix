@@ -443,10 +443,6 @@
   xdg.portal.xdgOpenUsePortal = true;
 
   environment.variables = {
-    # nvidia_icd.x86_64.json -> nvidia_icd.json as of 595.71.05
-    VK_DRIVER_FILES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
-    VK_ICD_FILENAMES = "/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json";
-
     NIXOS_OZONE_WL = "1";
 
     # Setting gfx.webrender.compositor.force-enabled to true breaks the direct backend
