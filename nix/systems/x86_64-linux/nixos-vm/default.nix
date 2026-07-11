@@ -1,5 +1,7 @@
 {
   pkgs,
+  inputs,
+  config,
   currentUsername,
   ...
 }:
@@ -18,16 +20,14 @@
     user = currentUsername;
   };
 
-  boot.loader = {
-    efi.canTouchEfiVariables = true;
+  nextdns = {
+    enable = true;
+    configFile = config.age.secrets."nextdns-resolved.conf".path;
+    hostName = "NixOS--PC";
+  };
 
-    grub = {
-      enable = true;
-      devices = [ "nodev" ];
-      efiSupport = true;
-      font = "${pkgs.nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf";
-      fontSize = 20;
-    };
+  age.secrets = {
+    "nextdns-resolved.conf".file = inputs.self + /nix/secrets/nextdns-resolved.conf.age;
   };
 
   audio = {
@@ -60,16 +60,68 @@
         limitThreshold = -12.0;
         appNames = [
           "spotify"
+          "foobar2000 Application"
         ];
       };
-      Discord.appNames = [
-        "Discord.*"
-        "Slack.*"
-      ];
+      Discord = {
+        appNames = [
+          "Discord.*"
+          "Slack.*"
+        ];
+        binaries = [
+          ".Discord-wrapped"
+          "fluxer"
+        ];
+      };
       System = { };
     };
 
     fallbackCategory = "System";
+  };
+
+  services.kmscon.config = {
+    hwaccel = true;
+    font-name = "JetBrainsMono Nerd Font Mono";
+    font-size = 26;
+    font-dpi = 256;
+  };
+
+  nixpkgs.overlays = [
+    # https://github.com/NixOS/nixpkgs/issues/540025
+    (final: prev: {
+      python314Packages = prev.python314Packages.overrideScope (
+        pyFinal: pyPrev: {
+          patool = pyPrev.patool.overridePythonAttrs (_old: {
+            doCheck = false;
+            doInstallCheck = false;
+          });
+        }
+      );
+    })
+    # https://github.com/NixOS/nixpkgs/pull/540416
+    (final: prev: {
+      inherit (inputs.nixpkgs-temp.legacyPackages.x86_64-linux) spicetify-cli;
+    })
+  ];
+
+  virtualisation = {
+    containers.enable = true;
+    podman = {
+      enable = true;
+      dockerCompat = true;
+      defaultNetwork.settings.dns_enabled = true;
+    };
+  };
+
+  flatpak = {
+    enable = true;
+    packages = [
+      "com.surfshark.Surfshark"
+      "com.gitbutler.gitbutler"
+    ];
+    extraOverrides."com.gitbutler.gitbutler".Environment = {
+      WEBKIT_DISABLE_DMABUF_RENDERER = "1";
+    };
   };
 
   networking.hostName = "nixos-vm";
@@ -82,19 +134,35 @@
 
   services.libinput.enable = true;
 
-  environment.systemPackages = with pkgs; [
-    ghostty
-    vscode-fhs
-    librewolf
+  environment.systemPackages =
+    with pkgs;
+    [
+      ghostty
+      librewolf
 
-    xdg-utils
-    xdg-desktop-portal
-    kdePackages.xdg-desktop-portal-kde
+      xdg-utils
+      xdg-desktop-portal
+      kdePackages.xdg-desktop-portal-kde
 
-    (discord.override {
-      withVencord = true;
-    })
-  ];
+      podman-compose
+
+      (discord.override {
+        withVencord = true;
+      })
+
+      master.antigravity-fhs
+      master.vscode-fhs
+      zed-editor-fhs
+      btrfs-progs
+      master.code-cursor-fhs
+    ]
+    ++ (with pkgs.llm-agents; [
+      cursor-agent
+      omp
+      opencode
+      droid
+      copilot-cli
+    ]);
 
   xdg.portal = {
     enable = true;
