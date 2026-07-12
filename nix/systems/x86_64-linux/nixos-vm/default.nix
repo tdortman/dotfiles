@@ -2,6 +2,7 @@
   pkgs,
   inputs,
   config,
+  system,
   currentUsername,
   ...
 }:
@@ -183,7 +184,7 @@
       btrfs-progs
       master.code-cursor-fhs
     ]
-    ++ (with pkgs.llm-agents; [
+    ++ (with inputs.llm-agents.packages.${system}; [
       cursor-agent
       omp
       opencode

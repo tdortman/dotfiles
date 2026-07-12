@@ -18,10 +18,6 @@
         ];
       };
 
-      overlays = with inputs; [
-        llm-agents.overlays.default
-      ];
-
       systems.modules.nixos = with inputs; [
         agenix.nixosModules.default
         nix-index-database.nixosModules.nix-index

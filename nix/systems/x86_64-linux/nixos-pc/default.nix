@@ -155,7 +155,7 @@
     ];
     packages =
       let
-        agents = pkgs.llm-agents;
+        agents = inputs.llm-agents.packages.${system};
       in
       [
         {

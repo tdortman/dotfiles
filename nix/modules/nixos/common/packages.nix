@@ -1,4 +1,10 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  config,
+  system,
+  inputs,
+  ...
+}:
 
 {
   environment.systemPackages =
@@ -121,10 +127,12 @@
       # Documentation
       man-pages
       man-pages-posix
-    ]
-    ++ [
+
       (if config.nvidia.driver.enable then pkgs.btop-cuda else pkgs.btop)
-      pkgs.llm-agents.hunk
-      pkgs.llm-agents.git-surgeon
-    ];
+
+    ]
+    ++ (with inputs.llm-agents.packages.${system}; [
+      hunk
+      git-surgeon
+    ]);
 }
