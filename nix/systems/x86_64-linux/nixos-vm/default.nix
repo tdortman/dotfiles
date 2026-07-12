@@ -23,7 +23,7 @@
   nextdns = {
     enable = true;
     configFile = config.age.secrets."nextdns-resolved.conf".path;
-    hostName = "NixOS--PC";
+    hostName = "NixOS--VM";
   };
 
   age.secrets = {
