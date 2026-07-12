@@ -108,7 +108,7 @@
     nixos-boot = "nh os boot";
 
     flake-update = "sudo nix flake update --flake $NH_FLAKE";
-    update = "nh os switch --update";
+    update = "flake-update && nixos-switch";
     hydra-check = "${lib.getExe pkgs.hydra-check} -c unstable -a x86_64-linux";
   };
 
