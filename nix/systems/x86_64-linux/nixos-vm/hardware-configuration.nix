@@ -9,10 +9,13 @@
     "uhci_hcd"
     "ehci_pci"
     "ahci"
+    "xhci_pci"
+    "virtio_pci"
+    "virtio_blk"
     "sd_mod"
     "sr_mod"
   ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "kvm-amd" ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
 
