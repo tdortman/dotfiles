@@ -1,4 +1,19 @@
 {
+    "ssh_connections": [
+        {
+            "host": "nixos-vm.local",
+            "username": "tim",
+            "args": [],
+            "projects": [
+                {
+                    "paths": [
+                        "/home/tim/dotfiles"
+                    ]
+                }
+            ],
+            "nickname": "dev vm"
+        }
+    ],
     "language_models": {
         "opencode": {
             "show_go_models": false,
