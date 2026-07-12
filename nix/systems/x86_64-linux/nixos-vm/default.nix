@@ -20,6 +20,22 @@
     user = currentUsername;
   };
 
+  services.openssh = {
+    enable = true;
+    openFirewall = true;
+
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "no";
+      AllowUsers = [ currentUsername ];
+    };
+  };
+
+  users.users.${currentUsername}.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvpbTCshwwLe3cfz/Wh88FWgyg2f91hicM70msF/3D2"
+  ];
+
   nextdns = {
     enable = true;
     configFile = config.age.secrets."nextdns-resolved.conf".path;
