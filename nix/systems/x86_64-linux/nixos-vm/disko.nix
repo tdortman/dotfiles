@@ -1,7 +1,7 @@
 {
   disko.devices.disk.primary = {
     type = "disk";
-    device = "/path/to/disk";
+    device = "/dev/vda";
     content = {
       type = "gpt";
       partitions = {
