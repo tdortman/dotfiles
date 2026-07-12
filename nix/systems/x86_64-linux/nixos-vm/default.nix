@@ -142,6 +142,12 @@
 
   networking.hostName = "nixos-vm";
 
+  services.avahi = {
+    enable = true;
+    openFirewall = true;
+    nssmdns4 = true;
+  };
+
   mime.librewolf.enable = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
