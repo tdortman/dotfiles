@@ -4,14 +4,15 @@
   imports = [ ];
 
   boot.initrd.availableKernelModules = [
+    "virtio_pci"
+    "virtio_blk"
+    "virtio_scsi"
+
     "ata_piix"
     "mptspi"
     "uhci_hcd"
     "ehci_pci"
     "ahci"
-    "xhci_pci"
-    "virtio_pci"
-    "virtio_blk"
     "sd_mod"
     "sr_mod"
   ];
