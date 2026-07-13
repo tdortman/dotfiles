@@ -205,7 +205,9 @@ omp-commit-cleanup() {
         echo "cleaned up"
 }
 
-omp-commit() {
+_omp_commit() {
+    local omp_command=$1
+    shift
     local snap root backup
     snap="pre-omp-$(date +%s%N)-$$"
     command -v rsync >/dev/null || {
@@ -234,7 +236,7 @@ omp-commit() {
     }
     _omp_commit_save_state "$snap" "$backup" "$root"
 
-    omp "$@" "$(
+    "$omp_command" "$@" "$(
         cat <<EOF
 Generate granular, atomic commits using the \`git-surgeon\` skill at
 \`$HOME/.agents/skills/git-surgeon/SKILL.md\`.
@@ -406,6 +408,14 @@ EOF
     else
         _omp_commit_show_recovery "$snap" "$backup" "$root"
     fi
+}
+
+omp-commit() {
+    _omp_commit omp "$@"
+}
+
+unsafe-omp-commit() {
+    _omp_commit unsafe-omp "$@"
 }
 
 create_man_wrapper
