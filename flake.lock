@@ -35,11 +35,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1783917276,
-        "narHash": "sha256-ZzNNtlsh1hnhncBoDLSeI/a3eaeC4dSRQkH/N40PkpU=",
+        "lastModified": 1784003617,
+        "narHash": "sha256-8ohI8w6x4390pInjK/MLMpfcsE9NLpduMgbOdo38BoY=",
         "owner": "tdortman",
         "repo": "agent-sandbox",
-        "rev": "973f0cfbaec5e5c6fe79f2577965ba6b9b8617fd",
+        "rev": "e7a7bb0903e270eec828fa471b0eeaa2ac701017",
         "type": "github"
       },
       "original": {

@@ -133,7 +133,10 @@
   agent-sandbox = {
     enable = true;
     sudoPolicy = "approve";
-    network.enable = true;
+    network = {
+      enable = true;
+      httpProxy.enable = true;
+    };
     gates = {
       filesystem.enable = true;
       resources.enable = true;
