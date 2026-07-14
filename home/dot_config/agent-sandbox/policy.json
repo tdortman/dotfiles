@@ -34,6 +34,7 @@
                 { "methods": ["GET"], "url": "https://arxiv.org/pdf", "comment": "global" },
                 { "methods": ["GET", "POST"], "url": "https://chatgpt.com/backend-api/codex/responses", "comment": "global" },
                 { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/ps/mcp", "comment": "global" },
+                { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/profiles/me", "comment": "global" },
                 { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/rate-limit-reset-credits", "comment": "global" },
                 { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/usage", "comment": "global" },
                 { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:fetchAvailableModels", "comment": "global" },
