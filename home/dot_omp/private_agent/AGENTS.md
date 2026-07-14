@@ -31,6 +31,15 @@ Prefer existing project dependencies and standard-library functionality.
 
 ## Repository safety
 
+### Avoid unfiltered Nix flake paths
+
+Never use `path:` flake references or `type = "path"` for a directory inside a Git repository.
+Do not replace Git-aware references such as `.` with `path:.`.
+
+Use the repository’s normal Git-aware flake reference so only tracked files are included.
+A `path:` reference may copy the entire directory into the Nix store, including ignored and untracked build artefacts such as `target/`.
+If Git-aware evaluation is unsuitable, report the issue rather than silently using `path:`.
+
 ### Respect existing work
 
 Assume all existing uncommitted changes belong to the user.
@@ -79,7 +88,7 @@ Do not make unrelated documentation edits.
 ## Validation
 
 Use repository-provided scripts and commands when available.
-Run the narrowest relevant validation first, such as targeted tests, type checks, linters, or builds for the affected area. 
+Run the narrowest relevant validation first, such as targeted tests, type checks, linters, or builds for the affected area.
 Run broader validation when justified by the scope of the change.
 Never claim that code builds, tests pass, or behavior is correct unless the relevant command was actually run successfully.
 Do not hide validation failures. Distinguish failures caused by the change from pre-existing or environmental failures when evidence supports that distinction.
