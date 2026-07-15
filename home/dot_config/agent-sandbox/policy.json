@@ -94,6 +94,7 @@
             { "path": "./.ruff_cache", "access": "read_write", "comment": "global" },
             { "path": "./.venv", "access": "read_write", "comment": "global" },
             { "path": "./.vscode", "access": "read_write", "comment": "global" },
+            { "path": "./AGENTS.md", "access": "read", "comment": "global" },
             { "path": "./Cargo.lock", "access": "read_write", "comment": "global" },
             { "path": "./Cargo.toml", "access": "read_write", "comment": "global" },
             { "path": "./README.md", "access": "read_write", "comment": "global" },
