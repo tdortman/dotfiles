@@ -28,6 +28,7 @@
                 { "methods": ["POST"], "url": "https://api.z.ai/api/anthropic/v1/messages", "comment": "global" },
                 { "methods": ["GET"], "url": "https://api.z.ai/api/monitor/usage/quota/limit", "comment": "global" },
                 { "methods": ["POST"], "url": "https://api2.cursor.sh/agent.v1.AgentService/GetUsableModels", "comment": "global" },
+                { "methods": ["GET"], "url": "https://api2.cursor.sh/auth/usage", "comment": "global" },
                 { "methods": ["GET"], "url": "https://ar5iv.labs.arxiv.org/html", "comment": "global" },
                 { "methods": ["GET"], "url": "https://arxiv.org/abs", "comment": "global" },
                 { "methods": ["GET"], "url": "https://arxiv.org/html", "comment": "global" },
