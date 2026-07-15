@@ -207,7 +207,6 @@
             { "kind": "unix_socket", "path": "/run/agent-sandbox/sandbox-policy.sock", "access": "connect", "comment": "global" },
             { "kind": "unix_socket", "path": "/run/nscd/socket", "access": "connect", "comment": "global" },
             { "kind": "unix_socket", "path": "/run/user/1000/1Password-BrowserSupport.sock", "access": "connect", "comment": "global" },
-            { "kind": "unix_socket", "path": "/run/user/1000/bus", "access": "connect", "comment": "global" },
             { "kind": "unix_socket", "path": "/tmp/nvidia-mps/control", "access": "connect", "comment": "global" },
             { "kind": "unix_socket", "path": "./.codegraph", "access": "connect", "comment": "global" },
             { "kind": "unix_socket", "path": "@abstract:nv_target_process_*", "access": "connect", "comment": "ncu profiler" },
