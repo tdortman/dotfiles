@@ -134,5 +134,6 @@
     ++ (with inputs.llm-agents.packages.${system}; [
       hunk
       git-surgeon
+      codegraph
     ]);
 }
