@@ -748,4 +748,5 @@
     "workbench.agentsWindowButton.enabled": false,
     "todo-tree.ripgrep.ripgrep": "/run/current-system/sw/bin/rg",
     "cursor.cpp.disabledLanguages": ["plaintext", "markdown", "scminput"],
+    "workbench.experimental.modernUI": true,
 }
