@@ -133,6 +133,7 @@
   agent-sandbox = {
     enable = true;
     sudoPolicy = "approve";
+    policy.dbus.enable = true;
     network = {
       enable = true;
       httpProxy.enable = true;
