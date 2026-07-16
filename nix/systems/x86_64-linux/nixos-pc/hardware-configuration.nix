@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  currentUsername,
   ...
 }:
 
@@ -70,7 +69,7 @@
 
   users.users.sonarr.extraGroups = [ "media" ];
   users.users.qbittorrent.extraGroups = [ "media" ];
-  users.users.${currentUsername}.extraGroups = [ "media" ];
+  users.users.${config.common.username}.extraGroups = [ "media" ];
 
   fileSystems."/mnt/shows" = {
     device = "/dev/disk/by-uuid/206C11B36C1184A6";

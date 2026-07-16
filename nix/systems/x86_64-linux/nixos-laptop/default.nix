@@ -3,7 +3,6 @@
   config,
   inputs,
   system,
-  currentUsername,
   ...
 }:
 
@@ -85,7 +84,7 @@
 
   onepassword = {
     enable = true;
-    user = currentUsername;
+    user = config.common.username;
   };
 
   backups.snapshots.enable = true;
@@ -113,7 +112,7 @@
   vpn-run = {
     enable = true;
     defaultInterface = "wg0";
-    allowedUsers = [ currentUsername ];
+    allowedUsers = [ config.common.username ];
   };
 
   jgu-vpn = {
@@ -243,7 +242,7 @@
 
   networking.wireguard.interfaces = {
     wg0 = {
-      privateKeyFile = "/home/${currentUsername}/.config/wireguard/privatekey";
+      privateKeyFile = "/home/${config.common.username}/.config/wireguard/privatekey";
       ips = [ "10.14.0.2/16" ];
 
       allowedIPsAsRoutes = false;

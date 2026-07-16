@@ -1,15 +1,15 @@
-{ currentUsername, ... }:
+{ config, ... }:
 
 {
   security.sudo = {
     enable = true;
     extraRules = [
       {
-        users = [ currentUsername ];
+        users = [ config.common.username ];
         commands = [ "ALL" ];
       }
       {
-        users = [ currentUsername ];
+        users = [ config.common.username ];
         commands = [
           {
             command = "/run/current-system/sw/bin/ip";

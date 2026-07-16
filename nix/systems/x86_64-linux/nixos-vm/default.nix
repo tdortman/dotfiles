@@ -3,7 +3,6 @@
   inputs,
   config,
   system,
-  currentUsername,
   ...
 }:
 
@@ -18,7 +17,7 @@
 
   onepassword = {
     enable = true;
-    user = currentUsername;
+    user = config.common.username;
   };
 
   services.openssh = {
@@ -29,11 +28,11 @@
       PasswordAuthentication = false;
       KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
-      AllowUsers = [ currentUsername ];
+      AllowUsers = [ config.common.username ];
     };
   };
 
-  users.users.${currentUsername}.openssh.authorizedKeys.keys = [
+  users.users.${config.common.username}.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvpbTCshwwLe3cfz/Wh88FWgyg2f91hicM70msF/3D2"
   ];
 
@@ -68,7 +67,7 @@
 
     eq = {
       enable = true;
-      file = "/home/${currentUsername}/.local/share/auto_eq/hd6xx_he-1_parametric.txt";
+      file = "/home/${config.common.username}/.local/share/auto_eq/hd6xx_he-1_parametric.txt";
     };
 
     appCategories = {

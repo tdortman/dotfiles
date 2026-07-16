@@ -1,6 +1,6 @@
 {
   pkgs,
-  currentUsername,
+  config,
   ...
 }:
 
@@ -43,7 +43,7 @@
 
   virtualisation.podman.enable = false;
 
-  users.users.${currentUsername} = {
+  users.users.${config.common.username} = {
     isNormalUser = true;
     extraGroups = [
       "podman"
@@ -56,7 +56,7 @@
 
   wsl = {
     enable = true;
-    defaultUser = currentUsername;
+    defaultUser = config.common.username;
     wslConf.interop.appendWindowsPath = false;
   };
 

@@ -1,11 +1,10 @@
 {
   config,
   lib,
-  currentUsername,
   ...
 }:
 let
-  uid = toString config.users.users.${currentUsername}.uid;
+  uid = toString config.users.users.${config.common.username}.uid;
 in
 {
   systemd.services.link-wslg-runtime = lib.mkIf config.wsl.enable {

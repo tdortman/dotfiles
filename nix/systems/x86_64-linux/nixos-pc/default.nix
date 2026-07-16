@@ -3,7 +3,6 @@
   config,
   inputs,
   system,
-  currentUsername,
   ...
 }:
 
@@ -37,7 +36,7 @@
 
   onepassword = {
     enable = true;
-    user = currentUsername;
+    user = config.common.username;
   };
 
   audio = {
@@ -62,7 +61,7 @@
 
     eq = {
       enable = true;
-      file = "/home/${currentUsername}/.local/share/auto_eq/hd6xx_he-1_parametric.txt";
+      file = "/home/${config.common.username}/.local/share/auto_eq/hd6xx_he-1_parametric.txt";
     };
 
     appCategories = {
@@ -117,7 +116,7 @@
   vpn-run = {
     enable = true;
     defaultInterface = "wg0";
-    allowedUsers = [ currentUsername ];
+    allowedUsers = [ config.common.username ];
   };
 
   jgu-vpn = {
@@ -275,7 +274,7 @@
 
   networking.wireguard.interfaces = {
     wg0 = {
-      privateKeyFile = "/home/${currentUsername}/.config/wireguard/privatekey";
+      privateKeyFile = "/home/${config.common.username}/.config/wireguard/privatekey";
       ips = [ "10.14.0.2/16" ];
 
       allowedIPsAsRoutes = false;

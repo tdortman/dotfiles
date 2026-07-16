@@ -2,7 +2,6 @@
   config,
   lib,
   pkgs,
-  currentUsername,
   ...
 }:
 
@@ -91,7 +90,7 @@ in
   options.backups = {
     user = lib.mkOption {
       type = lib.types.str;
-      default = currentUsername;
+      default = config.common.username;
       description = "The username to back up files for";
     };
 

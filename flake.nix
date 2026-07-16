@@ -29,19 +29,9 @@
         agent-sandbox.nixosModules.agent-sandbox
       ];
 
-      # Snowfall auto-imports nix/modules/nixos/* and invokes each module while
-      # collecting imports; currentUsername must be in specialArgs for that path.
-      systems.hosts = {
-        nixos-pc.specialArgs.currentUsername = "tim";
-        nixos-vm.specialArgs.currentUsername = "tim";
-        nixos-laptop.specialArgs.currentUsername = "tim";
-        nixos-wsl-pc = {
-          specialArgs.currentUsername = "tim";
-          modules = with inputs; [
-            nixos-wsl.nixosModules.default
-          ];
-        };
-      };
+      systems.hosts.nixos-wsl-pc.modules = with inputs; [
+        nixos-wsl.nixosModules.default
+      ];
 
       homes.modules = with inputs; [
         plasma-manager.homeModules.plasma-manager
