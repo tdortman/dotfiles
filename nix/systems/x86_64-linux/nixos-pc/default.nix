@@ -439,7 +439,6 @@
     custom.danbooru-rs
     custom.shiru
     custom.fluxer
-    custom.hayase
   ];
 
   hardware.logitech.wireless.enable = true;
