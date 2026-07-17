@@ -40,6 +40,7 @@
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/profiles/me", "comment": "global" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/rate-limit-reset-credits", "comment": "global" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/usage", "comment": "global" },
+        { "methods": ["GET"], "url": "https://codeload.github.com/", "comment": "global" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:fetchAvailableModels", "comment": "global" },
         { "methods": ["GET"], "url": "https://docs.factory.ai/changelog/release-notes.md", "comment": "global" },
         { "methods": ["GET"], "url": "https://downloads.factory.ai/factory-cli/LATEST", "comment": "global" },
