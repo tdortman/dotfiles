@@ -284,9 +284,6 @@
         "Meson": {
             "language_servers": ["mesonlsp", "!muon"],
         },
-        "TOML": {
-            "show_edit_predictions": false, // https://github.com/tombi-toml/tombi/issues/1556
-        },
         "TypeScript": {
             "code_actions_on_format": {
                 "source.organizeImports": true,
