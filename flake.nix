@@ -38,6 +38,10 @@
         voxtype.homeManagerModules.default
       ];
 
+      supportedSystems = [
+        "x86_64-linux"
+      ];
+
       templates = {
         cuda.description = "CUDA development environment";
         cpp.description = "C++ development environment using llvm";
