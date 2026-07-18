@@ -222,6 +222,7 @@
       { "kind": "unix_socket", "path": "@abstract:nv_target_process_*", "access": "connect", "comment": "ncu profiler" },
       { "kind": "unix_socket", "path": "~/.1password/agent.sock", "access": "connect", "comment": "global" },
       { "kind": "unix_socket", "path": "~/.config/herdr/herdr.sock", "access": "connect", "comment": "global" },
+      { "kind": "unix_socket", "path": "~/.omp/run/daemons/*/broker.sock", "access": "connect", "comment": "global" },
       { "kind": "device", "path": "/dev/dri/render*", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/nvidia*", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/shm/cuda_injection_path_shm", "access": "open_read_write", "comment": "global" },
