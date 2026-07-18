@@ -75,7 +75,7 @@ providers:
   tinyModelDevice: default
 setupVersion: 1
 bashInterceptor: 
-  enabled: false
+  enabled: true
 python: 
   kernelMode: session
 dev: 
