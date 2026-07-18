@@ -38,6 +38,8 @@ alias suggest="copilot -s --model \"gpt-5-mini\" -p"
 alias cm=chezmoi
 alias lg=lazygit
 alias cursor-agent='cursor-agent --plan'
+alias hd='hunk diff'
+alias hs='hunk show'
 
 # Encrypt a file using SSH key from 1Password via ssh-agent
 # Usage: age-encrypt <input-file> [output-file]
