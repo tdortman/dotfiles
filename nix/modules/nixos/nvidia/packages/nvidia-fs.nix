@@ -46,11 +46,6 @@ stdenv.mkDerivation rec {
       --replace-fail '/bin/rm' 'rm' \
       --replace-fail 'for mod in nvidia $(ls /lib/modules/$KVER/updates/dkms/nvidia*.ko* 2>/dev/null)' 'for mod in $NVIDIA_MODULES nvidia $(ls /lib/modules/$KVER/updates/dkms/nvidia*.ko* 2>/dev/null)'
 
-    substituteInPlace nvfs-dma.c \
-      --replace-fail 'static bool nvfs_peek_next_bvec(struct request *req, struct req_iterator *req_iter,' 'static bool nvfs_peek_next_bvec(struct request *req, struct blk_map_iter *req_iter,' \
-      --replace-fail 'static void nvfs_advance_bvec(struct req_iterator *req_iter, struct bio_vec *bvec)' 'static void nvfs_advance_bvec(struct blk_map_iter *req_iter, struct bio_vec *bvec)' \
-      --replace-fail 'struct req_iterator *req_iter,' 'struct blk_map_iter *req_iter,' \
-      --replace-fail 'struct req_iterator *req_iter = &iter->iter;' 'struct blk_map_iter *req_iter = &iter->iter;'
 
     substituteInPlace nvfs-mmap.c \
       --replace-fail 'vm_flags = ACCESS_PRIVATE(vma, __vm_flags);' 'vm_flags = vma->vm_flags;'
@@ -86,7 +81,7 @@ stdenv.mkDerivation rec {
   meta = {
     description = "NVIDIA GPUDirect Storage nvidia-fs kernel module";
     homepage = "https://docs.nvidia.com/gpudirect-storage/";
-    license = cudaPkgs.nvidia_fs.meta.license or lib.licenses.mit;
+    license = cudaPkgs.nvidia_fs.meta.license or lib.licenses.unfree;
     platforms = lib.platforms.linux;
   };
 }
