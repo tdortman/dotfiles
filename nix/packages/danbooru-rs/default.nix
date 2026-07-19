@@ -1,11 +1,11 @@
 {
   lib,
-  rustPlatform,
-  fetchFromGitHub,
-  pkg-config,
-  openssl,
   stdenv,
+  fetchFromGitHub,
   darwin,
+  openssl,
+  pkg-config,
+  rustPlatform,
 }:
 
 rustPlatform.buildRustPackage {
@@ -19,8 +19,6 @@ rustPlatform.buildRustPackage {
     hash = "sha256-0PG2lp1fSIrGstyNPxZ7ioD7iYxfdX2aMnSUbwegPjQ=";
   };
 
-  cargoHash = "sha256-KzWNLrEZ8V3JHbhdrJHcJuussuH0ItBWhuEWMtjUyWw=";
-
   nativeBuildInputs = [
     pkg-config
   ];
@@ -32,6 +30,8 @@ rustPlatform.buildRustPackage {
     darwin.apple_sdk.frameworks.Security
     darwin.apple_sdk.frameworks.SystemConfiguration
   ];
+
+  cargoHash = "sha256-KzWNLrEZ8V3JHbhdrJHcJuussuH0ItBWhuEWMtjUyWw=";
 
   meta = {
     description = "A cli tool to download images from danbooru";

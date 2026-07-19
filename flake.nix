@@ -6,32 +6,22 @@
     inputs:
     inputs.snowfall-lib.mkFlake {
       inherit inputs;
-      src = ./.;
 
-      snowfall.root = ./nix;
-      snowfall.namespace = "custom";
+      snowfall = {
+        namespace = "custom";
+        root = ./nix;
+      };
+
+      src = ./.;
 
       channels-config = {
         allowUnfree = true;
+
         permittedInsecurePackages = [
-          "olm-3.2.16" # nheko
           "electron-40.10.5" # winboat
+          "olm-3.2.16" # nheko
         ];
       };
-
-      systems.modules.nixos = with inputs; [
-        agenix.nixosModules.default
-        nix-index-database.nixosModules.nix-index
-        nix-flatpak.nixosModules.nix-flatpak
-        disko.nixosModules.disko
-        spicetify-nix.nixosModules.default
-        home-manager.nixosModules.home-manager
-        agent-sandbox.nixosModules.agent-sandbox
-      ];
-
-      systems.hosts.nixos-wsl-pc.modules = with inputs; [
-        nixos-wsl.nixosModules.default
-      ];
 
       homes.modules = with inputs; [
         plasma-manager.homeModules.plasma-manager
@@ -42,25 +32,60 @@
         "x86_64-linux"
       ];
 
+      systems = {
+        hosts.nixos-wsl-pc.modules = with inputs; [
+          nixos-wsl.nixosModules.default
+        ];
+
+        modules.nixos = with inputs; [
+          agenix.nixosModules.default
+          agent-sandbox.nixosModules.agent-sandbox
+          disko.nixosModules.disko
+          home-manager.nixosModules.home-manager
+          nix-flatpak.nixosModules.nix-flatpak
+          nix-index-database.nixosModules.nix-index
+          spicetify-nix.nixosModules.default
+        ];
+      };
+
       templates = {
-        cuda.description = "CUDA development environment";
-        cpp.description = "C++ development environment using llvm";
         basic.description = "Basic development environment";
-        shell.description = "Shell environment";
+        cpp.description = "C++ development environment using llvm";
+        cuda.description = "CUDA development environment";
+        cuda-oxide.description = "Rust development environment for cuda-oxide projects";
         package.description = "Package development environment";
         rust.description = "Rust development environment using rust-overlay";
         rust-shell.description = "Rust shell using rust-overlay";
-        cuda-oxide.description = "Rust development environment for cuda-oxide projects";
+        shell.description = "Shell environment";
       };
 
       outputs-builder =
         channels:
         let
           pkgs = channels.nixpkgs;
+          treefmt = inputs.treefmt-nix.lib.evalModule pkgs {
+            imports = [ inputs.pedantix.treefmtModules.default ];
+
+            programs.pedantix = {
+              enable = true;
+
+              settings = {
+                attrs = {
+                  blank-lines = 1;
+                  blank-lines-mode = "multiline";
+                  merge = true;
+                };
+
+                formatter = "nixfmt";
+                inherit-placement = "front";
+                lists.sort = false;
+              };
+            };
+
+            projectRootFile = "flake.nix";
+          };
         in
         {
-          formatter = pkgs.nixfmt;
-
           apps.update =
             let
               script = pkgs.writeShellScriptBin "update-packages" ''
@@ -83,72 +108,94 @@
               '';
             in
             {
-              type = "app";
               program = "${script}/bin/update-packages";
+              type = "app";
             };
+
+          checks.formatting = treefmt.config.build.check inputs.self;
+          formatter = treefmt.config.build.wrapper;
         };
     };
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
-    nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
-
-    nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/540416/head";
-
-    snowfall-lib = {
-      url = "github:anntnzrb/snowfall-lib";
+    agenix = {
       inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:ryantm/agenix";
     };
 
-    nixos-wsl = {
-      url = "github:nix-community/NixOS-WSL/main";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    agent-sandbox = {
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        snowfall-lib.follows = "snowfall-lib";
+      };
 
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
+      url = "github:tdortman/agent-sandbox";
     };
 
     disko = {
-      url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/disko";
     };
 
-    nix-index-database = {
-      url = "github:nix-community/nix-index-database";
+    home-manager = {
       inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/home-manager";
+    };
+
+    llm-agents.url = "github:numtide/llm-agents.nix";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
+
+    nix-index-database = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/nix-index-database";
+    };
+
+    nixos-wsl = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/NixOS-WSL/main";
+    };
+
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
+    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
+    nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/540416/head";
+
+    pedantix = {
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "treefmt-nix";
+      };
+
+      url = "github:swarsel/pedantix";
+    };
+
+    plasma-manager = {
+      inputs = {
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
+      };
+
+      url = "github:nix-community/plasma-manager";
+    };
+
+    snowfall-lib = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:anntnzrb/snowfall-lib";
     };
 
     spicetify-nix = {
-      url = "github:tdortman/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:tdortman/spicetify-nix";
     };
 
-    agenix = {
-      url = "github:ryantm/agenix";
+    treefmt-nix = {
       inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:numtide/treefmt-nix";
     };
 
     voxtype = {
-      url = "github:peteonrails/voxtype";
       inputs.nixpkgs.follows = "nixpkgs-flox";
-    };
-
-    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
-    llm-agents.url = "github:numtide/llm-agents.nix";
-
-    agent-sandbox = {
-      url = "github:tdortman/agent-sandbox";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.snowfall-lib.follows = "snowfall-lib";
+      url = "github:peteonrails/voxtype";
     };
   };
 }

@@ -3,8 +3,8 @@ let
   rustOverlay = fetchTarball "https://github.com/oxalica/rust-overlay/archive/master.tar.gz";
 
   pkgs = import nixpkgs {
-    overlays = [ (import rustOverlay) ];
     config.allowUnfree = true;
+    overlays = [ (import rustOverlay) ];
   };
 
   rust-toolchain = pkgs.rust-bin.stable.latest.default.override {
@@ -16,15 +16,14 @@ let
   ];
 
   nativeBuildInputs = [
-    rust-toolchain
-    pkgs.rust-analyzer
-    pkgs.mold-unwrapped
     pkgs.llvmPackages_22.clang
+    pkgs.mold-unwrapped
+    pkgs.rust-analyzer
+    rust-toolchain
   ];
 in
 
 pkgs.mkShell {
   inherit buildInputs nativeBuildInputs;
-
   LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath (buildInputs ++ nativeBuildInputs)}";
 }

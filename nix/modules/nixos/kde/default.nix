@@ -14,17 +14,35 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services = {
-      desktopManager.plasma6.enable = true;
-      displayManager.plasma-login-manager.enable = true;
+    environment = {
+      plasma6.excludePackages = with pkgs.kdePackages; [
+        plasma-browser-integration
+        kwin-x11
+      ];
+
+      systemPackages = with pkgs.kdePackages; [
+        kcalc
+        kcharselect
+        kcolorchooser
+        ksystemlog
+        sddm-kcm
+        pkgs.wayland-utils
+        pkgs.wl-clipboard
+        kdeconnect-kde
+
+        kaccounts-integration
+        kaccounts-providers
+        kio-gdrive
+
+        signond
+        signon-kwallet-extension
+        kdepim-addons
+
+        oxygen
+        oxygen-icons
+        oxygen-sounds
+      ];
     };
-
-    programs.kdeconnect.enable = true;
-
-    environment.plasma6.excludePackages = with pkgs.kdePackages; [
-      plasma-browser-integration
-      kwin-x11
-    ];
 
     nixpkgs.overlays = [
       (final: prev: {
@@ -38,27 +56,11 @@ in
       })
     ];
 
-    environment.systemPackages = with pkgs.kdePackages; [
-      kcalc
-      kcharselect
-      kcolorchooser
-      ksystemlog
-      sddm-kcm
-      pkgs.wayland-utils
-      pkgs.wl-clipboard
-      kdeconnect-kde
+    programs.kdeconnect.enable = true;
 
-      kaccounts-integration
-      kaccounts-providers
-      kio-gdrive
-
-      signond
-      signon-kwallet-extension
-      kdepim-addons
-
-      oxygen
-      oxygen-icons
-      oxygen-sounds
-    ];
+    services = {
+      desktopManager.plasma6.enable = true;
+      displayManager.plasma-login-manager.enable = true;
+    };
   };
 }

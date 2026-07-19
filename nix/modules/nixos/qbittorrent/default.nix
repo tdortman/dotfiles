@@ -1,7 +1,7 @@
 {
-  pkgs,
-  lib,
   config,
+  lib,
+  pkgs,
   ...
 }:
 
@@ -14,9 +14,36 @@ in
     package = lib.mkPackageOption pkgs "qbittorrent-nox" { };
 
     port = lib.mkOption {
-      default = null;
       type = lib.types.nullOr lib.types.int;
+      default = null;
       description = "BitTorrent port";
+    };
+
+    webui = lib.mkOption {
+      type = lib.types.submodule {
+        options = {
+          hashedPassword = lib.mkOption {
+            type = lib.types.str;
+            default = "";
+            description = "Hashed password for the webui (PBKDF2)";
+          };
+
+          port = lib.mkOption {
+            type = lib.types.int;
+            default = 8080;
+            description = "WebUI port";
+          };
+
+          username = lib.mkOption {
+            type = lib.types.str;
+            default = "admin";
+            description = "Username for the webui";
+          };
+        };
+      };
+
+      default = { };
+      description = "WebUI options";
     };
 
     wireguard = {
@@ -32,76 +59,74 @@ in
         description = "Wireguard listen port";
       };
     };
-
-    webui = lib.mkOption {
-      type = lib.types.submodule {
-        options = {
-          port = lib.mkOption {
-            type = lib.types.int;
-            default = 8080;
-            description = "WebUI port";
-          };
-          username = lib.mkOption {
-            type = lib.types.str;
-            default = "admin";
-            description = "Username for the webui";
-          };
-          hashedPassword = lib.mkOption {
-            type = lib.types.str;
-            default = "";
-            description = "Hashed password for the webui (PBKDF2)";
-          };
-        };
-      };
-      description = "WebUI options";
-      default = { };
-    };
   };
 
   config = lib.mkIf cfg.enable {
+    environment.systemPackages = [
+      pkgs.wireguard-tools
+    ];
+
+    networking.firewall = {
+      allowedTCPPorts = [
+        cfg.port
+        cfg.webui.port
+        cfg.wireguard.listenPort
+      ];
+
+      allowedUDPPorts = [
+        cfg.port
+        cfg.wireguard.listenPort
+      ];
+
+      checkReversePath = "loose";
+    };
+
     services.qbittorrent = {
-      enable = true;
       inherit (cfg) package;
-      webuiPort = cfg.webui.port;
+      enable = true;
       openFirewall = true;
+
       serverConfig = {
         BitTorrent.Session = {
           AddExtensionToIncompleteFiles = true;
           AnonymousModeEnabled = true;
-
-          MaxActiveDownloads = 6;
-          MaxActiveUploads = 6;
-          MaxActiveTorrents = 6;
-
           GlobalMaxRatio = 2;
+          Interface = cfg.wireguard.interface;
+          InterfaceName = cfg.wireguard.interface;
+          MaxActiveDownloads = 6;
+          MaxActiveTorrents = 6;
+          MaxActiveUploads = 6;
           MaxConnections = -1;
           MaxConnectionsPerTorrent = -1;
           MaxUploads = -1;
           MaxUploadsPerTorrent = -1;
-
-          Interface = cfg.wireguard.interface;
-          InterfaceName = cfg.wireguard.interface;
         }
         // lib.optionalAttrs (cfg.port != null) {
           Port = cfg.port;
         };
+
+        LegalNotice.Accepted = true;
+
         Preferences = {
-          General = {
-            StatusbarExternalIPDisplayed = true;
-            Locale = "en";
-          };
           Connection = {
             Interface = cfg.wireguard.interface;
           };
+
+          General = {
+            Locale = "en";
+            StatusbarExternalIPDisplayed = true;
+          };
+
           WebUI = with cfg.webui; {
             Address = "*";
             LocalHostAuth = false;
-            Username = username;
             Password_PBKDF2 = hashedPassword;
+            Username = username;
           };
         };
-        LegalNotice.Accepted = true;
       };
+
+      webuiPort = cfg.webui.port;
     };
 
     systemd.services.qbittorrent = {
@@ -109,24 +134,8 @@ in
         "network-online.target"
         "wireguard-${cfg.wireguard.interface}.service"
       ];
+
       wants = [ "wireguard-${cfg.wireguard.interface}.service" ];
     };
-
-    networking.firewall = {
-      allowedUDPPorts = [
-        cfg.wireguard.listenPort
-        cfg.port
-      ];
-      allowedTCPPorts = [
-        cfg.webui.port
-        cfg.wireguard.listenPort
-        cfg.port
-      ];
-      checkReversePath = "loose";
-    };
-
-    environment.systemPackages = [
-      pkgs.wireguard-tools
-    ];
   };
 }

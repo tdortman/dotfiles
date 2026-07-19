@@ -25,8 +25,8 @@ let
     name = "hdr-toggle";
 
     runtimeInputs = with pkgs; [
-      kdePackages.libkscreen
       jq
+      kdePackages.libkscreen
     ];
 
     text = scriptText;
@@ -35,6 +35,7 @@ let
   hdr-enable-script = pkgs.writeShellApplication {
     name = "hdr-enable";
     runtimeInputs = [ hdr-toggle-script ];
+
     text = ''
       exec hdr-toggle enable "$@"
     '';
@@ -43,6 +44,7 @@ let
   hdr-disable-script = pkgs.writeShellApplication {
     name = "hdr-disable";
     runtimeInputs = [ hdr-toggle-script ];
+
     text = ''
       exec hdr-toggle disable "$@"
     '';
@@ -53,32 +55,35 @@ in
   options.hdr = {
     enable = lib.mkEnableOption "KDE Plasma HDR toggling support";
 
-    defaultOutput = lib.mkOption {
-      type = lib.types.str;
-      default = "DP-1";
-      description = ''
-        Default display output to use when no output is specified.
-        Use 'kscreen-doctor -o' to list available outputs.
-      '';
-      example = "HDMI-A-1";
-    };
-
-    defaultIccProfile = lib.mkOption {
-      type = lib.types.str;
-      default = "";
-      description = ''
-        Default ICC profile path to apply when HDR is disabled.
-        Leave empty to skip ICC profile application.
-      '';
-      example = "/home/user/.local/share/icc/my-display-profile.icc";
-    };
-
     package = lib.mkOption {
       type = lib.types.package;
       default = hdr-toggle-script;
       defaultText = lib.literalExpression "hdr-toggle-script";
+
       description = ''
         The main hdr-toggle package to use.
+      '';
+    };
+
+    defaultIccProfile = lib.mkOption {
+      type = lib.types.str;
+      example = "/home/user/.local/share/icc/my-display-profile.icc";
+      default = "";
+
+      description = ''
+        Default ICC profile path to apply when HDR is disabled.
+        Leave empty to skip ICC profile application.
+      '';
+    };
+
+    defaultOutput = lib.mkOption {
+      type = lib.types.str;
+      example = "HDMI-A-1";
+      default = "DP-1";
+
+      description = ''
+        Default display output to use when no output is specified.
+        Use 'kscreen-doctor -o' to list available outputs.
       '';
     };
 
@@ -99,6 +104,7 @@ in
         mpv-hdr-script = pkgs.writeShellApplication {
           name = "mpv-hdr";
           runtimeInputs = [ pkgs.mpv ];
+
           text = ''
             ENABLE_HDR_WSI=1 mpv           \
               --vo=gpu-next                \
@@ -110,10 +116,12 @@ in
 
         mpv-hdr-auto-script = pkgs.writeShellApplication {
           name = "mpv-hdr-auto";
+
           runtimeInputs = [
             hdr-toggle-script
             mpv-hdr-script
           ];
+
           text = ''
             hdr-toggle enable
             mpv-hdr "$@"

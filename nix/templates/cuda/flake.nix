@@ -25,46 +25,46 @@
 
           cudaToolkit = pkgs.symlinkJoin {
             name = "cuda-toolkit";
-            paths = with cudaPkgs; [
-              cuda_nvcc
-              cuda_cudart
-              cuda_crt
 
+            paths = with cudaPkgs; [
+              cuda_crt
+              cuda_cudart
               cuda_gdb.bin
-              nsight_systems
+              cuda_nvcc
               nsight_compute
+              nsight_systems
             ];
           };
 
           cuda = {
-            arch = "1200";
-            smTarget = "sm_120";
-            path = cudaToolkit;
             version = {
               complete = cudaPkgs.cudaMajorMinorVersion;
               major = cudaPkgs.cudaMajorVersion;
               minor = lib.lists.last (builtins.splitVersion cuda.version.complete);
             };
+
+            arch = "1200";
+            path = cudaToolkit;
+            smTarget = "sm_120";
           };
 
           buildInputs = [
             cudaToolkit
+            pkgs.bzip2
             pkgs.stdenv.cc.cc.lib
             pkgs.xz
-            pkgs.bzip2
           ];
 
           nativeBuildInputs = with pkgs; [
-            llvmPkgs.clang-tools
-            llvmPkgs.clang
-            meson
-            uv
-            pkg-config
+            cmake
             doxygen
             graphviz
-
+            llvmPkgs.clang
+            llvmPkgs.clang-tools
+            meson
             ninja
-            cmake
+            pkg-config
+            uv
           ];
         in
         {

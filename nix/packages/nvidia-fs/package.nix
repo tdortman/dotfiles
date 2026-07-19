@@ -1,31 +1,21 @@
 {
   lib,
   stdenv,
-  kernel,
-  kernelModuleMakeFlags ? [ ],
+  binutils,
   cudaPkgs,
+  kernel,
+  kmod,
   nvidiaKernelModule,
   nvidiaKernelSourceDir,
-  kmod,
   xz,
-  binutils,
+  kernelModuleMakeFlags ? [ ],
+  ...
 }:
 
 stdenv.mkDerivation rec {
   pname = "nvidia-fs";
   version = cudaPkgs.nvidia_fs.version;
-
   src = "${cudaPkgs.nvidia_fs}/src/nvidia-fs-${lib.versions.majorMinor version}";
-
-  nativeBuildInputs = kernel.moduleBuildDependencies ++ [
-    kmod
-    xz
-    binutils
-  ];
-
-  dontConfigure = true;
-  dontStrip = true;
-  dontPatchELF = true;
 
   postPatch = ''
     patchShebangs configure create_nv.symvers.sh
@@ -51,15 +41,11 @@ stdenv.mkDerivation rec {
       --replace-fail 'vm_flags = ACCESS_PRIVATE(vma, __vm_flags);' 'vm_flags = vma->vm_flags;'
   '';
 
-  preBuild = ''
-    export NVIDIA_MODULES
-    NVIDIA_MODULES="$(find ${nvidiaKernelModule}/lib/modules/${kernel.modDirVersion} -type f -name 'nvidia.ko*' | sort)"
-
-    if [ -z "$NVIDIA_MODULES" ]; then
-      echo "Could not find nvidia.ko in ${nvidiaKernelModule}/lib/modules/${kernel.modDirVersion}" >&2
-      exit 1
-    fi
-  '';
+  nativeBuildInputs = kernel.moduleBuildDependencies ++ [
+    binutils
+    kmod
+    xz
+  ];
 
   makeFlags =
     kernelModuleMakeFlags
@@ -72,11 +58,25 @@ stdenv.mkDerivation rec {
       "C_INCLUDE_PATH=${lib.getLib stdenv.cc.cc}/lib/clang/${lib.versions.major stdenv.cc.cc.version}/include"
     ];
 
+  preBuild = ''
+    export NVIDIA_MODULES
+    NVIDIA_MODULES="$(find ${nvidiaKernelModule}/lib/modules/${kernel.modDirVersion} -type f -name 'nvidia.ko*' | sort)"
+
+    if [ -z "$NVIDIA_MODULES" ]; then
+      echo "Could not find nvidia.ko in ${nvidiaKernelModule}/lib/modules/${kernel.modDirVersion}" >&2
+      exit 1
+    fi
+  '';
+
   installPhase = ''
     runHook preInstall
     install -D -m 444 nvidia-fs.ko $out/lib/modules/${kernel.modDirVersion}/extra/nvidia-fs.ko
     runHook postInstall
   '';
+
+  dontConfigure = true;
+  dontPatchELF = true;
+  dontStrip = true;
 
   meta = {
     description = "NVIDIA GPUDirect Storage nvidia-fs kernel module";

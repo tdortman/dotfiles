@@ -2,38 +2,37 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  pnpm_10,
-  makeWrapper,
-  nodejs,
-  python3,
-  libxcrypt,
-  unzip,
-  fetchzip,
+  alsa-lib,
+  at-spi2-atk,
   autoPatchelfHook,
+  cups,
   electron,
-  pnpmConfigHook,
+  expat,
   fetchPnpmDeps,
-
-  pango,
+  fetchzip,
+  glib,
+  gtk3,
+  libGL,
+  libgbm,
   libx11,
+  libxcb,
   libxcomposite,
+  libxcrypt,
   libxdamage,
   libxext,
   libxfixes,
-  libxrandr,
-  libgbm,
-  expat,
-  libxcb,
   libxkbcommon,
-  systemd,
-  alsa-lib,
-  at-spi2-atk,
+  libxrandr,
+  makeWrapper,
+  nodejs,
   nspr,
   nss,
-  cups,
-  gtk3,
-  libGL,
-  glib,
+  pango,
+  pnpmConfigHook,
+  pnpm_10,
+  python3,
+  systemd,
+  unzip,
 }:
 
 let
@@ -61,50 +60,38 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-dqXpX4pLF3EjoTrjofOPTO39EGU/2JyfS3+slwCR4xU=";
   };
 
+  nativeBuildInputs = [
+    autoPatchelfHook
+    makeWrapper
+    nodejs
+    pnpmConfigHook
+    pnpm_10
+    python3
+    unzip
+  ];
+
   buildInputs = [
-    stdenv.cc.cc.lib
-    libxcrypt
-    pango
+    alsa-lib
+    at-spi2-atk
+    cups.lib
+    expat
+    gtk3
+    libgbm
     libx11
+    libxcb
     libxcomposite
+    libxcrypt
     libxdamage
     libxext
     libxfixes
-    libxrandr
-    libgbm
-    expat
-    libxcb
     libxkbcommon
-    systemd
-    alsa-lib
-    at-spi2-atk
+    libxrandr
     nspr
     nss
-    cups.lib
-    gtk3
+    pango
+    stdenv.cc.cc.lib
+    systemd
   ];
-
-  nativeBuildInputs = [
-    autoPatchelfHook
-    pnpmConfigHook
-    nodejs
-    python3
-    makeWrapper
-    unzip
-    pnpm_10
-  ];
-
-  runtimeInputs = [
-    glib
-    libGL
-  ];
-
-  pnpmDeps = fetchPnpmDeps {
-    inherit (finalAttrs) pname version src;
-    pnpm = pnpm_10;
-    fetcherVersion = 3;
-    hash = "sha256-38z1Lrs2e7wspwg7ftuisL5n4qhqfcidjash1l9XprY=";
-  };
 
   buildPhase = ''
     runHook preBuild
@@ -139,12 +126,24 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
+  pnpmDeps = fetchPnpmDeps {
+    inherit (finalAttrs) pname version src;
+    hash = "sha256-38z1Lrs2e7wspwg7ftuisL5n4qhqfcidjash1l9XprY=";
+    fetcherVersion = 3;
+    pnpm = pnpm_10;
+  };
+
+  runtimeInputs = [
+    glib
+    libGL
+  ];
+
   meta = {
     description = "Manage your personal media library, organize your collection, and stream your content in real time, no waiting required!";
     homepage = "https://github.com/RockinChaos/Shiru";
     license = lib.licenses.gpl3Only;
     maintainers = [ ];
-    mainProgram = "shiru";
     platforms = [ "x86_64-linux" ];
+    mainProgram = "shiru";
   };
 })

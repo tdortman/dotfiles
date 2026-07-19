@@ -10,11 +10,13 @@ let
 
   no-rgb = pkgs.writeShellApplication {
     name = "no-rgb";
+
     runtimeInputs = with pkgs; [
-      openrgb
-      gnugrep
       coreutils
+      gnugrep
+      openrgb
     ];
+
     text = ''
       NUM_DEVICES=$(openrgb --noautoconnect --list-devices | grep -cE '^[0-9]+: ')
 
@@ -30,24 +32,29 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.udev.packages = [ pkgs.openrgb ];
     boot.kernelModules = [ "i2c-dev" ];
     hardware.i2c.enable = true;
+    services.udev.packages = [ pkgs.openrgb ];
 
-    systemd.services.no-rgb = {
-      description = "no-rgb";
-      serviceConfig = {
-        ExecStart = "${no-rgb}/bin/no-rgb";
-        Type = "oneshot";
+    systemd = {
+      services.no-rgb = {
+        description = "no-rgb";
+
+        serviceConfig = {
+          ExecStart = "${no-rgb}/bin/no-rgb";
+          Type = "oneshot";
+        };
       };
-    };
 
-    systemd.timers.no-rgb = {
-      description = "Run no-rgb every 2 hours";
-      wantedBy = [ "timers.target" ];
-      timerConfig = {
-        OnBootSec = "0";
-        OnUnitActiveSec = "2h";
+      timers.no-rgb = {
+        description = "Run no-rgb every 2 hours";
+
+        timerConfig = {
+          OnBootSec = "0";
+          OnUnitActiveSec = "2h";
+        };
+
+        wantedBy = [ "timers.target" ];
       };
     };
   };

@@ -10,8 +10,8 @@
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [ rust-overlay.overlays.default ];
         config.allowUnfree = true;
+        overlays = [ rust-overlay.overlays.default ];
       };
 
       llvmPkgs = pkgs.llvmPackages_22;
@@ -19,26 +19,27 @@
 
       cudaToolkit = pkgs.symlinkJoin {
         name = "cuda-oxide-toolkit";
+
         paths = with cudaPkgs; [
           cuda_cudart
+          cuda_gdb.bin
           cuda_nvcc
           libnvjitlink.lib
           libnvvm
-          cuda_gdb.bin
         ];
       };
 
       rust-toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
 
       buildInputs = with pkgs; [
-        stdenv.cc.cc.lib
         cudaToolkit
+        stdenv.cc.cc.lib
       ];
 
       nativeBuildInputs = [
-        rust-toolchain
-        llvmPkgs.llvm
         llvmPkgs.clang
+        llvmPkgs.llvm
+        rust-toolchain
       ];
     in
     {
@@ -46,14 +47,15 @@
         inherit buildInputs nativeBuildInputs;
 
         env = {
+          CUDA_HOME = cudaToolkit;
+          CUDA_OXIDE_LLC = "${llvmPkgs.llvm}/bin/llc";
+          CUDA_TOOLKIT_PATH = cudaToolkit;
+
           LD_LIBRARY_PATH = "${
             pkgs.lib.makeLibraryPath (buildInputs ++ nativeBuildInputs)
           }:/run/opengl-driver/lib";
 
-          CUDA_HOME = cudaToolkit;
-          CUDA_TOOLKIT_PATH = cudaToolkit;
           LIBCLANG_PATH = "${llvmPkgs.libclang.lib}/lib";
-          CUDA_OXIDE_LLC = "${llvmPkgs.llvm}/bin/llc";
         };
       };
     };

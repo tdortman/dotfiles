@@ -11,33 +11,35 @@ in
   options.arr-stack = {
     enable = lib.mkEnableOption "the media automation stack (Sonarr, Prowlarr, FlareSolverr)";
 
-    openFirewall = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Whether to open firewall ports for each service.";
-    };
-
     extraBackupPaths = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
       description = "Additional paths to include in backup list.";
     };
+
+    openFirewall = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Whether to open firewall ports for each service.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
-    services.sonarr = {
-      enable = true;
-      inherit (cfg) openFirewall;
-    };
+    services = {
+      flaresolverr = {
+        inherit (cfg) openFirewall;
+        enable = true;
+      };
 
-    services.prowlarr = {
-      enable = true;
-      inherit (cfg) openFirewall;
-    };
+      prowlarr = {
+        inherit (cfg) openFirewall;
+        enable = true;
+      };
 
-    services.flaresolverr = {
-      enable = true;
-      inherit (cfg) openFirewall;
+      sonarr = {
+        inherit (cfg) openFirewall;
+        enable = true;
+      };
     };
   };
 }

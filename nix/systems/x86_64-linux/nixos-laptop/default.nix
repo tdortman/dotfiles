@@ -1,6 +1,6 @@
 {
-  pkgs,
   config,
+  pkgs,
   inputs,
   system,
   ...
@@ -8,43 +8,241 @@
 
 {
   imports = [
-    ./hardware-configuration.nix
     ./disko.nix
+    ./hardware-configuration.nix
   ];
 
-  kde.enable = true;
-  spicetify.enable = true;
+  age.secrets = {
+    "airvpn-presharedkey".file = inputs.self + /nix/secrets/airvpn-presharedkey.age;
+    "airvpn-privatekey".file = inputs.self + /nix/secrets/airvpn-privatekey.age;
+    "jgu-vpn-swanctl".file = inputs.self + /nix/secrets/jgu-vpn-swanctl.age;
+    "nextdns-resolved.conf".file = inputs.self + /nix/secrets/nextdns-resolved.conf.age;
+    "restic-password".file = inputs.self + /nix/secrets/restic-password.age;
+  };
+
+  agent-sandbox = {
+    enable = true;
+
+    gates = {
+      filesystem.enable = true;
+      resources.enable = true;
+      syscalls.enable = true;
+    };
+
+    network.enable = true;
+
+    packages =
+      let
+        agents = inputs.llm-agents.packages.${system};
+      in
+      [
+        {
+          package = agents.codex;
+          readwriteDirs = [ "~/.codex" ];
+        }
+        {
+          package = agents.cursor-agent;
+
+          readwriteDirs = [
+            "~/.cursor"
+            "~/.config/cursor"
+            "~/.cache/cursor-compile-cache"
+          ];
+        }
+        {
+          package = agents.droid;
+          readwriteDirs = [ "~/.factory" ];
+        }
+        {
+          package = agents.omp;
+          readwriteDirs = [ "~/.omp" ];
+        }
+        {
+          package = agents.opencode;
+
+          readonlyFiles = [
+            "~/.config/cursor/auth.json" # For opencode-cursor
+          ];
+
+          readwriteDirs = [
+            "~/.config/opencode"
+            "~/.local/share/opencode"
+            "~/.local/state/opencode"
+            "~/.local/share/zoxide"
+            "~/.cache/opencode"
+            "~/.opencode"
+
+            # cursor-acp
+            "~/.opencode-cursor"
+            "~/.local/share/cursor-agent"
+          ];
+        }
+      ];
+
+    readonlyDirs = [
+      "~/.local/bin"
+      "/lib64"
+      "/usr/lib"
+      "~/.config/agent-sandbox"
+    ];
+
+    readonlyFiles = [
+      "~/.gitconfig"
+      "~/.1password/agent.sock"
+      "/usr/bin/env"
+    ];
+
+    readwriteDirs = [
+      "~/.agents"
+    ];
+
+    sudoPolicy = "approve";
+  };
+
+  backups.snapshots.enable = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  environment = {
+    systemPackages = with pkgs; [
+      (discord.override {
+        commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
+        withVencord = true;
+      })
+      btrfs-progs
+      custom.danbooru-rs
+      custom.fluxer
+      custom.shiru
+      ghostty
+      glib
+      google-chrome # Used by antigravity
+      gvfs
+      inputs.agenix.packages."${system}".default
+      kdePackages.xdg-desktop-portal-kde
+      libnotify
+      libreoffice-qt6
+      librewolf
+      master.antigravity-fhs
+      master.code-cursor-fhs
+      master.vscode-fhs
+      mpv
+      nheko
+      ntfs3g
+      qpwgraph
+      samba
+      teams-for-linux
+      vlc
+      xdg-desktop-portal
+      xdg-utils
+      zed-editor-fhs
+    ];
+
+    variables = {
+      MOZ_DISABLE_RDD_SANDBOX = 1;
+      # Setting gfx.webrender.compositor.force-enabled to true breaks the direct backend
+      MOZ_ENABLE_WAYLAND = 1;
+      NIXOS_OZONE_WL = "1";
+    };
+  };
+
   fingerprint.enable = true;
 
-  # Let KDE PowerDevil own lid/power policy. logind should only watch the
-  # hardware events, not race PowerDevil with a second hibernate request.
-  services.logind.settings.Login = {
-    HandleLidSwitch = "ignore";
-    HandleLidSwitchExternalPower = "ignore";
-    HandleLidSwitchDocked = "ignore";
-    HandlePowerKey = "ignore";
+  flatpak = {
+    enable = true;
+
+    extraOverrides."com.gitbutler.gitbutler".Environment = {
+      WEBKIT_DISABLE_DMABUF_RENDERER = "1";
+    };
+
+    packages = [
+      "com.gitbutler.gitbutler"
+      "com.surfshark.Surfshark"
+    ];
+  };
+
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+
+    settings = {
+      General = {
+        Experimental = true;
+      };
+    };
+  };
+
+  jgu-vpn = {
+    enable = true;
+
+    dnsServers = [
+      "134.93.144.2"
+      "134.93.144.3"
+    ];
+
+    secretsFile = config.age.secrets."jgu-vpn-swanctl".path;
+    username = "tdortman@uni-mainz.de";
+  };
+
+  kde.enable = true;
+  mime.librewolf.enable = true;
+
+  networking = {
+    hostName = "nixos-laptop";
+    networkmanager.enable = true;
+
+    wireguard.interfaces = {
+      wg0 = {
+        allowedIPsAsRoutes = false;
+        dynamicEndpointRefreshSeconds = 300;
+        ips = [ "10.14.0.2/16" ];
+
+        peers = [
+          {
+            allowedIPs = [
+              "0.0.0.0/0"
+              "::/0"
+            ];
+
+            endpoint = "de-fra.prod.surfshark.com:51820";
+            publicKey = "fJDA+OA6jzQxfRcoHfC27xz7m3C8/590fRjpntzSpGo=";
+          }
+        ];
+
+        privateKeyFile = "/home/${config.common.username}/.config/wireguard/privatekey";
+      };
+
+      wg1 = {
+        allowedIPsAsRoutes = false;
+        dynamicEndpointRefreshSeconds = 300;
+        ips = [ "10.183.233.232/32" ];
+
+        peers = [
+          {
+            allowedIPs = [
+              "0.0.0.0/0"
+              "::/0"
+            ];
+
+            endpoint = "de3.vpn.airdns.org:51820";
+            persistentKeepalive = 15;
+            presharedKeyFile = toString config.age.secrets."airvpn-presharedkey".path;
+            publicKey = "PyLCXAQT8KkM4T+dUsOQfn+Ub3pGxfGlxkIApuig+hk=";
+          }
+        ];
+
+        privateKeyFile = toString config.age.secrets."airvpn-privatekey".path;
+      };
+    };
+  };
+
+  nextdns = {
+    enable = true;
+    configFile = config.age.secrets."nextdns-resolved.conf".path;
+    hostName = "NixOS--Laptop";
   };
 
   nixpkgs.overlays = [
     # Fingerprint reader needs fork (04f3:0c4c)
     (_: prev: {
-      libfprint = prev.libfprint.overrideAttrs (oldAttrs: {
-        version = "1.94.9"; # fprintd requires libfprint-2.pc to report >= 1.94.9
-        src = prev.fetchFromGitLab {
-          domain = "gitlab.freedesktop.org";
-          owner = "depau";
-          repo = "libfprint";
-          rev = "elanmoc2-working";
-          hash = "sha256-uYT1qQK5Hv4AcX9AT9jc36oygiOnpoVh7W4bdsiXWog=";
-        };
-        patches = [ ];
-        buildInputs = oldAttrs.buildInputs ++ [ prev.nss ];
-        postPatch = (oldAttrs.postPatch or "") + ''
-          substituteInPlace meson.build \
-            --replace-fail "version: '1.94.7'" "version: '1.94.9'"
-        '';
-      });
-
       fprintd = prev.fprintd.overrideAttrs (oldAttrs: {
         patches = (oldAttrs.patches or [ ]) ++ [
           (prev.writeText "fprintd-optional-too-fast-retry.patch" (
@@ -79,6 +277,26 @@
           ))
         ];
       });
+
+      libfprint = prev.libfprint.overrideAttrs (oldAttrs: {
+        version = "1.94.9"; # fprintd requires libfprint-2.pc to report >= 1.94.9
+
+        src = prev.fetchFromGitLab {
+          domain = "gitlab.freedesktop.org";
+          hash = "sha256-uYT1qQK5Hv4AcX9AT9jc36oygiOnpoVh7W4bdsiXWog=";
+          owner = "depau";
+          repo = "libfprint";
+          rev = "elanmoc2-working";
+        };
+
+        buildInputs = oldAttrs.buildInputs ++ [ prev.nss ];
+        patches = [ ];
+
+        postPatch = (oldAttrs.postPatch or "") + ''
+          substituteInPlace meson.build \
+            --replace-fail "version: '1.94.7'" "version: '1.94.9'"
+        '';
+      });
     })
   ];
 
@@ -87,119 +305,85 @@
     user = config.common.username;
   };
 
-  backups.snapshots.enable = true;
+  programs = {
+    dconf.enable = true;
+    mtr.enable = true;
+    thunderbird.enable = true;
+    virt-manager.enable = true;
+  };
 
   security.rtkit.enable = true;
 
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
-    jack.enable = true;
-    wireplumber.enable = true;
-
-    extraLadspaPackages = [
-      pkgs.ladspaPlugins
-    ];
-  };
-
-  nextdns = {
-    enable = true;
-    configFile = config.age.secrets."nextdns-resolved.conf".path;
-    hostName = "NixOS--Laptop";
-  };
-
-  vpn-run = {
-    enable = true;
-    defaultInterface = "wg0";
-    allowedUsers = [ config.common.username ];
-  };
-
-  jgu-vpn = {
-    enable = true;
-    username = "tdortman@uni-mainz.de";
-    secretsFile = config.age.secrets."jgu-vpn-swanctl".path;
-    dnsServers = [
-      "134.93.144.2"
-      "134.93.144.3"
-    ];
-  };
-
-  agent-sandbox = {
-    enable = true;
-    sudoPolicy = "approve";
-    network.enable = true;
-    gates = {
-      filesystem.enable = true;
-      resources.enable = true;
-      syscalls.enable = true;
+  services = {
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      openFirewall = true;
     };
-    readonlyDirs = [
-      "~/.local/bin"
-      "/lib64"
-      "/usr/lib"
-      "~/.config/agent-sandbox"
-    ];
-    readwriteDirs = [
-      "~/.agents"
-    ];
-    readonlyFiles = [
-      "~/.gitconfig"
-      "~/.1password/agent.sock"
-      "/usr/bin/env"
-    ];
-    packages =
-      let
-        agents = inputs.llm-agents.packages.${system};
-      in
-      [
-        {
-          package = agents.omp;
-          readwriteDirs = [ "~/.omp" ];
-        }
-        {
-          package = agents.cursor-agent;
-          readwriteDirs = [
-            "~/.cursor"
-            "~/.config/cursor"
-            "~/.cache/cursor-compile-cache"
-          ];
-        }
-        {
-          package = agents.codex;
-          readwriteDirs = [ "~/.codex" ];
-        }
-        {
-          package = agents.opencode;
-          readwriteDirs = [
-            "~/.config/opencode"
-            "~/.local/share/opencode"
-            "~/.local/state/opencode"
-            "~/.local/share/zoxide"
-            "~/.cache/opencode"
-            "~/.opencode"
 
-            # cursor-acp
-            "~/.opencode-cursor"
-            "~/.local/share/cursor-agent"
-          ];
-          readonlyFiles = [
-            "~/.config/cursor/auth.json" # For opencode-cursor
-          ];
-        }
-        {
-          package = agents.droid;
-          readwriteDirs = [ "~/.factory" ];
-        }
+    btrfs.autoScrub = {
+      enable = true;
+      fileSystems = [ "/" ];
+      interval = "weekly";
+    };
+
+    gvfs.enable = true;
+
+    kmscon.config = {
+      font-dpi = 256;
+      font-name = "JetBrainsMono Nerd Font Mono";
+      font-size = 26;
+      hwaccel = true;
+    };
+
+    libinput.enable = true;
+
+    # Let KDE PowerDevil own lid/power policy. logind should only watch the
+    # hardware events, not race PowerDevil with a second hibernate request.
+    logind.settings.Login = {
+      HandleLidSwitch = "ignore";
+      HandleLidSwitchDocked = "ignore";
+      HandleLidSwitchExternalPower = "ignore";
+      HandlePowerKey = "ignore";
+    };
+
+    pipewire = {
+      alsa.enable = true;
+      enable = true;
+
+      extraLadspaPackages = [
+        pkgs.ladspaPlugins
       ];
+
+      jack.enable = true;
+      pulse.enable = true;
+      wireplumber.enable = true;
+    };
+
+    printing = {
+      drivers = with pkgs; [
+        cups-browsed
+        cups-filters
+      ];
+
+      enable = true;
+    };
+
+    ratbagd.enable = true;
+    udisks2.enable = true;
   };
 
-  age.secrets = {
-    "restic-password".file = inputs.self + /nix/secrets/restic-password.age;
-    "nextdns-resolved.conf".file = inputs.self + /nix/secrets/nextdns-resolved.conf.age;
-    "airvpn-privatekey".file = inputs.self + /nix/secrets/airvpn-privatekey.age;
-    "airvpn-presharedkey".file = inputs.self + /nix/secrets/airvpn-presharedkey.age;
-    "jgu-vpn-swanctl".file = inputs.self + /nix/secrets/jgu-vpn-swanctl.age;
+  spicetify.enable = true;
+  system.stateVersion = "26.11";
+
+  virtualisation = {
+    containers.enable = true;
+
+    podman = {
+      enable = true;
+      defaultNetwork.settings.dns_enabled = true;
+      dockerCompat = true;
+    };
   };
 
   virtualisation.libvirtd = {
@@ -207,177 +391,11 @@
     qemu.vhostUserPackages = with pkgs; [ virtiofsd ];
   };
 
-  programs.virt-manager.enable = true;
-
-  services.avahi = {
+  vpn-run = {
     enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
+    allowedUsers = [ config.common.username ];
+    defaultInterface = "wg0";
   };
-
-  services.kmscon.config = {
-    hwaccel = true;
-    font-name = "JetBrainsMono Nerd Font Mono";
-    font-size = 26;
-    font-dpi = 256;
-  };
-
-  services.printing = {
-    enable = true;
-    drivers = with pkgs; [
-      cups-filters
-      cups-browsed
-    ];
-  };
-
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-    settings = {
-      General = {
-        Experimental = true;
-      };
-    };
-  };
-
-  networking.wireguard.interfaces = {
-    wg0 = {
-      privateKeyFile = "/home/${config.common.username}/.config/wireguard/privatekey";
-      ips = [ "10.14.0.2/16" ];
-
-      allowedIPsAsRoutes = false;
-      dynamicEndpointRefreshSeconds = 300;
-
-      peers = [
-        {
-          publicKey = "fJDA+OA6jzQxfRcoHfC27xz7m3C8/590fRjpntzSpGo=";
-          endpoint = "de-fra.prod.surfshark.com:51820";
-
-          allowedIPs = [
-            "0.0.0.0/0"
-            "::/0"
-          ];
-        }
-      ];
-    };
-
-    wg1 = {
-      privateKeyFile = toString config.age.secrets."airvpn-privatekey".path;
-      ips = [ "10.183.233.232/32" ];
-
-      allowedIPsAsRoutes = false;
-      dynamicEndpointRefreshSeconds = 300;
-
-      peers = [
-        {
-          publicKey = "PyLCXAQT8KkM4T+dUsOQfn+Ub3pGxfGlxkIApuig+hk=";
-          presharedKeyFile = toString config.age.secrets."airvpn-presharedkey".path;
-          endpoint = "de3.vpn.airdns.org:51820";
-          persistentKeepalive = 15;
-
-          allowedIPs = [
-            "0.0.0.0/0"
-            "::/0"
-          ];
-        }
-      ];
-    };
-  };
-
-  virtualisation = {
-    containers.enable = true;
-    podman = {
-      enable = true;
-      dockerCompat = true;
-      defaultNetwork.settings.dns_enabled = true;
-    };
-  };
-
-  flatpak = {
-    enable = true;
-    packages = [
-      "com.surfshark.Surfshark"
-      "com.gitbutler.gitbutler"
-    ];
-    extraOverrides."com.gitbutler.gitbutler".Environment = {
-      WEBKIT_DISABLE_DMABUF_RENDERER = "1";
-    };
-  };
-
-  networking.hostName = "nixos-laptop";
-
-  mime.librewolf.enable = true;
-
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  networking.networkmanager.enable = true;
-
-  services.libinput.enable = true;
-
-  services.btrfs.autoScrub = {
-    enable = true;
-    interval = "weekly";
-    fileSystems = [ "/" ];
-  };
-
-  services.ratbagd.enable = true;
-
-  services.gvfs.enable = true;
-  services.udisks2.enable = true;
-  programs.dconf.enable = true;
-
-  programs.thunderbird.enable = true;
-
-  environment.systemPackages = with pkgs; [
-    ntfs3g
-    ghostty
-    btrfs-progs
-    mpv
-    librewolf
-
-    gvfs
-    samba
-    glib
-    qpwgraph
-
-    inputs.agenix.packages."${system}".default
-
-    vlc
-    libnotify
-    libreoffice-qt6
-    nheko
-
-    xdg-utils
-    xdg-desktop-portal
-    kdePackages.xdg-desktop-portal-kde
-    teams-for-linux
-
-    (discord.override {
-      withVencord = true;
-      commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
-    })
-
-    google-chrome # Used by antigravity
-    master.antigravity-fhs
-    master.vscode-fhs
-    zed-editor-fhs
-    master.code-cursor-fhs
-
-    custom.danbooru-rs
-    custom.shiru
-    custom.fluxer
-  ];
 
   xdg.portal.xdgOpenUsePortal = true;
-
-  environment.variables = {
-    NIXOS_OZONE_WL = "1";
-
-    # Setting gfx.webrender.compositor.force-enabled to true breaks the direct backend
-    MOZ_ENABLE_WAYLAND = 1;
-    MOZ_DISABLE_RDD_SANDBOX = 1;
-  };
-
-  programs.mtr.enable = true;
-  system.stateVersion = "26.11";
 }

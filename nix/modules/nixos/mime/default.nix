@@ -16,16 +16,16 @@ in
   };
 
   config = lib.mkIf cfg.librewolf.enable {
-    xdg.mime.defaultApplications = {
-      "text/html" = "librewolf.desktop";
-      "x-scheme-handler/http" = "librewolf.desktop";
-      "x-scheme-handler/https" = "librewolf.desktop";
-      "x-scheme-handler/about" = "librewolf.desktop";
-    };
-
     environment.variables = {
       BROWSER = "${pkgs.librewolf}/bin/librewolf";
       DEFAULT_BROWSER = "${pkgs.librewolf}/bin/librewolf";
+    };
+
+    xdg.mime.defaultApplications = {
+      "text/html" = "librewolf.desktop";
+      "x-scheme-handler/about" = "librewolf.desktop";
+      "x-scheme-handler/http" = "librewolf.desktop";
+      "x-scheme-handler/https" = "librewolf.desktop";
     };
   };
 }

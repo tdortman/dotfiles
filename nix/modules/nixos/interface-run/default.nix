@@ -7,11 +7,11 @@
 let
   mkVethRunner =
     {
-      name,
-      logPrefix ? name,
       defaultInterface,
+      name,
       disableIPv6 ? true,
       dropNonInterfaceForward ? true,
+      logPrefix ? name,
     }:
     let
       setupText =
@@ -44,26 +44,30 @@ let
 
       setupPackage = pkgs.writeShellApplication {
         name = "${name}-setup";
+
         runtimeInputs = [
+          pkgs.coreutils
+          pkgs.gnugrep
           pkgs.iproute2
           pkgs.nftables
-          pkgs.coreutils
-          pkgs.util-linux
           pkgs.procps
-          pkgs.gnugrep
           pkgs.socat
+          pkgs.util-linux
         ];
+
         text = setupText;
       };
 
       runPackage = pkgs.writeShellApplication {
         inherit name;
+
         runtimeInputs = [
-          pkgs.iproute2
           pkgs.coreutils
+          pkgs.iproute2
           pkgs.util-linux
           setupPackage
         ];
+
         text = runText;
       };
     in
@@ -96,12 +100,14 @@ let
     {
       runPackage = pkgs.writeShellApplication {
         inherit name;
+
         runtimeInputs = [
           pkgs.coreutils
           pkgs.iproute2
-          pkgs.util-linux
           pkgs.systemd
+          pkgs.util-linux
         ];
+
         text = runText;
       };
     };

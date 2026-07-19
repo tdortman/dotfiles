@@ -32,6 +32,7 @@ in
 
     services.resolved = {
       enable = true;
+
       settings.Resolve = {
         Domains = [ "~." ];
       }
@@ -42,17 +43,17 @@ in
 
     systemd.services.nextdns-config-generator = {
       description = "Generate NextDNS config for systemd-resolved";
+      after = [ "local-fs.target" ];
       before = [ "systemd-resolved.service" ];
       wantedBy = [ "sysinit.target" ];
-      after = [ "local-fs.target" ];
+
+      serviceConfig = {
+        RemainAfterExit = true;
+        Type = "oneshot";
+      };
 
       unitConfig = {
         DefaultDependencies = false;
-      };
-
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
       };
 
       script = ''

@@ -11,36 +11,37 @@ in
   options.flatpak = {
     enable = lib.mkEnableOption "Flatpak with themed overrides for Plasma/GTK";
 
-    packages = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [ ];
-      example = [
-        "com.surfshark.Surfshark"
-        "com.gitbutler.gitbutler"
-      ];
-      description = "Flatpak application IDs to install.";
-    };
-
     extraOverrides = lib.mkOption {
       type = lib.types.attrsOf lib.types.attrs;
-      default = { };
-      description = "Per-application Flatpak overrides (additional to the global theme overrides).";
+
       example = {
         "com.gitbutler.gitbutler".Environment = {
           WEBKIT_DISABLE_DMABUF_RENDERER = "1";
         };
       };
+
+      default = { };
+      description = "Per-application Flatpak overrides (additional to the global theme overrides).";
+    };
+
+    packages = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+
+      example = [
+        "com.surfshark.Surfshark"
+        "com.gitbutler.gitbutler"
+      ];
+
+      default = [ ];
+      description = "Flatpak application IDs to install.";
     };
   };
 
   config = lib.mkIf cfg.enable {
     services.flatpak = {
-      enable = true;
       inherit (cfg) packages;
-      update.auto = {
-        enable = true;
-        onCalendar = "weekly";
-      };
+      enable = true;
+
       overrides = {
         global = {
           Context = {
@@ -55,12 +56,18 @@ in
               "xdg-data/icons:ro"
             ];
           };
+
           Environment = {
             GTK_THEME = "Breeze";
           };
         };
       }
       // cfg.extraOverrides;
+
+      update.auto = {
+        enable = true;
+        onCalendar = "weekly";
+      };
     };
   };
 }

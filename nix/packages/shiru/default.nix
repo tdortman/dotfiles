@@ -1,7 +1,7 @@
 {
   lib,
-  appimageTools,
   fetchurl,
+  appimageTools,
 }:
 
 appimageTools.wrapType2 rec {
@@ -34,8 +34,8 @@ appimageTools.wrapType2 rec {
     description = "Manage your personal media library, organize your collection, and stream your content in real time, no waiting required!";
     homepage = "https://github.com/RockinChaos/Shiru";
     license = licenses.gpl3;
+    sourceProvenance = [ sourceTypes.binaryNativeCode ];
     maintainers = [ ];
     platforms = [ "x86_64-linux" ];
-    sourceProvenance = [ sourceTypes.binaryNativeCode ];
   };
 }

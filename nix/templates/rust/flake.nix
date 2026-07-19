@@ -10,8 +10,8 @@
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [ rust-overlay.overlays.default ];
         config.allowUnfree = true;
+        overlays = [ rust-overlay.overlays.default ];
       };
 
       rust-toolchain = pkgs.rust-bin.stable.latest.default.override {
@@ -23,16 +23,15 @@
       ];
 
       nativeBuildInputs = with pkgs; [
-        rust-toolchain
-        rust-analyzer
-        mold-unwrapped
         llvmPackages_22.clang
+        mold-unwrapped
+        rust-analyzer
+        rust-toolchain
       ];
     in
     {
       devShells.${system}.default = pkgs.mkShell {
         inherit buildInputs nativeBuildInputs;
-
         LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (buildInputs ++ nativeBuildInputs);
       };
     };

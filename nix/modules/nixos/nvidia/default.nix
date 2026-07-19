@@ -1,7 +1,7 @@
 {
-  pkgs,
   config,
   lib,
+  pkgs,
   ...
 }:
 
@@ -23,6 +23,7 @@ in
 
     driver = {
       enable = lib.mkEnableOption "NVIDIA graphics driver";
+
       package = lib.mkOption {
         type = lib.types.package;
         default = config.boot.kernelPackages.nvidiaPackages.stable;
@@ -33,15 +34,15 @@ in
 
   config =
     let
-      pocl-cuda = pkgs.callPackage ./packages/pocl-cuda.nix {
+      pocl-cuda = pkgs.callPackage ../../../packages/pocl-cuda/package.nix {
         cudaPkgs = cfg.cuda.packages;
       };
     in
     lib.mkMerge [
       (lib.mkIf (cfg.cuda.enable || cfg.driver.enable) {
         hardware.graphics = {
-          enable32Bit = true;
           enable = true;
+          enable32Bit = true;
         };
       })
 
@@ -53,13 +54,13 @@ in
       })
 
       (lib.mkIf (cfg.cuda.enable && !cfg.driver.enable) {
-        hardware.graphics.extraPackages = [
-          pocl-cuda
-        ];
-
         environment.variables = {
           OCL_ICD_FILENAMES = "${pocl-cuda}/etc/OpenCL/vendors/pocl.icd";
         };
+
+        hardware.graphics.extraPackages = [
+          pocl-cuda
+        ];
       })
 
       # Base CUDA configuration
@@ -73,27 +74,26 @@ in
 
       # nvidia-fs  Kernel Module Integration
       (lib.mkIf (cfg.cuda.enable && cfg.cuda.nvidia-fs.enable && cfg.driver.enable) {
-        boot.kernelModules = [ "nvidia-fs" ];
+        boot = {
+          extraModulePackages =
+            let
+              kernelPackages = config.boot.kernelPackages;
+            in
+            [
+              (kernelPackages.callPackage ../../../packages/nvidia-fs/package.nix {
+                cudaPkgs = cfg.cuda.packages;
+                nvidiaKernelModule = config.hardware.nvidia.package.open;
+                nvidiaKernelSourceDir = "${config.hardware.nvidia.package.open.src}/kernel-open/nvidia";
+              })
+            ];
 
-        boot.extraModulePackages =
-          let
-            kernelPackages = config.boot.kernelPackages;
-          in
-          [
-            (kernelPackages.callPackage ./packages/nvidia-fs.nix {
-              cudaPkgs = cfg.cuda.packages;
-              nvidiaKernelModule = config.hardware.nvidia.package.open;
-              nvidiaKernelSourceDir = "${config.hardware.nvidia.package.open.src}/kernel-open/nvidia";
-            })
-          ];
+          kernelModules = [ "nvidia-fs" ];
+        };
       })
 
       # Driver configuration
       (lib.mkIf cfg.driver.enable {
-        services.xserver.videoDrivers = [ "nvidia" ];
-
         hardware.nvidia = {
-          videoAcceleration = true;
           package = cfg.driver.package // {
             open = cfg.driver.package.open.overrideAttrs (old: {
               patches = (old.patches or [ ]) ++ [
@@ -105,8 +105,12 @@ in
               ];
             });
           };
+
           open = true;
+          videoAcceleration = true;
         };
+
+        services.xserver.videoDrivers = [ "nvidia" ];
       })
     ];
 }

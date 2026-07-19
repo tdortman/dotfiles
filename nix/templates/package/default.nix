@@ -1,7 +1,7 @@
 {
   lib,
-  stdenv,
   fetchFromGithub,
+  stdenv,
   ...
 }:
 
@@ -10,14 +10,13 @@ stdenv.mkDerivation (finalAttrs: {
   version = "0.1.0";
 
   src = fetchFromGithub {
+    hash = "";
     owner = "tdortman";
     repo = "package";
     rev = "v${finalAttrs.version}";
-    hash = "";
   };
 
   buildInputs = [ ];
-  nativeBuildInputs = [ ];
 
   installPhase = ''
     runHook preInstall
@@ -28,12 +27,14 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
+  nativeBuildInputs = [ ];
+
   meta = {
     description = "Package";
     homepage = "https://github.com/tdortman/package";
     license = lib.licenses.gpl3Only;
-    maintainers = [ ];
     mainProgram = "package";
+    maintainers = [ ];
     platforms = [ "x86_64-linux" ];
   };
 })

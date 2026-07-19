@@ -7,13 +7,16 @@ final: _: {
   # };
 
   cuda = import inputs.nixpkgs-flox {
+    config = {
+      allowUnfree = true;
+      cudaSupport = true;
+    };
+
     system = final.stdenv.hostPlatform.system;
-    config.allowUnfree = true;
-    config.cudaSupport = true;
   };
 
   master = import inputs.nixpkgs-master {
-    system = final.stdenv.hostPlatform.system;
     config.allowUnfree = true;
+    system = final.stdenv.hostPlatform.system;
   };
 }

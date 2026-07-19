@@ -88,20 +88,11 @@ let
 in
 {
   options.backups = {
-    user = lib.mkOption {
-      type = lib.types.str;
-      default = config.common.username;
-      description = "The username to back up files for";
-    };
-
-    passwordFile = lib.mkOption {
-      type = lib.types.path;
-      example = lib.literalExpression "config.age.secrets.restic-password.path";
-      description = "Path to the Restic repository password file";
-    };
-
-    remote = {
-      enable = lib.mkEnableOption "Google Drive Restic backup of selected home data";
+    flatpakApps = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      example = [ "com.core447.StreamController" ];
+      default = [ ];
+      description = "List of Flatpak application IDs to backup their ~/.var/app data.";
     };
 
     librewolfProfile = lib.mkOption {
@@ -109,31 +100,14 @@ in
       description = "LibreWolf profile name to backup";
     };
 
-    flatpakApps = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [ ];
-      example = [ "com.core447.StreamController" ];
-      description = "List of Flatpak application IDs to backup their ~/.var/app data.";
-    };
-
-    snapshots = {
-      enable = lib.mkEnableOption "automatic btrfs snapshots of the home subvolume via snapper";
-
-      subvolume = lib.mkOption {
-        type = lib.types.str;
-        default = "/home";
-        description = "Mounted btrfs subvolume to snapshot.";
-      };
-    };
-
     local = {
-      enable = lib.mkEnableOption "a local Restic backup of the home subvolume to a disk";
-
       device = lib.mkOption {
         type = lib.types.str;
         example = "/dev/disk/by-uuid/...";
         description = "Device path of the backup disk, mounted at mountPoint.";
       };
+
+      enable = lib.mkEnableOption "a local Restic backup of the home subvolume to a disk";
 
       fsType = lib.mkOption {
         type = lib.types.str;
@@ -150,11 +124,38 @@ in
       timer = lib.mkOption {
         type = lib.types.str;
         default = "daily";
+
         description = ''
           systemd OnCalendar expression for the local backup timer
           (e.g. "*-*-* 18:00:00" for daily at 18:00).
         '';
       };
+    };
+
+    passwordFile = lib.mkOption {
+      type = lib.types.path;
+      example = lib.literalExpression "config.age.secrets.restic-password.path";
+      description = "Path to the Restic repository password file";
+    };
+
+    remote = {
+      enable = lib.mkEnableOption "Google Drive Restic backup of selected home data";
+    };
+
+    snapshots = {
+      enable = lib.mkEnableOption "automatic btrfs snapshots of the home subvolume via snapper";
+
+      subvolume = lib.mkOption {
+        type = lib.types.str;
+        default = "/home";
+        description = "Mounted btrfs subvolume to snapshot.";
+      };
+    };
+
+    user = lib.mkOption {
+      type = lib.types.str;
+      default = config.common.username;
+      description = "The username to back up files for";
     };
   };
 
@@ -162,8 +163,9 @@ in
     (lib.mkIf cfg.remote.enable {
       # ---- Google Drive backup (Restic over rclone) ----
       fileSystems."/mnt/gdrive" = {
-        device = "gdrive:";
         fsType = "rclone";
+        device = "gdrive:";
+
         options = [
           "nodev"
           "nofail"
@@ -179,22 +181,24 @@ in
       };
 
       services.restic.backups.gdrive = {
-        repository = "rclone:gdrive:backups/desktop";
         inherit (cfg) passwordFile;
 
-        paths =
-          (map (p: "/home/${cfg.user}/${p}") [
-            "Documents"
-            "Pictures"
-            "Videos"
-            "Music"
-            ".librewolf/${cfg.librewolfProfile}"
-          ])
-          ++ [
-            "/var/lib/sonarr/.config/NzbDrone/Backups"
-            "/var/lib/private/prowlarr/Backups"
-          ]
-          ++ map (app: "/home/${cfg.user}/.var/app/${app}") cfg.flatpakApps;
+        backupCleanupCommand = ''
+          echo "Google Drive backup completed at $(date)"
+        '';
+
+        backupPrepareCommand = ''
+          echo "Starting Google Drive backup at $(date)"
+          echo "Backing up paths: ${pkgs.lib.concatStringsSep ", " config.services.restic.backups.gdrive.paths}"
+        '';
+
+        createWrapper = true;
+
+        environmentFile = toString (
+          pkgs.writeText "gdrive-rclone-env" ''
+            RCLONE_CONFIG=/home/${cfg.user}/.config/rclone/rclone.conf
+          ''
+        );
 
         exclude =
           commonExcludes
@@ -204,17 +208,21 @@ in
           ];
 
         extraBackupArgs = commonExtraBackupArgs;
+        initialize = true;
 
-        environmentFile = toString (
-          pkgs.writeText "gdrive-rclone-env" ''
-            RCLONE_CONFIG=/home/${cfg.user}/.config/rclone/rclone.conf
-          ''
-        );
-
-        timerConfig = {
-          OnCalendar = "daily";
-          Persistent = true;
-        };
+        paths =
+          (map (p: "/home/${cfg.user}/${p}") [
+            ".librewolf/${cfg.librewolfProfile}"
+            "Documents"
+            "Music"
+            "Pictures"
+            "Videos"
+          ])
+          ++ [
+            "/var/lib/private/prowlarr/Backups"
+            "/var/lib/sonarr/.config/NzbDrone/Backups"
+          ]
+          ++ map (app: "/home/${cfg.user}/.var/app/${app}") cfg.flatpakApps;
 
         pruneOpts = [
           "--keep-daily 4"
@@ -222,35 +230,29 @@ in
           "--keep-monthly 2"
         ];
 
-        initialize = true;
-
         rcloneOptions = {
           drive-use-trash = false;
         };
 
-        createWrapper = true;
+        repository = "rclone:gdrive:backups/desktop";
 
-        backupPrepareCommand = ''
-          echo "Starting Google Drive backup at $(date)"
-          echo "Backing up paths: ${pkgs.lib.concatStringsSep ", " config.services.restic.backups.gdrive.paths}"
-        '';
-
-        backupCleanupCommand = ''
-          echo "Google Drive backup completed at $(date)"
-        '';
+        timerConfig = {
+          OnCalendar = "daily";
+          Persistent = true;
+        };
       };
     })
 
     (lib.mkIf cfg.snapshots.enable {
       # ---- Local btrfs snapshots of /home via snapper ----
       services.snapper.configs.${snapName} = {
-        SUBVOLUME = cfg.snapshots.subvolume;
-        FSTYPE = "btrfs";
         ALLOW_USERS = [ cfg.user ];
-        TIMELINE_CREATE = true;
+        FSTYPE = "btrfs";
+        SUBVOLUME = cfg.snapshots.subvolume;
         TIMELINE_CLEANUP = true;
-        TIMELINE_LIMIT_HOURLY = "7";
+        TIMELINE_CREATE = true;
         TIMELINE_LIMIT_DAILY = "7";
+        TIMELINE_LIMIT_HOURLY = "7";
       };
 
       # The NixOS snapper module only writes the config and timers. It does not
@@ -258,27 +260,32 @@ in
       # before the timeline service is allowed to run.
       systemd.services."snapper-${snapName}-init" = {
         description = "Create btrfs .snapshots subvolume for snapper on ${cfg.snapshots.subvolume}";
-        wantedBy = [ "multi-user.target" ];
-        requires = [ "local-fs.target" ];
         after = [ "local-fs.target" ];
+
         before = [
-          "snapper-timeline.service"
           "snapper-cleanup.service"
+          "snapper-timeline.service"
         ];
-        unitConfig.ConditionPathExists = "!${cfg.snapshots.subvolume}/.snapshots";
+
+        requires = [ "local-fs.target" ];
+        wantedBy = [ "multi-user.target" ];
+
         serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
           ExecStart = "${pkgs.btrfs-progs}/bin/btrfs subvolume create ${cfg.snapshots.subvolume}/.snapshots";
+          RemainAfterExit = true;
+          Type = "oneshot";
         };
+
+        unitConfig.ConditionPathExists = "!${cfg.snapshots.subvolume}/.snapshots";
       };
     })
 
     (lib.mkIf cfg.local.enable {
       # ---- Local Restic backup to a dedicated disk ----
       fileSystems.${cfg.local.mountPoint} = {
-        device = cfg.local.device;
         fsType = cfg.local.fsType;
+        device = cfg.local.device;
+
         options = [
           "defaults"
           "noatime"
@@ -287,10 +294,8 @@ in
       };
 
       services.restic.backups.local = {
-        repository = "${cfg.local.mountPoint}/restic";
         inherit (cfg) passwordFile;
-
-        paths = [ cfg.snapshots.subvolume ];
+        createWrapper = true;
 
         exclude = commonExcludes ++ [
           ".snapshots"
@@ -309,19 +314,20 @@ in
         ];
 
         extraBackupArgs = commonExtraBackupArgs;
-
-        timerConfig = {
-          OnCalendar = cfg.local.timer;
-          Persistent = true;
-        };
+        initialize = true;
+        paths = [ cfg.snapshots.subvolume ];
 
         pruneOpts = [
           "--keep-daily 7"
           "--keep-weekly 2"
         ];
 
-        initialize = true;
-        createWrapper = true;
+        repository = "${cfg.local.mountPoint}/restic";
+
+        timerConfig = {
+          OnCalendar = cfg.local.timer;
+          Persistent = true;
+        };
       };
 
       # Never let restic write into a stale mountpoint on the root filesystem:

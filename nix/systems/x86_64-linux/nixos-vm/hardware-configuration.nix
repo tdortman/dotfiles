@@ -3,42 +3,47 @@
 {
   imports = [ ];
 
-  boot.initrd.availableKernelModules = [
-    "virtio_pci"
-    "virtio_blk"
-    "virtio_scsi"
+  boot = {
+    extraModulePackages = [ ];
 
-    "ata_piix"
-    "mptspi"
-    "uhci_hcd"
-    "ehci_pci"
-    "ahci"
-    "sd_mod"
-    "sr_mod"
-  ];
-  boot.initrd.kernelModules = [ "kvm-amd" ];
-  boot.kernelModules = [ ];
-  boot.extraModulePackages = [ ];
+    initrd = {
+      availableKernelModules = [
+        "ahci"
+        "ata_piix"
+        "ehci_pci"
+        "mptspi"
+        "sd_mod"
+        "sr_mod"
+        "uhci_hcd"
+        "virtio_blk"
+        "virtio_pci"
+        "virtio_scsi"
+      ];
 
-  boot.kernel.sysctl = {
-    "fs.inotify.max_user_watches" = 1048576;
-    "fs.inotify.max_user_instances" = 2048;
-  };
+      kernelModules = [ "kvm-amd" ];
+    };
 
-  swapDevices = [ ];
+    kernel.sysctl = {
+      "fs.inotify.max_user_instances" = 2048;
+      "fs.inotify.max_user_watches" = 1048576;
+    };
 
-  boot.loader = {
-    efi.canTouchEfiVariables = true;
+    kernelModules = [ ];
 
-    grub = {
-      enable = true;
-      devices = [ "nodev" ];
-      efiSupport = true;
-      font = "${pkgs.nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf";
-      fontSize = 20;
+    loader = {
+      efi.canTouchEfiVariables = true;
+
+      grub = {
+        enable = true;
+        devices = [ "nodev" ];
+        efiSupport = true;
+        font = "${pkgs.nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf";
+        fontSize = 20;
+      };
     };
   };
 
   networking.useDHCP = lib.mkDefault true;
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  swapDevices = [ ];
 }

@@ -1,8 +1,8 @@
 {
-  pkgs,
   config,
-  system,
+  pkgs,
   inputs,
+  system,
   ...
 }:
 
@@ -10,130 +10,110 @@
   environment.systemPackages =
     with pkgs;
     [
-      # Editors / Shell
-      neovim
-      zsh
-      oh-my-posh
-      lazygit
-      delta
-      hex
-
-      # Languages / Runtimes
-      python3
-      nodejs
-      bun
-      uv
-      pixi
-      volta
-
-      # Nix tooling
-      nixfmt
-      nixd
-      nil
-      nix-output-monitor
-      nix-init
-      cachix
-      hydra-check
+      (if config.nvidia.driver.enable then pkgs.btop-cuda else pkgs.btop)
       age
+      atool
+      atuin
+      bat
+      bear
+      bun
+      cachix
+      chezmoi
+      clinfo
+      codesnap
+      containerd
+      curl
+      deadnix
+      delta
       devenv
-
-      # Dev tools
+      direnv
+      dotool
+      dust
+      eza
+      fastfetch
+      fd
+      ffmpeg-full
+      file
+      fzf
+      gdb
+      gh
+      gifsicle
       git
       git-filter-repo
       git-lfs
-      gh
-      direnv
-      atuin
-      fzf
-      zoxide
-      jq
-      file
-      pkg-config
-      mold-unwrapped
-      openssl
-      bear
-      gdb
-      valgrind
-      hyperfine
-      oha
-      shfmt
-      ruff
-      dotool
-
-      # System / CLI utilities
-      curl
-      wget
-      moor
-      stow
-      unzip
-      zip
-      unrar
-      p7zip-rar
-      trashy
-      rm-improved
-      dust
-      eza
-      bat
-      ripgrep
-      fd
-      sd
-      fastfetch
-      tokei
-      kmod
-      lz4
-      openssh
-      podman
-      containerd
-      qemu
-      chezmoi
-      strongswan
-
-      # Media / Graphics
-      ffmpeg-full
-      imagemagick
-      gifsicle
-      vulkan-tools
-      vulkan-loader
-      libva-utils
-      vdpauinfo
-      mesa-demos
-      mesa
-      clinfo
-      opencl-headers
-      libgcc
-
-      # GTK / Qt theming
-      gtk4
-      gtk3
       gtk2
+      gtk3
+      gtk4
+      hex
+      hydra-check
+      hyperfine
+      imagemagick
+      jq
       kdePackages.breeze-gtk
-
-      # Databases
-      sqlite
-      sqlitebrowser
-      turso-cli
-
-      # Misc
-      codesnap
-      shellcheck
-      zenity
-      rclone
-      atool
-      ookla-speedtest
-      deadnix
-      statix
-      nftables
-
+      kmod
+      lazygit
+      libgcc
+      libva-utils
+      lz4
       # Documentation
       man-pages
       man-pages-posix
-
-      (if config.nvidia.driver.enable then pkgs.btop-cuda else pkgs.btop)
-
+      mesa
+      mesa-demos
+      mold-unwrapped
+      moor
+      neovim
+      nftables
+      nil
+      nix-init
+      nix-output-monitor
+      nixd
+      nixfmt
+      nodejs
+      oh-my-posh
+      oha
+      ookla-speedtest
+      opencl-headers
+      openssh
+      openssl
+      p7zip-rar
+      pixi
+      pkg-config
+      podman
+      python3
+      qemu
+      rclone
+      ripgrep
+      rm-improved
+      ruff
+      sd
+      shellcheck
+      shfmt
+      sqlite
+      sqlitebrowser
+      statix
+      stow
+      strongswan
+      tokei
+      trashy
+      turso-cli
+      unrar
+      unzip
+      uv
+      valgrind
+      vdpauinfo
+      volta
+      vulkan-loader
+      vulkan-tools
+      wget
+      zenity
+      zip
+      zoxide
+      zsh
     ]
     ++ (with inputs.llm-agents.packages.${system}; [
-      hunk
-      git-surgeon
       codegraph
+      git-surgeon
+      hunk
     ]);
 }

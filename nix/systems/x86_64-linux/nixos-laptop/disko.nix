@@ -1,62 +1,80 @@
 {
   disko.devices.disk.main = {
-    type = "disk";
     device = "/dev/disk/by-id/nvme-INTEL_HBRPEKNX0202AH_BTTE04330BBY512B-1";
+
     content = {
-      type = "gpt";
       partitions = {
         ESP = {
           size = "1G";
-          type = "EF00";
+
           content = {
-            type = "filesystem";
             format = "vfat";
-            mountpoint = "/boot";
             mountOptions = [ "umask=0077" ];
+            mountpoint = "/boot";
+            type = "filesystem";
           };
+
+          type = "EF00";
         };
+
         luks = {
           size = "350G";
+
           content = {
-            type = "luks";
-            name = "crypted";
-            settings = {
-              allowDiscards = true;
-            };
             content = {
-              type = "btrfs";
               extraArgs = [ "-f" ];
+
               subvolumes = {
-                "/root" = {
-                  mountpoint = "/";
-                  mountOptions = [
-                    "compress=zstd"
-                    "noatime"
-                  ];
-                };
                 "/home" = {
+                  mountOptions = [
+                    "compress=zstd"
+                    "noatime"
+                  ];
+
                   mountpoint = "/home";
-                  mountOptions = [
-                    "compress=zstd"
-                    "noatime"
-                  ];
                 };
+
                 "/nix" = {
-                  mountpoint = "/nix";
                   mountOptions = [
                     "compress=zstd"
                     "noatime"
                   ];
+
+                  mountpoint = "/nix";
                 };
+
+                "/root" = {
+                  mountOptions = [
+                    "compress=zstd"
+                    "noatime"
+                  ];
+
+                  mountpoint = "/";
+                };
+
                 "/swap" = {
                   mountpoint = "/swap";
                   swap.swapfile.size = "18G";
                 };
               };
+
+              type = "btrfs";
             };
+
+            name = "crypted";
+
+            settings = {
+              allowDiscards = true;
+            };
+
+            type = "luks";
           };
         };
       };
+
+      type = "gpt";
     };
+
+    type = "disk";
   };
 }

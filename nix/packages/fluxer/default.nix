@@ -1,22 +1,22 @@
 {
   lib,
   stdenv,
-  appimageTools,
   fetchurl,
+  appimageTools,
   makeWrapper,
-
-  middleClickScroll ? true,
-  version ? "0.0.8",
   artifacts ? {
-    x86_64-linux = {
-      url = "https://api.fluxer.app/dl/desktop/stable/linux/x64/fluxer-stable-${version}-x86_64.AppImage";
-      hash = "sha256-GdoBK+Z/d2quEIY8INM4IQy5tzzIBBM+3CgJXQn0qAw=";
-    };
     aarch64-linux = {
       url = "https://api.fluxer.app/dl/desktop/stable/linux/arm64/fluxer-stable-${version}-arm64.AppImage";
       hash = "sha256-wxLNekbw3E0YPcC27COWtp8VphKmBB9bF2dp7lnjPf8=";
     };
+
+    x86_64-linux = {
+      url = "https://api.fluxer.app/dl/desktop/stable/linux/x64/fluxer-stable-${version}-x86_64.AppImage";
+      hash = "sha256-GdoBK+Z/d2quEIY8INM4IQy5tzzIBBM+3CgJXQn0qAw=";
+    };
   },
+  middleClickScroll ? true,
+  version ? "0.0.8",
 }:
 
 let
@@ -43,7 +43,6 @@ let
 in
 appimageTools.wrapType2 {
   inherit pname version src;
-
   nativeBuildInputs = [ makeWrapper ];
 
   extraInstallCommands = ''
@@ -63,8 +62,8 @@ appimageTools.wrapType2 {
     description = "A free and open source instant messaging and VoIP platform built for friends, groups, and communities.";
     homepage = "https://fluxer.app";
     license = licenses.agpl3Only;
-    mainProgram = "fluxer";
-    platforms = builtins.attrNames artifacts;
     sourceProvenance = with sourceTypes; [ binaryNativeCode ];
+    platforms = builtins.attrNames artifacts;
+    mainProgram = "fluxer";
   };
 }

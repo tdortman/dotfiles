@@ -1,55 +1,70 @@
 {
   disko.devices.disk.primary = {
-    type = "disk";
     device = "/dev/disk/by-uuid/ea0f1e23-1f8c-4739-815a-025db4591419";
+
     content = {
-      type = "gpt";
       partitions = {
         ESP = {
           size = "1G";
-          type = "EF00";
+
           content = {
-            type = "filesystem";
             format = "vfat";
-            mountpoint = "/boot";
             mountOptions = [ "umask=0077" ];
+            mountpoint = "/boot";
+            type = "filesystem";
           };
+
+          type = "EF00";
         };
+
         root = {
           size = "100%";
+
           content = {
-            type = "btrfs";
             extraArgs = [ "-f" ];
+
             subvolumes = {
-              "/root" = {
-                mountpoint = "/";
-                mountOptions = [
-                  "compress=zstd"
-                  "noatime"
-                ];
-              };
               "/home" = {
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
+
                 mountpoint = "/home";
-                mountOptions = [
-                  "compress=zstd"
-                  "noatime"
-                ];
               };
+
               "/nix" = {
-                mountpoint = "/nix";
                 mountOptions = [
                   "compress=zstd"
                   "noatime"
                 ];
+
+                mountpoint = "/nix";
               };
+
+              "/root" = {
+                mountOptions = [
+                  "compress=zstd"
+                  "noatime"
+                ];
+
+                mountpoint = "/";
+              };
+
               "/swap" = {
                 mountpoint = "/swap";
                 swap.swapfile.size = "70G";
               };
             };
+
+            type = "btrfs";
           };
         };
       };
+
+      type = "gpt";
     };
+
+    type = "disk";
   };
 }
