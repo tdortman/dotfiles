@@ -59,7 +59,7 @@ in
       script = ''
         mkdir -p /run/systemd/resolved.conf.d
 
-        ${pkgs.gnused}/bin/sed 's/HOSTNAME/${cfg.hostName}/g' ${cfg.configFile} > /run/systemd/resolved.conf.d/99-nextdns.conf
+        ${pkgs.gnused}/bin/sed 's/HOSTNAME/${cfg.hostName}/g' ${cfg.configFile} > /run/systemd/resolved.conf.d/01-nextdns.conf
       '';
     };
   };
