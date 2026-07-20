@@ -139,48 +139,128 @@ skills-add() {
 }
 
 _omp_commit_state_file="$HOME/.local/state/omp-backups/last"
-
-# Regenerable build/dependency artifacts excluded from backups (at any depth).
-# Add entries here as needed.
-_omp_commit_excludes=(
-    node_modules .pnpm-store target .venv venv .tox .nox __pycache__
-    .pytest_cache .mypy_cache .ruff_cache .next .nuxt .svelte-kit .turbo
-    .vite .parcel-cache .cache dist build coverage .pixi .zig-cache .zig-out
-    zig-cache zig-out result
-)
+_omp_commit_backup_dir="$HOME/.local/state/omp-backups"
 
 _omp_commit_save_state() {
     mkdir -p "${_omp_commit_state_file:h}"
-    printf 'snap=%q\nbackup=%q\nroot=%q\n' "$1" "$2" "$3" >"$_omp_commit_state_file"
+    printf 'backup=%q\nroot=%q\n' "$1" "$2" >"$_omp_commit_state_file"
 }
 
 _omp_commit_load_state() {
     [[ -f "$_omp_commit_state_file" ]] || return 1
-    snap=""
     backup=""
     root=""
     # shellcheck disable=SC1090
     source "$_omp_commit_state_file" || return 1
-    [[ -n $snap && -n $backup && -n $root ]] || return 1
+    [[ -n $backup && -n $root ]] || return 1
 }
 
 _omp_commit_clear_state() {
     rm -f "$_omp_commit_state_file"
 }
 
+_omp_commit_restore_snapshot() {
+    local cwd=$PWD
+    local parent=${root:h}
+    local old
+    local rc
+    local rollback_failed=0
+    local had_root=0
+
+    if [[ -z "$root" || -z "$backup" || "$root" == / || "$root" == "$backup" ]]; then
+        print -u2 -r -- "invalid snapshot paths"
+        return 1
+    fi
+
+    old="${root}.omp-old-$$-$RANDOM"
+    while [[ -e "$old" ]]; do
+        old="${root}.omp-old-$$-$RANDOM"
+    done
+
+    cd "$parent" || return 1
+
+    if [[ ! -d "$backup" ]]; then
+        print -u2 -r -- "backup snapshot does not exist: $backup"
+        cd "$cwd" 2>/dev/null || cd "$parent" || return 1
+        return 1
+    fi
+
+    # Move the current project aside without deleting it yet.
+    if [[ -e "$root" ]]; then
+        mv -- "$root" "$old"
+        rc=$?
+
+        if ((rc != 0)); then
+            cd "$cwd" 2>/dev/null || cd "$parent" || return 1
+            return "$rc"
+        fi
+
+        had_root=1
+    fi
+
+    # Promote the backup snapshot to the original project path.
+    mv -- "$backup" "$root"
+    rc=$?
+
+    if ((rc != 0)); then
+        if ((had_root)); then
+            mv -- "$old" "$root" >/dev/null 2>&1 ||
+                print -u2 -r -- \
+                    "failed to move the original subvolume back to: $root"
+        fi
+
+        cd "$cwd" 2>/dev/null || cd "$parent" || return 1
+        return "$rc"
+    fi
+
+    # Keep the old project around until the saved state is cleared.
+    _omp_commit_clear_state
+    rc=$?
+
+    if ((rc != 0)); then
+        # Attempt to undo the filesystem changes.
+        mv -- "$root" "$backup" >/dev/null 2>&1 ||
+            rollback_failed=1
+
+        if ((had_root)); then
+            mv -- "$old" "$root" >/dev/null 2>&1 ||
+                rollback_failed=1
+        fi
+
+        if ((rollback_failed)); then
+            print -u2 -r -- \
+                "failed to clear state and could not completely roll back the restore"
+        fi
+
+        cd "$cwd" 2>/dev/null || cd "$parent" || return 1
+        return "$rc"
+    fi
+
+    # Restoration succeeded. Failure to remove the previous tree is only
+    # a cleanup failure, since the backup is already active at $root.
+    if ((had_root)); then
+        if ! sudo btrfs subvolume delete "$old" >/dev/null; then
+            print -u2 -r -- \
+                "restored, but failed to delete the previous subvolume: $old"
+        fi
+    fi
+
+    # The old working directory may not exist in the restored snapshot.
+    cd "$cwd" 2>/dev/null ||
+        cd "$root" 2>/dev/null ||
+        cd "$parent" ||
+        return 1
+
+    print -r -- "restored"
+}
+
 _omp_commit_show_recovery() {
-    local -a _xflags=(--exclude=.git "${_omp_commit_excludes[@]/#/--exclude=}")
-    local snap=$1 backup=$2 root=$3 recover cleanup xflags="${_xflags[*]}"
-    recover="git reset --hard $(printf %q "$snap") && rsync -a --delete $xflags $(printf %q "$backup/") $(printf %q "$root/")"
-    cleanup="rm -rf $(printf %q "$backup")"
+    local backup=$1 root=$2
 
     echo "kept agent's changes; backup at $backup"
     echo
     echo "restore:  omp-commit-restore"
     echo "cleanup:  omp-commit-cleanup"
-    echo
-    print -r -- "$recover"
-    print -r -- "$cleanup"
 }
 
 omp-commit-restore() {
@@ -188,12 +268,7 @@ omp-commit-restore() {
         echo "no omp-commit backup state" >&2
         return 1
     }
-    git reset --hard "$snap" &&
-        rsync -a --delete --exclude=.git "${_omp_commit_excludes[@]/#/--exclude=}" "$backup/" "$root/" &&
-        rm -rf "$backup" &&
-        git tag -d "$snap" >/dev/null 2>&1 &&
-        _omp_commit_clear_state &&
-        echo "restored"
+    _omp_commit_restore_snapshot
 }
 
 omp-commit-cleanup() {
@@ -201,8 +276,7 @@ omp-commit-cleanup() {
         echo "no omp-commit backup state" >&2
         return 1
     }
-    rm -rf "$backup" &&
-        git tag -d "$snap" >/dev/null 2>&1 &&
+    sudo btrfs subvolume delete "$backup" >/dev/null &&
         _omp_commit_clear_state &&
         echo "cleaned up"
 }
@@ -210,33 +284,62 @@ omp-commit-cleanup() {
 _omp_commit() {
     local omp_command=$1
     shift
-    local snap root backup
-    snap="pre-omp-$(date +%s%N)-$$"
-    command -v rsync >/dev/null || {
-        echo "rsync required for omp-commit" >&2
+    local root backup filesystem_type filesystem_uuid
+    local backup_filesystem_uuid commit timestamp path_name
+
+    command -v findmnt >/dev/null || {
+        echo "findmnt required for omp-commit" >&2
         return 1
     }
+
+    filesystem_type=$(findmnt -T . -no FSTYPE 2>/dev/null) || {
+        echo "could not determine filesystem type" >&2
+        return 1
+    }
+
+    [[ "$filesystem_type" == btrfs ]] || {
+        echo "omp-commit backups require a Btrfs filesystem" >&2
+        return 1
+    }
+
+    command -v btrfs >/dev/null || {
+        echo "btrfs required for omp-commit" >&2
+        return 1
+    }
+
     root=$(git rev-parse --show-toplevel 2>/dev/null) || {
         echo "not a git repo" >&2
         return 1
     }
-    backup="$HOME/.local/state/omp-backups/$snap"
-    mkdir -p "$backup" || {
+
+    # All subvolumes have inode 256 on Btrfs
+    [[ $(stat -Lc '%i' -- "$root") == 256 ]] || {
+        echo "git root must be a Btrfs subvolume" >&2
+        return 1
+    }
+
+    mkdir -p "$_omp_commit_backup_dir" || {
         echo "mkdir failed" >&2
         return 1
     }
-    git tag "$snap" HEAD || {
-        rm -rf "$backup"
-        echo "tag failed" >&2
+
+    filesystem_uuid=$(findmnt -T "$root" -no UUID 2>/dev/null)
+    backup_filesystem_uuid=$(findmnt -T "$_omp_commit_backup_dir" -no UUID 2>/dev/null)
+
+    [[ -n "$filesystem_uuid" && "$filesystem_uuid" == "$backup_filesystem_uuid" ]] || {
+        echo "backup directory must be on the same Btrfs filesystem" >&2
         return 1
     }
-    rsync -a --exclude=.git "${_omp_commit_excludes[@]/#/--exclude=}" "$root/" "$backup/" || {
-        rm -rf "$backup"
-        git tag -d "$snap" >/dev/null 2>&1
-        echo "copy failed" >&2
+
+    commit=$(git rev-parse --short HEAD)
+    timestamp=$(date +%s%N)
+    path_name="${root//\//-}"
+    backup="$_omp_commit_backup_dir/${path_name}-${commit}-${timestamp}"
+    btrfs subvolume snapshot "$root" "$backup" || {
+        echo "snapshot failed" >&2
         return 1
     }
-    _omp_commit_save_state "$snap" "$backup" "$root"
+    _omp_commit_save_state "$backup" "$root"
 
     "$omp_command" "$@" "$(
         cat <<EOF
@@ -388,27 +491,21 @@ any commit message that fails the audit.
 EOF
     )"
     echo
-    echo "agent commits since $snap:"
-    git log --oneline "$snap..HEAD" 2>/dev/null | sed 's/^/  /'
     echo "worktree status:"
     git status -s 2>/dev/null | sed 's/^/  /'
     read -r -q "REPLY?Restore from backup ($backup)? [y/N] "
     echo
     if [[ $REPLY == y ]]; then
-        if git reset --hard "$snap" &&
-            rsync -a --delete --exclude=.git "${_omp_commit_excludes[@]/#/--exclude=}" "$backup/" "$root/" &&
-            rm -rf "$backup" &&
-            git tag -d "$snap" >/dev/null 2>&1; then
-            _omp_commit_clear_state
-            echo "restored"
+        if _omp_commit_restore_snapshot; then
+            :
         else
             echo "restore failed (state may be partial); backup still at $backup"
             echo
-            _omp_commit_show_recovery "$snap" "$backup" "$root"
+            _omp_commit_show_recovery "$backup" "$root"
             return 1
         fi
     else
-        _omp_commit_show_recovery "$snap" "$backup" "$root"
+        _omp_commit_show_recovery "$backup" "$root"
     fi
 }
 
