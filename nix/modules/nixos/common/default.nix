@@ -83,7 +83,6 @@
         LC_MEASUREMENT = "C.UTF-8";
         LC_PAPER = "C.UTF-8";
         LC_TELEPHONE = "C.UTF-8";
-        LC_TIME = "C.UTF-8";
       };
     };
 
