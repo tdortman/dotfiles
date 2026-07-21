@@ -35,11 +35,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784640942,
-        "narHash": "sha256-RrKQFiTwRocRt8p4/uerLAn8/FSrEHFAqwPF5aXy6xg=",
+        "lastModified": 1784666565,
+        "narHash": "sha256-Pqsqz+nMLNq+fhfQjggpKaie80EbSJJMSLIYZosAfsU=",
         "owner": "tdortman",
         "repo": "agent-sandbox",
-        "rev": "707a33e564c50c3eaa083600c49ce8747ed884ba",
+        "rev": "576292b8020da47dcebb78f8b6f3d9a3c2d9098f",
         "type": "github"
       },
       "original": {
@@ -399,11 +399,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1784615936,
-        "narHash": "sha256-DzPXJmiePXn0+G6t5/H8nqTNX/AT7KlzVrpL5LZe8OE=",
+        "lastModified": 1784664112,
+        "narHash": "sha256-bitsWriFTZgxeOfLVSSQ1p5NFpw44P7qeXO8qP1zBv4=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "ba8c89d5b4836d46f7bdbffd2df34c66dadef725",
+        "rev": "1f2b955c693852cd22b494bb9b9c4ef55deb9b31",
         "type": "github"
       },
       "original": {
@@ -505,11 +505,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784058842,
-        "narHash": "sha256-3u3tvbCIAid3Mv7RrJx13jusIEQC/HeKYhO/SUSxR3A=",
+        "lastModified": 1784642409,
+        "narHash": "sha256-hcbDqFuySAJawljt5r0sKBCJKYnbtGD0T/ZIozH1Dq0=",
         "owner": "nix-community",
         "repo": "NixOS-WSL",
-        "rev": "24c8dc8e0f2170e1a377be24dfadc7d9d21dc1ad",
+        "rev": "eaeb18da90024448a60eb1ec7132eafa4003404e",
         "type": "github"
       },
       "original": {
@@ -553,11 +553,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1784640533,
-        "narHash": "sha256-Pq61+Vxdphk6d85f9iMOARo2mtEuy5a7RbWCh8qfc0o=",
+        "lastModified": 1784666319,
+        "narHash": "sha256-bmtWhGzQAzXoRtLsNCxJck/J3sPznL1HX1J4kSr1YKA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "98089f0292103ac8aecc9bf871616a9c5a35297e",
+        "rev": "ad4b3fbc95b43d8912b7e34b75a14397c60f5044",
         "type": "github"
       },
       "original": {
@@ -611,11 +611,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1784582112,
-        "narHash": "sha256-I1ZL3M3Lr8QUGATFIYYxagZ/np2YGPsUx4Etnymah2M=",
+        "lastModified": 1784647469,
+        "narHash": "sha256-348YvOpYCiPDkstNg8g+jB3JIvqiMM7wXTS1EIqlWeI=",
         "owner": "swarsel",
         "repo": "pedantix",
-        "rev": "b1caed073bdd731177372c8a383fb9aa0da1c6c7",
+        "rev": "8d762c8a9275feb215ce1268970f99779d3cdb04",
         "type": "github"
       },
       "original": {
