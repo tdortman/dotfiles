@@ -126,6 +126,7 @@
       { "path": "./nix", "access": "read_write", "comment": "global" },
       { "path": "./paper", "access": "read_write", "comment": "global" },
       { "path": "./result.tmp-*", "access": "write", "comment": "global" },
+      { "path": "./rustfmt.toml", "access": "read", "comment": "global" },
       { "path": "./spack.*", "access": "read_write", "comment": "global" },
       { "path": "./subprojects", "access": "execute", "comment": "global" },
       { "path": "./target", "access": "all", "comment": "global" },
