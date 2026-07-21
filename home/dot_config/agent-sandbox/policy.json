@@ -166,6 +166,7 @@
       { "path": "~/.config/nix/nix.conf", "access": "read", "comment": "global" },
       { "path": "~/.config/op/config", "access": "read", "comment": "global" },
       { "path": "~/.config/opencode/AGENTS.md", "access": "read", "comment": "global" },
+      { "path": "~/.config/ponytail/config.json", "access": "read_write", "comment": "global" },
       { "path": "~/.config/user-dirs.dirs", "access": "read", "comment": "global" },
       { "path": "~/.config/zsh", "access": "read", "comment": "global" },
       { "path": "~/.cursor/.gitignore", "access": "read_write", "comment": "global" },
