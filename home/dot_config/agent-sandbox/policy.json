@@ -93,6 +93,7 @@
       { "path": "./**/Doxyfile", "access": "read_write", "comment": "global" },
       { "path": "./**/LICENSE*", "access": "read_write", "comment": "global" },
       { "path": "./**/meson.*", "access": "read_write", "comment": "global" },
+      { "path": "./**/pedantix.toml", "access": "read", "comment": "global" },
       { "path": "./**/tsconfig.json", "access": "read", "comment": "global" },
       { "path": "./.agent-sandbox/policy.json", "access": "read", "comment": "global" },
       { "path": "./.cache", "access": "read", "comment": "global" },
