@@ -218,7 +218,7 @@
       librewolf
       lsfg-vk
       lsfg-vk-ui
-      master.antigravity-fhs
+      master.antigravity-ide-fhs
       master.code-cursor-fhs
       master.vscode-fhs
       mpv

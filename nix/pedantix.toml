@@ -165,3 +165,31 @@ lists.sort = true
 [[overrides]]
 path = "**.overlays"
 lists.sort = true
+
+[[overrides]]
+path = "**.src"
+attrs.first = [
+  "url",
+  "owner",
+  "repo",
+  "rev",
+  "tag",
+  "hash",
+  "sha256",
+  "fetchSubmodules",
+]
+
+[[overrides]]
+path = "**.meta"
+attrs.first = [
+  "description",
+  "longDescription",
+  "homepage",
+  "changelog",
+  "license",
+  "sourceProvenance",
+  "maintainers",
+  "platforms",
+  "badPlatforms",
+  "mainProgram",
+]

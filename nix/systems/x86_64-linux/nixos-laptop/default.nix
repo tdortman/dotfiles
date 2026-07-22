@@ -121,7 +121,7 @@
       libnotify
       libreoffice-qt6
       librewolf
-      master.antigravity-fhs
+      master.antigravity-ide-fhs
       master.code-cursor-fhs
       master.vscode-fhs
       mpv
