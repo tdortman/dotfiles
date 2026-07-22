@@ -59,6 +59,7 @@ task:
   maxRecursionDepth: -1
   showResolvedModelBadge: true
   batch: true
+  maxConcurrency: 0
 secrets: 
   enabled: true
 contextPromotion: 

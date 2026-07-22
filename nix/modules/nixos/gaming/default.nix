@@ -23,6 +23,7 @@ in
         DXVK_NVAPI_DRS_NGX_DLSS_SR_OVERRIDE = "on";
         DXVK_NVAPI_DRS_NGX_DLSS_SR_OVERRIDE_RENDER_PRESET_SELECTION = "render_preset_latest";
         PROTON_DLSS_UPGRADE = 1;
+        PROTON_ENABLE_WAYLAND = 1;
       };
 
       systemPackages = with pkgs; [
