@@ -11,6 +11,7 @@ modelRoles:
   tiny: openai-codex/gpt-5.6-luna:low
 startup: 
   checkUpdate: false
+  quiet: false
 symbolPreset: nerd
 stt: 
   enabled: false
@@ -24,6 +25,7 @@ statusLine:
   showHookStatus: true
 terminal: 
   showImages: true
+  showProgress: true
 images: 
   autoResize: true
   blockImages: false
@@ -74,6 +76,7 @@ providers:
     neuralwatt: 3
   tinyModel: online
   tinyModelDevice: default
+  webSearchGeminiModel: gemini-3-flash
 setupVersion: 1
 bashInterceptor: 
   enabled: true
@@ -123,3 +126,14 @@ doubleEscapeAction: tree
 astGrep: 
   enabled: true
 steeringMode: one-at-a-time
+collapseChangelog: false
+tui: 
+  tight: false
+  textSizing: true
+bash: 
+  autoBackground: 
+    enabled: true
+shellMinimizer: 
+  sourceOutlineLevel: default
+generate_image: 
+  enabled: true
