@@ -87,6 +87,7 @@
       rm-improved
       ruff
       sd
+      secretspec
       shellcheck
       shfmt
       sqlite
