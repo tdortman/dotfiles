@@ -44,19 +44,6 @@
           readwriteDirs = [ "~/.codex" ];
         }
         {
-          package = agents.copilot-cli;
-
-          readonlyFiles = [
-            "/run/user/1000/wayland-0"
-            "/run/user/1000/bus"
-          ];
-
-          readwriteDirs = [
-            "~/.config/gh-copilot"
-            "~/.copilot"
-          ];
-        }
-        {
           package = agents.cursor-agent;
 
           readwriteDirs = [
@@ -64,10 +51,6 @@
             "~/.config/cursor"
             "~/.cache/cursor-compile-cache"
           ];
-        }
-        {
-          package = agents.droid;
-          readwriteDirs = [ "~/.factory" ];
         }
         {
           package = agents.omp;
@@ -306,7 +289,6 @@
   mime.librewolf.enable = true;
 
   networking = {
-    # Hunk inside agent-sandbox
     firewall.interfaces.asbx-host.allowedTCPPorts = [ 47657 ];
     hostName = "nixos-pc";
     networkmanager.enable = true;
@@ -363,10 +345,6 @@
   };
 
   nixpkgs.overlays = [
-    # https://github.com/NixOS/nixpkgs/pull/540416
-    (final: prev: {
-      inherit (inputs.nixpkgs-temp.legacyPackages.x86_64-linux) spicetify-cli;
-    })
     # https://github.com/NixOS/nixpkgs/issues/540025
     (final: prev: {
       python314Packages = prev.python314Packages.overrideScope (

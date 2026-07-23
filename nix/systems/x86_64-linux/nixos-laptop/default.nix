@@ -50,10 +50,6 @@
           ];
         }
         {
-          package = agents.droid;
-          readwriteDirs = [ "~/.factory" ];
-        }
-        {
           package = agents.omp;
           readwriteDirs = [ "~/.omp" ];
         }
