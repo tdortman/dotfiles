@@ -10,10 +10,10 @@ stdenv.mkDerivation (finalAttrs: {
   version = "0.1.0";
 
   src = fetchFromGithub {
-    hash = "";
     owner = "tdortman";
     repo = "package";
     rev = "v${finalAttrs.version}";
+    hash = "";
   };
 
   buildInputs = [ ];
@@ -33,8 +33,8 @@ stdenv.mkDerivation (finalAttrs: {
     description = "Package";
     homepage = "https://github.com/tdortman/package";
     license = lib.licenses.gpl3Only;
-    mainProgram = "package";
     maintainers = [ ];
     platforms = [ "x86_64-linux" ];
+    mainProgram = "package";
   };
 })

@@ -25,9 +25,7 @@
         "/etc/age/key"
       ];
 
-      secrets = {
-        login-password.file = "${inputs.self}/nix/secrets/login-password.age";
-      };
+      secrets.login-password.file = "${inputs.self}/nix/secrets/login-password.age";
     };
 
     common.username = lib.mkDefault "tim";
@@ -51,9 +49,7 @@
         update = "flake-update && nixos-switch";
       };
 
-      variables = {
-        SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
-      };
+      variables.SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
     };
 
     fonts = {

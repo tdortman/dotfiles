@@ -264,32 +264,30 @@ in
       };
     };
 
-    systemd = {
-      services = {
-        jgu-vpn-xfrm = {
-          description = "Create JGU VPN XFRM interface ${cfg.interface}";
-          before = [ "strongswan-swanctl.service" ];
-          wantedBy = [ "multi-user.target" ];
+    systemd.services = {
+      jgu-vpn-xfrm = {
+        description = "Create JGU VPN XFRM interface ${cfg.interface}";
+        before = [ "strongswan-swanctl.service" ];
+        wantedBy = [ "multi-user.target" ];
 
-          serviceConfig = {
-            RemainAfterExit = true;
-            Type = "oneshot";
-          };
-
-          script = ''
-            if ! ip link show "${cfg.interface}" >/dev/null 2>&1; then
-              ip link add "${cfg.interface}" type xfrm if_id ${toString cfg.ifId}
-            fi
-            ip link set "${cfg.interface}" up
-          '';
-
-          path = [ pkgs.iproute2 ];
+        serviceConfig = {
+          RemainAfterExit = true;
+          Type = "oneshot";
         };
 
-        strongswan-swanctl = {
-          after = lib.mkAfter [ "jgu-vpn-xfrm.service" ];
-          wants = [ "jgu-vpn-xfrm.service" ];
-        };
+        script = ''
+          if ! ip link show "${cfg.interface}" >/dev/null 2>&1; then
+            ip link add "${cfg.interface}" type xfrm if_id ${toString cfg.ifId}
+          fi
+          ip link set "${cfg.interface}" up
+        '';
+
+        path = [ pkgs.iproute2 ];
+      };
+
+      strongswan-swanctl = {
+        after = lib.mkAfter [ "jgu-vpn-xfrm.service" ];
+        wants = [ "jgu-vpn-xfrm.service" ];
       };
     };
   };

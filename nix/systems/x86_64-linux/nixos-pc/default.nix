@@ -234,10 +234,7 @@
 
   flatpak = {
     enable = true;
-
-    extraOverrides."com.gitbutler.gitbutler".Environment = {
-      WEBKIT_DISABLE_DMABUF_RENDERER = "1";
-    };
+    extraOverrides."com.gitbutler.gitbutler".Environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
 
     packages = [
       "com.gitbutler.gitbutler"
@@ -251,12 +248,7 @@
     bluetooth = {
       enable = true;
       powerOnBoot = true;
-
-      settings = {
-        General = {
-          Experimental = true;
-        };
-      };
+      settings.General.Experimental = true;
     };
 
     firmware = with pkgs; [

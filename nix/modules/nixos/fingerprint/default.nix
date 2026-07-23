@@ -37,13 +37,11 @@ in
       ];
     };
 
-    services = {
-      fprintd = {
-        enable = true;
+    services.fprintd = {
+      enable = true;
 
-        package = pkgs.fprintd.override {
-          libfprint = cfg.libfprintPkg;
-        };
+      package = pkgs.fprintd.override {
+        libfprint = cfg.libfprintPkg;
       };
     };
   };

@@ -14,11 +14,13 @@ in
     extraOverrides = lib.mkOption {
       type = lib.types.attrsOf lib.types.attrs;
 
-      example = {
-        "com.gitbutler.gitbutler".Environment = {
-          WEBKIT_DISABLE_DMABUF_RENDERER = "1";
-        };
-      };
+      example = lib.literalExpression ''
+        {
+          "com.gitbutler.gitbutler" = {
+            Environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
+          };
+        }
+      '';
 
       default = { };
       description = "Per-application Flatpak overrides (additional to the global theme overrides).";
@@ -44,22 +46,18 @@ in
 
       overrides = {
         global = {
-          Context = {
-            filesystems = [
-              "xdg-config/fontconfig:ro"
-              "xdg-config/gtkrc:ro"
-              "xdg-config/gtkrc-2.0:ro"
-              "xdg-config/gtk-2.0:ro"
-              "xdg-config/gtk-3.0:ro"
-              "xdg-config/gtk-4.0:ro"
-              "xdg-data/themes:ro"
-              "xdg-data/icons:ro"
-            ];
-          };
+          Context.filesystems = [
+            "xdg-config/fontconfig:ro"
+            "xdg-config/gtkrc:ro"
+            "xdg-config/gtkrc-2.0:ro"
+            "xdg-config/gtk-2.0:ro"
+            "xdg-config/gtk-3.0:ro"
+            "xdg-config/gtk-4.0:ro"
+            "xdg-data/themes:ro"
+            "xdg-data/icons:ro"
+          ];
 
-          Environment = {
-            GTK_THEME = "Breeze";
-          };
+          Environment.GTK_THEME = "Breeze";
         };
       }
       // cfg.extraOverrides;

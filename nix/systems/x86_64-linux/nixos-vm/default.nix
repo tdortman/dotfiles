@@ -12,9 +12,7 @@
     ./hardware-configuration.nix
   ];
 
-  age.secrets = {
-    "nextdns-resolved.conf".file = inputs.self + /nix/secrets/nextdns-resolved.conf.age;
-  };
+  age.secrets."nextdns-resolved.conf".file = inputs.self + /nix/secrets/nextdns-resolved.conf.age;
 
   audio = {
     enable = true;
@@ -100,17 +98,12 @@
         opencode
       ]);
 
-    variables = {
-      NIXOS_OZONE_WL = "1";
-    };
+    variables.NIXOS_OZONE_WL = "1";
   };
 
   flatpak = {
     enable = true;
-
-    extraOverrides."com.gitbutler.gitbutler".Environment = {
-      WEBKIT_DISABLE_DMABUF_RENDERER = "1";
-    };
+    extraOverrides."com.gitbutler.gitbutler".Environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
 
     packages = [
       "com.gitbutler.gitbutler"

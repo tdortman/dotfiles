@@ -62,11 +62,7 @@
             };
 
             name = "crypted";
-
-            settings = {
-              allowDiscards = true;
-            };
-
+            settings.allowDiscards = true;
             type = "luks";
           };
         };

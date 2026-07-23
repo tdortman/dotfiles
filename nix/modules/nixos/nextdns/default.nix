@@ -52,9 +52,7 @@ in
         Type = "oneshot";
       };
 
-      unitConfig = {
-        DefaultDependencies = false;
-      };
+      unitConfig.DefaultDependencies = false;
 
       script = ''
         mkdir -p /run/systemd/resolved.conf.d

@@ -138,9 +138,7 @@ in
       description = "Path to the Restic repository password file";
     };
 
-    remote = {
-      enable = lib.mkEnableOption "Google Drive Restic backup of selected home data";
-    };
+    remote.enable = lib.mkEnableOption "Google Drive Restic backup of selected home data";
 
     snapshots = {
       enable = lib.mkEnableOption "automatic btrfs snapshots of the home subvolume via snapper";
@@ -230,10 +228,7 @@ in
           "--keep-monthly 2"
         ];
 
-        rcloneOptions = {
-          drive-use-trash = false;
-        };
-
+        rcloneOptions.drive-use-trash = false;
         repository = "rclone:gdrive:backups/desktop";
 
         timerConfig = {

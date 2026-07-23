@@ -14,11 +14,9 @@
       enable = true;
       defaultProfile = "default";
 
-      profiles.default = {
-        font = {
-          size = 14;
-          name = "ComicCodeLigatures Nerd Font Mono";
-        };
+      profiles.default.font = {
+        size = 14;
+        name = "ComicCodeLigatures Nerd Font Mono";
       };
     };
 
@@ -150,28 +148,24 @@
             { kickoff = { }; }
             { pager = { }; }
             {
-              iconTasks = {
-                launchers = [
-                  "applications:org.kde.kdeconnect.app.desktop"
-                  "applications:thunderbird.desktop"
-                  "applications:com.mitchellh.ghostty.desktop"
-                  "applications:org.kde.dolphin.desktop"
-                  "applications:librewolf.desktop"
-                  "applications:discord.desktop"
-                  "applications:spotify.desktop"
-                ];
-              };
+              iconTasks.launchers = [
+                "applications:org.kde.kdeconnect.app.desktop"
+                "applications:thunderbird.desktop"
+                "applications:com.mitchellh.ghostty.desktop"
+                "applications:org.kde.dolphin.desktop"
+                "applications:librewolf.desktop"
+                "applications:discord.desktop"
+                "applications:spotify.desktop"
+              ];
             }
             "org.kde.plasma.marginsseparator"
             {
-              systemTray = {
-                items = {
-                  # Seems to not be functional at the moment, in fact the volume
-                  # applet doesn't seem to exist at all?
-                  #
-                  # https://github.com/nix-community/plasma-manager/issues/565
-                  configs."org.kde.plasma.volume".config.General.showVirtualDevices = true;
-                };
+              systemTray.items = {
+                # Seems to not be functional at the moment, in fact the volume
+                # applet doesn't seem to exist at all?
+                #
+                # https://github.com/nix-community/plasma-manager/issues/565
+                configs."org.kde.plasma.volume".config.General.showVirtualDevices = true;
               };
             }
             {
@@ -250,25 +244,17 @@
       session.sessionRestore.restoreOpenApplicationsOnLogin = "startWithEmptySession";
 
       shortcuts = {
-        "services/com.mitchellh.ghostty.desktop" = {
-          new-window = "Meta+Return";
-        };
-
+        "services/com.mitchellh.ghostty.desktop".new-window = "Meta+Return";
         "services/net.local.hdr-toggle.desktop"."_launch" = lib.mkIf osConfig.hdr.enable "Meta+Alt+B";
-
-        "services/systemsettings.desktop" = {
-          _launch = "Meta+I";
-        };
+        "services/systemsettings.desktop"._launch = "Meta+I";
       };
 
-      startup.startupScript = {
-        teams = {
-          runAlways = true;
+      startup.startupScript.teams = {
+        runAlways = true;
 
-          text = ''
-            setsid teams-for-linux --wayland --minimized --enableIncomingCallToast &
-          '';
-        };
+        text = ''
+          setsid teams-for-linux --wayland --minimized --enableIncomingCallToast &
+        '';
       };
 
       windows.allowWindowsToRememberPositions = true;

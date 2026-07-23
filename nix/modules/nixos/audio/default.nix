@@ -266,20 +266,18 @@ in
                 "node.name" = "${categoryName}";
               };
 
-              "filter.graph" = {
-                nodes = [
-                  {
-                    control = {
-                      "Limit (dB)" = categoryConfig.limitThreshold;
-                      "Release time (s)" = 0.1;
-                    };
+              "filter.graph".nodes = [
+                {
+                  control = {
+                    "Limit (dB)" = categoryConfig.limitThreshold;
+                    "Release time (s)" = 0.1;
+                  };
 
-                    label = "fastLookaheadLimiter";
-                    plugin = "fast_lookahead_limiter_1913";
-                    type = "ladspa";
-                  }
-                ];
-              };
+                  label = "fastLookaheadLimiter";
+                  plugin = "fast_lookahead_limiter_1913";
+                  type = "ladspa";
+                }
+              ];
 
               "playback.props" = {
                 "media.class" = "Audio/Source";
@@ -489,19 +487,15 @@ in
                         "node.name" = "MainEQ";
                       };
 
-                      "filter.graph" = {
-                        nodes = [
-                          {
-                            config.filename = cfg.eq.file;
-                            label = "param_eq";
-                            type = "builtin";
-                          }
-                        ];
-                      };
+                      "filter.graph".nodes = [
+                        {
+                          config.filename = cfg.eq.file;
+                          label = "param_eq";
+                          type = "builtin";
+                        }
+                      ];
 
-                      "playback.props" = {
-                        "node.target" = cfg.output;
-                      };
+                      "playback.props"."node.target" = cfg.output;
                     };
                   }
                 else
@@ -516,47 +510,41 @@ in
                         "node.name" = "MainEQ";
                       };
 
-                      "playback.props" = {
-                        "node.target" = cfg.output;
-                      };
+                      "playback.props"."node.target" = cfg.output;
                     };
                   }
               )
             ];
         };
 
-      pipewire.extraConfig.pipewire-pulse."99-app-routing" = {
-        "pulse.rules" = [
-          {
-            actions.update-props."node.target" = cfg.fallbackCategory;
-            matches = [ { "application.name" = "~.*"; } ];
-          }
-        ]
-        ++ (mkAppRoutingRules cfg.appCategories);
-      };
+      pipewire.extraConfig.pipewire-pulse."99-app-routing"."pulse.rules" = [
+        {
+          actions.update-props."node.target" = cfg.fallbackCategory;
+          matches = [ { "application.name" = "~.*"; } ];
+        }
+      ]
+      ++ (mkAppRoutingRules cfg.appCategories);
 
-      pipewire.wireplumber.extraConfig."99-alsa-rules" = {
-        "monitor.alsa.rules" = [
-          {
-            actions.update-props = {
-              "api.alsa.disable-tsched" = true;
-              "api.alsa.headroom" = 8192;
-              "api.alsa.period-num" = 32;
-            };
+      pipewire.wireplumber.extraConfig."99-alsa-rules"."monitor.alsa.rules" = [
+        {
+          actions.update-props = {
+            "api.alsa.disable-tsched" = true;
+            "api.alsa.headroom" = 8192;
+            "api.alsa.period-num" = 32;
+          };
 
-            matches = [ { "node.name" = cfg.output; } ];
-          }
-          {
-            actions.update-props = {
-              "api.alsa.disable-tsched" = true;
-              "api.alsa.headroom" = 8192;
-              "api.alsa.period-num" = 32;
-            };
+          matches = [ { "node.name" = cfg.output; } ];
+        }
+        {
+          actions.update-props = {
+            "api.alsa.disable-tsched" = true;
+            "api.alsa.headroom" = 8192;
+            "api.alsa.period-num" = 32;
+          };
 
-            matches = [ { "node.name" = cfg.input; } ];
-          }
-        ];
-      };
+          matches = [ { "node.name" = cfg.input; } ];
+        }
+      ];
     };
 
     systemd.user.services.mute-audio-inputs = lib.mkIf (cfg.mutedInputs != [ ]) {

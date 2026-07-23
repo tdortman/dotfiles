@@ -54,9 +54,7 @@ in
       })
 
       (lib.mkIf (cfg.cuda.enable && !cfg.driver.enable) {
-        environment.variables = {
-          OCL_ICD_FILENAMES = "${pocl-cuda}/etc/OpenCL/vendors/pocl.icd";
-        };
+        environment.variables.OCL_ICD_FILENAMES = "${pocl-cuda}/etc/OpenCL/vendors/pocl.icd";
 
         hardware.graphics.extraPackages = [
           pocl-cuda

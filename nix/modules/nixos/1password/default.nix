@@ -30,21 +30,19 @@ in
             .librewolf-wrap
           '';
         };
+
+        "xdg/autostart/1password.desktop".text = ''
+          [Desktop Entry]
+          Type=Application
+          Name=1Password
+          Exec=1password --silent
+          Hidden=false
+          NoDisplay=false
+          X-GNOME-Autostart-enabled=true
+        '';
       };
 
-      etc."xdg/autostart/1password.desktop".text = ''
-        [Desktop Entry]
-        Type=Application
-        Name=1Password
-        Exec=1password --silent
-        Hidden=false
-        NoDisplay=false
-        X-GNOME-Autostart-enabled=true
-      '';
-
-      sessionVariables = {
-        SSH_AUTH_SOCK = "$HOME/.1password/agent.sock";
-      };
+      sessionVariables.SSH_AUTH_SOCK = "$HOME/.1password/agent.sock";
     };
 
     programs = {
@@ -56,25 +54,23 @@ in
       };
     };
 
-    security = {
-      polkit = {
-        enable = true;
+    security.polkit = {
+      enable = true;
 
-        # Idk if this is really worth it
-        extraConfig = ''
-          polkit.addRule(function(action, subject) {
-            if (
-              (
-                action.id == "com.1password.1Password.unlock" ||
-                action.id == "com.1password.1Password.authorizeSshAgent"
-              ) &&
-              subject.user == "${cfg.user}"
-            ) {
-              return polkit.Result.YES;
-            }
-          });
-        '';
-      };
+      # Idk if this is really worth it
+      extraConfig = ''
+        polkit.addRule(function(action, subject) {
+          if (
+            (
+              action.id == "com.1password.1Password.unlock" ||
+              action.id == "com.1password.1Password.authorizeSshAgent"
+            ) &&
+            subject.user == "${cfg.user}"
+          ) {
+            return polkit.Result.YES;
+          }
+        });
+      '';
     };
   };
 }

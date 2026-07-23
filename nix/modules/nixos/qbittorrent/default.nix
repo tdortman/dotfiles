@@ -108,9 +108,7 @@ in
         LegalNotice.Accepted = true;
 
         Preferences = {
-          Connection = {
-            Interface = cfg.wireguard.interface;
-          };
+          Connection.Interface = cfg.wireguard.interface;
 
           General = {
             Locale = "en";

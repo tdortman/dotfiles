@@ -30,9 +30,7 @@ let
 
 in
 {
-  options.disableWakeFromHibernate = {
-    enable = lib.mkEnableOption "service to disable wakeup from hibernate for usb devices";
-  };
+  options.disableWakeFromHibernate.enable = lib.mkEnableOption "service to disable wakeup from hibernate for usb devices";
 
   config = lib.mkIf cfg.enable {
     environment.etc."systemd/system-sleep/disable_wakeup.sh".source = script;

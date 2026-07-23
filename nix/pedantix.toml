@@ -169,6 +169,7 @@ lists.sort = true
 [[overrides]]
 path = "**.src"
 attrs.first = [
+  "domain",
   "url",
   "owner",
   "repo",

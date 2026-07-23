@@ -11,9 +11,7 @@ let
   spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
 in
 {
-  options.spicetify = {
-    enable = lib.mkEnableOption "Spicetify Spotify customization";
-  };
+  options.spicetify.enable = lib.mkEnableOption "Spicetify Spotify customization";
 
   config = lib.mkIf cfg.enable {
     programs.spicetify = {
@@ -26,8 +24,8 @@ in
 
         {
           src = pkgs.fetchzip {
-            hash = "sha256-8CO5M0EM0n/aXD79Xsis0eiBpxj2zVLfu49/kbO+m+M=";
             url = "https://github.com/harbassan/spicetify-apps/releases/download/stats-v1.1.3/spicetify-stats.release.zip";
+            hash = "sha256-8CO5M0EM0n/aXD79Xsis0eiBpxj2zVLfu49/kbO+m+M=";
           };
 
           name = "index.js";
@@ -42,10 +40,10 @@ in
         {
           src =
             (pkgs.fetchFromGitHub {
-              hash = "sha256-2mFk+tzFMc3o41DvelHFNykdk/DSfq+QOltNc8ON/t4=";
               owner = "41pha1";
               repo = "spicetify-extensions";
               rev = "8f10fa3db610695033f46612d7ab4100f1eb65fe";
+              hash = "sha256-2mFk+tzFMc3o41DvelHFNykdk/DSfq+QOltNc8ON/t4=";
             })
             + "/romaji-lyrics";
 
@@ -54,10 +52,10 @@ in
         {
           src =
             (pkgs.fetchFromGitHub {
-              hash = "sha256-SLu2+H5tdwPz0JrT61SuAx9uSW7Wfv2wLoA7d/AwmZQ=";
               owner = "resxt";
               repo = "spicetify-extensions";
               rev = "fb94b32511b74f791ddeb025aec0c77928d6bd60";
+              hash = "sha256-SLu2+H5tdwPz0JrT61SuAx9uSW7Wfv2wLoA7d/AwmZQ=";
             })
             + "/startup-page/dist";
 

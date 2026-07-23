@@ -73,6 +73,7 @@
                 attrs = {
                   blank-lines = 1;
                   blank-lines-mode = "multiline";
+                  flatten = true;
                   merge = true;
                 };
 
