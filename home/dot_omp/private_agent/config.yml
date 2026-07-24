@@ -69,14 +69,14 @@ contextPromotion:
 renderMermaid: 
   enabled: true
 providers: 
-  webSearch: auto
-  image: auto
   memoryModel: online
   maxInFlightRequests: 
     neuralwatt: 3
   tinyModel: online
   tinyModelDevice: default
   webSearchGeminiModel: gemini-3-flash
+  webSearchOrder: 
+    []
 setupVersion: 1
 bashInterceptor: 
   enabled: true
