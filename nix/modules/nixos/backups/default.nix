@@ -255,13 +255,13 @@ in
       # before the timeline service is allowed to run.
       systemd.services."snapper-${snapName}-init" = {
         description = "Create btrfs .snapshots subvolume for snapper on ${cfg.snapshots.subvolume}";
-        after = [ "local-fs.target" ];
 
         before = [
           "snapper-cleanup.service"
           "snapper-timeline.service"
         ];
 
+        after = [ "local-fs.target" ];
         requires = [ "local-fs.target" ];
         wantedBy = [ "multi-user.target" ];
 

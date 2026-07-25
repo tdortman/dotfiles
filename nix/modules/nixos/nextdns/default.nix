@@ -43,8 +43,8 @@ in
 
     systemd.services.nextdns-config-generator = {
       description = "Generate NextDNS config for systemd-resolved";
-      after = [ "local-fs.target" ];
       before = [ "systemd-resolved.service" ];
+      after = [ "local-fs.target" ];
       wantedBy = [ "sysinit.target" ];
 
       serviceConfig = {

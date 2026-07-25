@@ -44,8 +44,8 @@ attrs.last = ["description", "meta"]
 path = "**.services.**"
 attrs.first = [
   "description",
-  "after",
   "before",
+  "after",
   "wants",
   "requires",
   "wantedBy",
