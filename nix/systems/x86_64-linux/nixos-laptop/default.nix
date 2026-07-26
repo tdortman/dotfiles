@@ -29,7 +29,17 @@
       syscalls.enable = true;
     };
 
-    network.enable = true;
+    network = {
+      enable = true;
+
+      httpProxy = {
+        enable = true;
+
+        websocketHttp11Urls = [
+          "https://api.openai.com/v1/live/rtc_*"
+        ];
+      };
+    };
 
     packages =
       let
