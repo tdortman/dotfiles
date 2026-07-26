@@ -41,7 +41,7 @@
       sessionVariables.NH_FLAKE = "$HOME/dotfiles";
 
       shellAliases = {
-        flake-update = "sudo nix flake update --flake $NH_FLAKE";
+        flake-update = "nix flake update --flake $NH_FLAKE";
         hydra-check = "${lib.getExe pkgs.hydra-check} -c unstable -a x86_64-linux";
         nix-shell = ''command nix-shell --command "''${SHELL:-bash}"'';
         nixos-boot = "nh os boot";

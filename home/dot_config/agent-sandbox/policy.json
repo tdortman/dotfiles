@@ -47,6 +47,7 @@
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/rate-limit-reset-credits", "comment": "global" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/usage", "comment": "global" },
         { "methods": ["GET"], "url": "https://codeload.github.com/", "comment": "global" },
+        { "methods": ["GET"], "url": "https://crates.io/", "comment": "global" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:fetchAvailableModels", "comment": "global" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent", "comment": "global" },
         { "methods": ["GET"], "url": "https://developer.nvidia.com/", "comment": "global" },
@@ -55,6 +56,7 @@
         { "methods": ["GET"], "url": "https://docs.nvidia.com/cuda", "comment": "global" },
         { "methods": ["GET"], "url": "https://downloads.factory.ai/factory-cli/LATEST", "comment": "global" },
         { "methods": ["GET"], "url": "https://github.com/*/*/blob", "comment": "global" },
+        { "methods": ["GET"], "url": "https://index.crates.io/", "comment": "global" },
         { "methods": ["GET"], "url": "https://integrate.api.nvidia.com/v1/models", "comment": "global" },
         { "methods": ["GET"], "url": "https://man7.org/linux/man-pages", "comment": "global" },
         { "methods": ["GET"], "url": "https://models.dev/api.json", "comment": "global" },
@@ -66,6 +68,7 @@
         { "methods": ["GET"], "url": "https://raw.githubusercontent.com/", "comment": "global" },
         { "methods": ["GET"], "url": "https://snowfall.org/guides", "comment": "global" },
         { "methods": ["GET"], "url": "https://snowfall.org/reference", "comment": "global" },
+        { "methods": ["GET"], "url": "https://static.crates.io/crates/*/*/download", "comment": "global" },
         { "methods": ["GET"], "url": "https://zenmux.ai/api/v1/models", "comment": "global" }
       ],
       "deny": [

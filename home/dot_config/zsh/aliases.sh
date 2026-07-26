@@ -465,6 +465,51 @@ normalisation step needs to live behind a single helper. Keeping the helper
 inside the parser avoids duplicating path handling before later callers are
 added."
 
+### Semantic Versioning
+
+If a commit adds, removes, or changes functionality, find every place in
+the codebase that sets the software version and update it according to
+these rules.
+
+Never automatically promote a pre-\`1.0.0\` codebase to \`1.0.0\`. The
+transition to \`1.0.0\` is a deliberate project decision and must only
+happen when the user explicitly requests it.
+
+Version components are not limited to single digits. Versions such as
+\`0.10.0\`, \`0.27.4\`, and \`0.100.0\` are valid. Do not promote a project to
+\`1.0.0\` merely because its current minor version is \`9\` or greater.
+
+When the current version is below \`1.0.0\`:
+
+- Increment the minor version for incompatible API changes, removed
+  functionality, or other breaking changes.
+- Increment the minor version for new backwards-compatible functionality.
+- Increment the patch version for backwards-compatible bug fixes.
+- Reset the patch version to zero whenever the minor version is
+  incremented.
+
+For example:
+
+- \`0.3.4\` becomes \`0.4.0\` after a breaking API change.
+- \`0.3.4\` becomes \`0.4.0\` after adding functionality.
+- \`0.3.4\` becomes \`0.3.5\` after a backwards-compatible bug fix.
+- \`0.9.7\` becomes \`0.10.0\` after adding functionality or making a
+  breaking change.
+- \`0.9.7\` must not become \`1.0.0\` without an explicit user instruction.
+
+When the current version is at least \`1.0.0\`:
+
+- Increment the major version for incompatible API changes or removed
+  functionality.
+- Increment the minor version for new backwards-compatible functionality.
+- Increment the patch version for backwards-compatible bug fixes.
+- Reset all less significant version components to zero when incrementing
+  a more significant component.
+
+When one commit contains multiple kinds of change, apply the highest
+required increment. A breaking change takes precedence over added
+functionality, and added functionality takes precedence over a bug fix.
+
 ### Shell Formatting Safety
 
 Each \`git commit\` command must contain exactly one \`-m\` flag. Use a
