@@ -40,6 +40,7 @@ alias lg=lazygit
 alias cursor-agent='cursor-agent --plan'
 alias hd='hunk diff'
 alias hs='hunk show'
+alias hp='hunk pager'
 
 # Encrypt a file using SSH key from 1Password via ssh-agent
 # Usage: age-encrypt <input-file> [output-file]
@@ -467,9 +468,26 @@ added."
 
 ### Semantic Versioning
 
-If a commit adds, removes, or changes functionality, find every place in
-the codebase that sets the software version and update it according to
-these rules.
+Assess versioning once for the complete commit series, not separately for
+each commit.
+
+If the series adds, removes, changes, or fixes functionality, find every
+place in the codebase that sets the software version. Apply exactly one
+version bump across the entire series and update all version locations
+together.
+
+Determine the required bump from the highest-impact change anywhere in
+the series:
+
+- Breaking changes take precedence over added functionality.
+- Added functionality takes precedence over bug fixes.
+- Do not combine or accumulate bumps from individual commits.
+- Do not bump the version again after the aggregate bump has been applied.
+
+Prefer a dedicated version commit at the end of the series when that
+matches the project's existing release workflow. Otherwise, include the
+single bump in the final commit that changes version-relevant
+functionality.
 
 Never automatically promote a pre-\`1.0.0\` codebase to \`1.0.0\`. The
 transition to \`1.0.0\` is a deliberate project decision and must only
@@ -481,34 +499,38 @@ Version components are not limited to single digits. Versions such as
 
 When the current version is below \`1.0.0\`:
 
-- Increment the minor version for incompatible API changes, removed
-  functionality, or other breaking changes.
-- Increment the minor version for new backwards-compatible functionality.
-- Increment the patch version for backwards-compatible bug fixes.
-- Reset the patch version to zero whenever the minor version is
-  incremented.
+- Increment the minor version if the series contains incompatible API
+  changes, removed functionality, other breaking changes, or new
+  functionality.
+- Increment the patch version if the series contains only
+  backwards-compatible bug fixes.
+- Reset the patch version to zero when incrementing the minor version.
 
 For example:
 
-- \`0.3.4\` becomes \`0.4.0\` after a breaking API change.
-- \`0.3.4\` becomes \`0.4.0\` after adding functionality.
-- \`0.3.4\` becomes \`0.3.5\` after a backwards-compatible bug fix.
-- \`0.9.7\` becomes \`0.10.0\` after adding functionality or making a
-  breaking change.
+- A series based on \`0.3.4\` that adds several features becomes \`0.4.0\`,
+  not \`0.6.0\`.
+- A series based on \`0.3.4\` that contains features and bug fixes becomes
+  \`0.4.0\`.
+- A series based on \`0.3.4\` that contains only bug fixes becomes \`0.3.5\`.
+- A series based on \`0.9.7\` that adds functionality or makes breaking
+  changes becomes \`0.10.0\`.
 - \`0.9.7\` must not become \`1.0.0\` without an explicit user instruction.
 
 When the current version is at least \`1.0.0\`:
 
-- Increment the major version for incompatible API changes or removed
-  functionality.
-- Increment the minor version for new backwards-compatible functionality.
-- Increment the patch version for backwards-compatible bug fixes.
+- Increment the major version if the series contains incompatible API
+  changes or removed functionality.
+- Increment the minor version if the series adds backwards-compatible
+  functionality and contains no breaking changes.
+- Increment the patch version if the series contains only
+  backwards-compatible bug fixes.
 - Reset all less significant version components to zero when incrementing
   a more significant component.
 
-When one commit contains multiple kinds of change, apply the highest
-required increment. A breaking change takes precedence over added
-functionality, and added functionality takes precedence over a bug fix.
+Do not bump the version when the complete series contains only internal
+changes that do not add, remove, change, or fix software functionality,
+unless the project's established versioning policy requires a bump.
 
 ### Shell Formatting Safety
 
