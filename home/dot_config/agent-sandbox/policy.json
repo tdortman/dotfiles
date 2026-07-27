@@ -64,6 +64,7 @@
         { "methods": ["GET"], "url": "https://downloads.factory.ai/factory-cli/LATEST", "comment": "global" },
         { "methods": ["GET"], "url": "https://index.crates.io/", "comment": "global" },
         { "methods": ["GET"], "url": "https://integrate.api.nvidia.com/v1/models", "comment": "global" },
+        { "methods": ["GET"], "url": "https://lib.rs/crates/*", "comment": "global" },
         { "methods": ["GET"], "url": "https://man7.org/linux/man-pages", "comment": "global" },
         { "methods": ["GET"], "url": "https://models.dev/api.json", "comment": "global" },
         { "methods": ["GET"], "url": "https://nixos.org/manual", "comment": "global" },
