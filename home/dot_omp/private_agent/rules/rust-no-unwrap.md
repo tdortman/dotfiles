@@ -2,7 +2,7 @@
 name: rust-no-unwrap
 description: "Never use .unwrap() in Rust — handle errors with ?, .expect(), or explicit match"
 condition: "\\.unwrap\\s*\\("
-scope: ["tool:edit", "tool:write"]
+scope: ["tool:edit(*.rs)", "tool:write(*.rs)"]
 ---
 
 In Rust, do not call `.unwrap()`. Prefer one of:
