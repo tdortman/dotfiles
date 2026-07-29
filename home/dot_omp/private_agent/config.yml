@@ -48,7 +48,7 @@ lsp:
 calc: 
   enabled: true
 inspect_image: 
-  enabled: true
+  mode: "on"
 checkpoint: 
   enabled: true
 task: 
@@ -107,7 +107,7 @@ mnemopi:
   polyphonicRecall: true
   enhancedRecall: true
 github: 
-  enabled: true
+  enabled: false
 plan: 
   defaultOnStartup: false
 defaultThinkingLevel: medium
