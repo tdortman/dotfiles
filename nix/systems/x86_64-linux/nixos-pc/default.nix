@@ -406,8 +406,7 @@
       hwaccel = true;
     };
 
-    # FIXME: https://github.com/NixOS/nixpkgs/pull/546155
-    # lact.enable = true;
+    lact.enable = true;
     libinput.enable = true;
 
     printing = {
