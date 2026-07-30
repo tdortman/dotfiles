@@ -1,0 +1,8 @@
+use_nom_flake() {
+  if (( $# == 0 )); then
+    set -- .
+  fi
+
+  use flake "$@" --log-format internal-json -v \
+    2> >(nom --json >&2)
+}
