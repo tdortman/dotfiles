@@ -87,7 +87,7 @@ dev:
   autoqaPush: 
     endpoint: ""
 advisor: 
-  enabled: true
+  enabled: false
   subagents: false
   syncBacklog: "1"
 completion: 
