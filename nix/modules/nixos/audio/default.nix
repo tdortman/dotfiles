@@ -546,8 +546,8 @@ in
       wantedBy = [ "default.target" ];
 
       serviceConfig = {
-        ExecStart = lib.getExe muteAudioInputs;
         Type = "oneshot";
+        ExecStart = lib.getExe muteAudioInputs;
       };
     };
   };

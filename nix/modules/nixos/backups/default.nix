@@ -266,9 +266,9 @@ in
         wantedBy = [ "multi-user.target" ];
 
         serviceConfig = {
+          Type = "oneshot";
           ExecStart = "${pkgs.btrfs-progs}/bin/btrfs subvolume create ${cfg.snapshots.subvolume}/.snapshots";
           RemainAfterExit = true;
-          Type = "oneshot";
         };
 
         unitConfig.ConditionPathExists = "!${cfg.snapshots.subvolume}/.snapshots";

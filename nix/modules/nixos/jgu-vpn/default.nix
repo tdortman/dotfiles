@@ -270,8 +270,8 @@ in
         wantedBy = [ "multi-user.target" ];
 
         serviceConfig = {
-          RemainAfterExit = true;
           Type = "oneshot";
+          RemainAfterExit = true;
         };
 
         script = ''

@@ -48,8 +48,8 @@ in
       wantedBy = [ "sysinit.target" ];
 
       serviceConfig = {
-        RemainAfterExit = true;
         Type = "oneshot";
+        RemainAfterExit = true;
       };
 
       unitConfig.DefaultDependencies = false;
