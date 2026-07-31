@@ -128,7 +128,13 @@
     };
 
     agent-sandbox = {
-      inputs.snowfall-lib.follows = "snowfall-lib";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        pedantix.follows = "pedantix";
+        snowfall-lib.follows = "snowfall-lib";
+        treefmt-nix.follows = "treefmt-nix";
+      };
+
       url = "github:tdortman/agent-sandbox";
     };
 
