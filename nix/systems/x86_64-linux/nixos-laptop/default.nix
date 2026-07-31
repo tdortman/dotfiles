@@ -13,11 +13,11 @@
   ];
 
   age.secrets = {
-    "airvpn-presharedkey".file = inputs.self + /nix/secrets/airvpn-presharedkey.age;
-    "airvpn-privatekey".file = inputs.self + /nix/secrets/airvpn-privatekey.age;
-    "jgu-vpn-swanctl".file = inputs.self + /nix/secrets/jgu-vpn-swanctl.age;
+    airvpn-presharedkey.file = inputs.self + /nix/secrets/airvpn-presharedkey.age;
+    airvpn-privatekey.file = inputs.self + /nix/secrets/airvpn-privatekey.age;
+    jgu-vpn-swanctl.file = inputs.self + /nix/secrets/jgu-vpn-swanctl.age;
     "nextdns-resolved.conf".file = inputs.self + /nix/secrets/nextdns-resolved.conf.age;
-    "restic-password".file = inputs.self + /nix/secrets/restic-password.age;
+    restic-password.file = inputs.self + /nix/secrets/restic-password.age;
   };
 
   agent-sandbox = {

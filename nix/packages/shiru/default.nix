@@ -15,7 +15,7 @@ appimageTools.wrapType2 rec {
 
   extraInstallCommands =
     let
-      extracted = appimageTools.extractType2 { inherit pname version src; };
+      extracted = appimageTools.extractType2 { inherit pname src version; };
     in
     ''
       # Install desktop file

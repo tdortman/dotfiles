@@ -5,76 +5,6 @@
 }:
 
 let
-  mkVethRunner =
-    {
-      defaultInterface,
-      name,
-      disableIPv6 ? true,
-      dropNonInterfaceForward ? true,
-      logPrefix ? name,
-    }:
-    let
-      setupText =
-        builtins.replaceStrings
-          [
-            "@defaultInterface@"
-            "@disableIPv6@"
-            "@dropNonInterfaceForward@"
-            "@logPrefix@"
-          ]
-          [
-            defaultInterface
-            (if disableIPv6 then "true" else "false")
-            (if dropNonInterfaceForward then "true" else "false")
-            logPrefix
-          ]
-          (builtins.readFile ./veth-setup.sh);
-
-      runText =
-        builtins.replaceStrings
-          [
-            "@defaultInterface@"
-            "@logPrefix@"
-          ]
-          [
-            defaultInterface
-            logPrefix
-          ]
-          (builtins.readFile ./veth-run.sh);
-
-      setupPackage = pkgs.writeShellApplication {
-        name = "${name}-setup";
-
-        runtimeInputs = [
-          pkgs.coreutils
-          pkgs.gnugrep
-          pkgs.iproute2
-          pkgs.nftables
-          pkgs.procps
-          pkgs.socat
-          pkgs.util-linux
-        ];
-
-        text = setupText;
-      };
-
-      runPackage = pkgs.writeShellApplication {
-        inherit name;
-
-        runtimeInputs = [
-          pkgs.coreutils
-          pkgs.iproute2
-          pkgs.util-linux
-          setupPackage
-        ];
-
-        text = runText;
-      };
-    in
-    {
-      inherit setupPackage runPackage;
-    };
-
   mkDirectRunner =
     {
       name,
@@ -111,6 +41,73 @@ let
         text = runText;
       };
     };
+
+  mkVethRunner =
+    {
+      defaultInterface,
+      name,
+      disableIPv6 ? true,
+      dropNonInterfaceForward ? true,
+      logPrefix ? name,
+    }:
+    let
+      runPackage = pkgs.writeShellApplication {
+        inherit name;
+
+        runtimeInputs = [
+          pkgs.coreutils
+          pkgs.iproute2
+          pkgs.util-linux
+          setupPackage
+        ];
+
+        text = runText;
+      };
+      runText =
+        builtins.replaceStrings
+          [
+            "@defaultInterface@"
+            "@logPrefix@"
+          ]
+          [
+            defaultInterface
+            logPrefix
+          ]
+          (builtins.readFile ./veth-run.sh);
+      setupPackage = pkgs.writeShellApplication {
+        name = "${name}-setup";
+
+        runtimeInputs = [
+          pkgs.coreutils
+          pkgs.gnugrep
+          pkgs.iproute2
+          pkgs.nftables
+          pkgs.procps
+          pkgs.socat
+          pkgs.util-linux
+        ];
+
+        text = setupText;
+      };
+      setupText =
+        builtins.replaceStrings
+          [
+            "@defaultInterface@"
+            "@disableIPv6@"
+            "@dropNonInterfaceForward@"
+            "@logPrefix@"
+          ]
+          [
+            defaultInterface
+            (if disableIPv6 then "true" else "false")
+            (if dropNonInterfaceForward then "true" else "false")
+            logPrefix
+          ]
+          (builtins.readFile ./veth-setup.sh);
+    in
+    {
+      inherit runPackage setupPackage;
+    };
 in
 {
   options.interface-run.lib = lib.mkOption {
@@ -120,6 +117,6 @@ in
   };
 
   config.interface-run.lib = {
-    inherit mkVethRunner mkDirectRunner;
+    inherit mkDirectRunner mkVethRunner;
   };
 }

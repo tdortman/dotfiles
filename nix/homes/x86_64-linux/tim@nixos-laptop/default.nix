@@ -49,7 +49,7 @@
 
         kwinrc = {
           # Disable overview when moving to top left corner
-          "Effect-overview".BorderActivate = 9;
+          Effect-overview.BorderActivate = 9;
           # For some reason the workspace setting does not persist this setting
           # so we write it directly into the config file (disable middle click paste)
           Wayland.EnablePrimarySelection = false;
@@ -245,7 +245,7 @@
 
       shortcuts = {
         "services/com.mitchellh.ghostty.desktop".new-window = "Meta+Return";
-        "services/net.local.hdr-toggle.desktop"."_launch" = lib.mkIf osConfig.hdr.enable "Meta+Alt+B";
+        "services/net.local.hdr-toggle.desktop"._launch = lib.mkIf osConfig.hdr.enable "Meta+Alt+B";
         "services/systemsettings.desktop"._launch = "Meta+I";
       };
 

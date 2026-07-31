@@ -4,21 +4,20 @@
   outputs =
     { nixpkgs, ... }:
     let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
-      llvm = pkgs.llvmPackages_21;
       buildInputs = with pkgs; [
         stdenv.cc.cc.lib
       ];
-
+      llvm = pkgs.llvmPackages_21;
       nativeBuildInputs = with pkgs; [
         gnumake
         llvm.clang-tools
         llvm.lldb
       ];
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+      system = "x86_64-linux";
 
     in
     {

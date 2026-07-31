@@ -20,17 +20,13 @@
 }:
 
 let
-  pname = "fluxer";
-  system = stdenv.hostPlatform.system;
-
-  artifact = artifacts.${system} or (throw "Unsupported system: ${system}");
-
-  src = fetchurl artifact;
-
   appimageContents = appimageTools.extractType2 {
-    inherit pname version src;
+    inherit pname src version;
   };
-
+  artifact = artifacts.${system} or (throw "Unsupported system: ${system}");
+  pname = "fluxer";
+  src = fetchurl artifact;
+  system = stdenv.hostPlatform.system;
   wrapperArgs = [
     "--add-flags"
     "--no-sandbox"
@@ -42,7 +38,7 @@ let
 
 in
 appimageTools.wrapType2 {
-  inherit pname version src;
+  inherit pname src version;
   nativeBuildInputs = [ makeWrapper ];
 
   extraInstallCommands = ''

@@ -4,13 +4,13 @@
   outputs =
     { nixpkgs, ... }:
     let
-      system = "x86_64-linux";
+      buildInputs = [ ];
+      nativeBuildInputs = [ ];
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
       };
-      buildInputs = [ ];
-      nativeBuildInputs = [ ];
+      system = "x86_64-linux";
     in
     {
       devShells.${system}.default = pkgs.mkShell {

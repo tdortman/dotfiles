@@ -6,15 +6,15 @@
 
 let
   cfg = config.vpn-run;
+
   runners = config.interface-run.lib.mkVethRunner {
     inherit (cfg) defaultInterface disableIPv6;
     dropNonInterfaceForward = cfg.dropNonVpnForward;
     name = "vpn-run";
   };
 
-  vpnRunSetup = runners.setupPackage;
   vpnRun = runners.runPackage;
-
+  vpnRunSetup = runners.setupPackage;
 in
 {
   options.vpn-run = {

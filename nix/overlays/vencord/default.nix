@@ -16,10 +16,10 @@ final: prev: {
 
       pnpmDeps = prev.fetchPnpmDeps {
         inherit (finalAttrs)
-          pname
-          src
           patches
+          pname
           postPatch
+          src
           ;
 
         fetcherVersion = 4;

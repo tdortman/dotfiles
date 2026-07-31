@@ -7,10 +7,8 @@
 
 let
   cfg = config.jgu-vpn;
-  haricaCa = ./HARICA-TLS-Root-2021-RSA.pem;
-
   dnsTarget = if cfg.dnsServers != [ ] then "${builtins.head cfg.dnsServers}:53" else "127.0.0.53:53";
-  xfrmIdPattern = "(${toString cfg.ifId}|0x${lib.toHexString cfg.ifId})";
+  haricaCa = ./HARICA-TLS-Root-2021-RSA.pem;
 
   jguVpnRun = pkgs.writeShellApplication {
     name = "jgu-vpn-run";
@@ -63,6 +61,7 @@ let
       " _ "$@"
     '';
   };
+  xfrmIdPattern = "(${toString cfg.ifId}|0x${lib.toHexString cfg.ifId})";
 in
 {
   options.jgu-vpn = {

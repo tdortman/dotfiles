@@ -36,17 +36,16 @@
 }:
 
 let
-  electronVersion = "39.2.7";
-  electronHeaders = fetchzip {
-    url = "https://www.electronjs.org/headers/v${electronVersion}/node-v${electronVersion}-headers.tar.gz";
-    hash = "sha256-Yrk7++Ttjm42J0TXTDxyUJC5nVSlNMDIt9/PrZaBsxA=";
-  };
-
   electronDist = fetchzip {
     url = "https://github.com/electron/electron/releases/download/v${electronVersion}/electron-v${electronVersion}-linux-x64.zip";
     hash = "sha256-zeGTv504UUUZETelo5lZHAMUgSFloRRuUxpzP0IezuA=";
     stripRoot = false;
   };
+  electronHeaders = fetchzip {
+    url = "https://www.electronjs.org/headers/v${electronVersion}/node-v${electronVersion}-headers.tar.gz";
+    hash = "sha256-Yrk7++Ttjm42J0TXTDxyUJC5nVSlNMDIt9/PrZaBsxA=";
+  };
+  electronVersion = "39.2.7";
 in
 
 stdenv.mkDerivation (finalAttrs: {
@@ -127,7 +126,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   pnpmDeps = fetchPnpmDeps {
-    inherit (finalAttrs) pname version src;
+    inherit (finalAttrs) pname src version;
     hash = "sha256-38z1Lrs2e7wspwg7ftuisL5n4qhqfcidjash1l9XprY=";
     fetcherVersion = 3;
     pnpm = pnpm_10;

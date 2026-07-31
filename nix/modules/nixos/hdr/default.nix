@@ -8,18 +8,23 @@
 let
   cfg = config.hdr;
 
-  # Read the script and substitute config values
-  scriptText =
-    builtins.replaceStrings
-      [
-        "@defaultOutput@"
-        "@defaultIccProfile@"
-      ]
-      [
-        cfg.defaultOutput
-        cfg.defaultIccProfile
-      ]
-      (builtins.readFile ./hdr-toggle.sh);
+  hdr-disable-script = pkgs.writeShellApplication {
+    name = "hdr-disable";
+    runtimeInputs = [ hdr-toggle-script ];
+
+    text = ''
+      exec hdr-toggle disable "$@"
+    '';
+  };
+
+  hdr-enable-script = pkgs.writeShellApplication {
+    name = "hdr-enable";
+    runtimeInputs = [ hdr-toggle-script ];
+
+    text = ''
+      exec hdr-toggle enable "$@"
+    '';
+  };
 
   hdr-toggle-script = pkgs.writeShellApplication {
     name = "hdr-toggle";
@@ -32,23 +37,18 @@ let
     text = scriptText;
   };
 
-  hdr-enable-script = pkgs.writeShellApplication {
-    name = "hdr-enable";
-    runtimeInputs = [ hdr-toggle-script ];
-
-    text = ''
-      exec hdr-toggle enable "$@"
-    '';
-  };
-
-  hdr-disable-script = pkgs.writeShellApplication {
-    name = "hdr-disable";
-    runtimeInputs = [ hdr-toggle-script ];
-
-    text = ''
-      exec hdr-toggle disable "$@"
-    '';
-  };
+  # Read the script and substitute config values
+  scriptText =
+    builtins.replaceStrings
+      [
+        "@defaultOutput@"
+        "@defaultIccProfile@"
+      ]
+      [
+        cfg.defaultOutput
+        cfg.defaultIccProfile
+      ]
+      (builtins.readFile ./hdr-toggle.sh);
 in
 
 {
@@ -101,19 +101,6 @@ in
     ]
     ++ (
       let
-        mpv-hdr-script = pkgs.writeShellApplication {
-          name = "mpv-hdr";
-          runtimeInputs = [ pkgs.mpv ];
-
-          text = ''
-            ENABLE_HDR_WSI=1 mpv           \
-              --vo=gpu-next                \
-              --target-colorspace-hint     \
-              --gpu-api=vulkan             \
-              --gpu-context=waylandvk "$@"
-          '';
-        };
-
         mpv-hdr-auto-script = pkgs.writeShellApplication {
           name = "mpv-hdr-auto";
 
@@ -126,6 +113,18 @@ in
             hdr-toggle enable
             mpv-hdr "$@"
             hdr-toggle disable
+          '';
+        };
+        mpv-hdr-script = pkgs.writeShellApplication {
+          name = "mpv-hdr";
+          runtimeInputs = [ pkgs.mpv ];
+
+          text = ''
+            ENABLE_HDR_WSI=1 mpv           \
+              --vo=gpu-next                \
+              --target-colorspace-hint     \
+              --gpu-api=vulkan             \
+              --gpu-context=waylandvk "$@"
           '';
         };
       in

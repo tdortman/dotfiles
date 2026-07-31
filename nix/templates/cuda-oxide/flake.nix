@@ -7,16 +7,11 @@
   outputs =
     { nixpkgs, rust-overlay, ... }:
     let
-      system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-        overlays = [ rust-overlay.overlays.default ];
-      };
-
-      llvmPkgs = pkgs.llvmPackages_22;
+      buildInputs = with pkgs; [
+        cudaToolkit
+        stdenv.cc.cc.lib
+      ];
       cudaPkgs = pkgs.cudaPackages_13_2;
-
       cudaToolkit = pkgs.symlinkJoin {
         name = "cuda-oxide-toolkit";
 
@@ -28,19 +23,19 @@
           libnvvm
         ];
       };
-
-      rust-toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-
-      buildInputs = with pkgs; [
-        cudaToolkit
-        stdenv.cc.cc.lib
-      ];
-
+      llvmPkgs = pkgs.llvmPackages_22;
       nativeBuildInputs = [
         llvmPkgs.clang
         llvmPkgs.llvm
         rust-toolchain
       ];
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+        overlays = [ rust-overlay.overlays.default ];
+      };
+      rust-toolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+      system = "x86_64-linux";
     in
     {
       devShells.${system}.default = pkgs.mkShell {

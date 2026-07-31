@@ -12,15 +12,25 @@
       devShells = nixpkgs.lib.genAttrs supportedSystems (
         system:
         let
-          pkgs = import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-          };
-
           inherit (pkgs) lib;
-          cudaPkgs = pkgs.cudaPackages_13_2;
-          llvmPkgs = pkgs.llvmPackages_22;
+          buildInputs = [
+            cudaToolkit
+            pkgs.bzip2
+            pkgs.stdenv.cc.cc.lib
+            pkgs.xz
+          ];
+          cuda = {
+            version = {
+              complete = cudaPkgs.cudaMajorMinorVersion;
+              major = cudaPkgs.cudaMajorVersion;
+              minor = lib.lists.last (builtins.splitVersion cuda.version.complete);
+            };
 
+            arch = "1200";
+            path = cudaToolkit;
+            smTarget = "sm_120";
+          };
+          cudaPkgs = pkgs.cudaPackages_13_2;
           cudaToolkit = pkgs.symlinkJoin {
             name = "cuda-toolkit";
 
@@ -33,26 +43,7 @@
               nsight_systems
             ];
           };
-
-          cuda = {
-            version = {
-              complete = cudaPkgs.cudaMajorMinorVersion;
-              major = cudaPkgs.cudaMajorVersion;
-              minor = lib.lists.last (builtins.splitVersion cuda.version.complete);
-            };
-
-            arch = "1200";
-            path = cudaToolkit;
-            smTarget = "sm_120";
-          };
-
-          buildInputs = [
-            cudaToolkit
-            pkgs.bzip2
-            pkgs.stdenv.cc.cc.lib
-            pkgs.xz
-          ];
-
+          llvmPkgs = pkgs.llvmPackages_22;
           nativeBuildInputs = with pkgs; [
             cmake
             doxygen
@@ -64,6 +55,10 @@
             pkg-config
             uv
           ];
+          pkgs = import nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
         in
         {
           default = pkgs.mkShell {

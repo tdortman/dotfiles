@@ -48,7 +48,7 @@
 
         kwinrc = {
           # Disable overview when moving to top left corner
-          "Effect-overview".BorderActivate = 9;
+          Effect-overview.BorderActivate = 9;
           # For some reason the workspace setting does not persist this setting
           # so we write it directly into the config file (disable middle click paste)
           Wayland.EnablePrimarySelection = false;

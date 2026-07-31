@@ -8,6 +8,28 @@
 let
   cfg = config.audio;
 
+  mkAppRoutingRules =
+    categories:
+    let
+      categoryRules = lib.mapAttrsToList (
+        categoryName: categoryConfig:
+        let
+          binaryRules = map (binary: {
+            actions.update-props."node.target" = targetName;
+            matches = [ { "application.process.binary" = binary; } ];
+          }) categoryConfig.binaries;
+          nameRules = map (appName: {
+            actions.update-props."node.target" = targetName;
+            matches = [ { "application.name" = "~${appName}"; } ];
+          }) categoryConfig.appNames;
+          targetName = categoryName;
+
+        in
+        nameRules ++ binaryRules
+      ) categories;
+
+    in
+    lib.flatten categoryRules;
   muteAudioInputs = pkgs.writeShellApplication {
     name = "mute-audio-inputs";
 
@@ -38,32 +60,6 @@ let
       done
     '';
   };
-
-  mkAppRoutingRules =
-    categories:
-    let
-      categoryRules = lib.mapAttrsToList (
-        categoryName: categoryConfig:
-        let
-          targetName = categoryName;
-
-          nameRules = map (appName: {
-            actions.update-props."node.target" = targetName;
-            matches = [ { "application.name" = "~${appName}"; } ];
-          }) categoryConfig.appNames;
-
-          binaryRules = map (binary: {
-            actions.update-props."node.target" = targetName;
-            matches = [ { "application.process.binary" = binary; } ];
-          }) categoryConfig.binaries;
-
-        in
-        nameRules ++ binaryRules
-      ) categories;
-
-    in
-    lib.flatten categoryRules;
-
 in
 {
   options.audio = {
@@ -255,82 +251,7 @@ in
 
       pipewire.extraConfig.pipewire."10-processing-and-linking" =
         let
-          mkAppChain = categoryName: categoryConfig: {
-            name = "libpipewire-module-filter-chain";
-
-            args = {
-              "capture.props" = {
-                "audio.position" = "FL,FR";
-                "media.class" = "Audio/Sink";
-                "node.description" = "${categoryName} (Raw)";
-                "node.name" = "${categoryName}";
-              };
-
-              "filter.graph".nodes = [
-                {
-                  control = {
-                    "Limit (dB)" = categoryConfig.limitThreshold;
-                    "Release time (s)" = 0.1;
-                  };
-
-                  label = "fastLookaheadLimiter";
-                  plugin = "fast_lookahead_limiter_1913";
-                  type = "ladspa";
-                }
-              ];
-
-              "playback.props" = {
-                "media.class" = "Audio/Source";
-                "node.description" = "${categoryName} (Processed)";
-                "node.name" = "${categoryName}Processed";
-              };
-            };
-          };
-
-          mkMainLoopback = name: {
-            name = "libpipewire-module-loopback";
-
-            args = {
-              "capture.props"."node.target" = "${name}Processed";
-              "node.description" = "${name} ➜ Main";
-              "playback.props"."node.target" = if cfg.eq.enable then "MainEQ" else cfg.output;
-            };
-          };
-
           appChains = lib.mapAttrsToList mkAppChain cfg.appCategories;
-          mainLoopbacks = map mkMainLoopback (lib.attrNames cfg.appCategories);
-
-          inputIsMono = cfg.inputChannels == "mono";
-
-          stereoStreamProps = {
-            "audio.position" = "FL,FR";
-          };
-
-          monoStreamProps = {
-            "audio.channels" = 1;
-            "audio.position" = "[ MONO ]";
-          };
-
-          # Upmix at the processed source output; loopback channelmix is unreliable for MONO→FL/FR.
-          monoToStereoOutputProps = {
-            "audio.channels" = 2;
-            "audio.position" = "FL,FR";
-            "channelmix.normalize" = false;
-            "channelmix.upmix" = true;
-            "channelmix.upmix-method" = "simple";
-            "stream.dont-remix" = false;
-          };
-
-          micCaptureStreamProps = if inputIsMono then monoStreamProps else stereoStreamProps;
-
-          # Stereo compressor output is already FL/FR; upmix only for direct HW passthrough.
-          micFilterPlaybackStreamProps = stereoStreamProps;
-
-          micPassthroughPlaybackStreamProps =
-            if inputIsMono then monoToStereoOutputProps else stereoStreamProps;
-
-          rnnoiseLabel = if inputIsMono then "noise_suppressor_mono" else "noise_suppressor_stereo";
-
           compressorLinks =
             if inputIsMono then
               [
@@ -354,6 +275,14 @@ in
                   output = "rnnoise:Output (R)";
                 }
               ];
+
+          inputIsMono = cfg.inputChannels == "mono";
+          mainLoopbacks = map mkMainLoopback (lib.attrNames cfg.appCategories);
+          micCaptureStreamProps = if inputIsMono then monoStreamProps else stereoStreamProps;
+          # Stereo compressor output is already FL/FR; upmix only for direct HW passthrough.
+          micFilterPlaybackStreamProps = stereoStreamProps;
+          micPassthroughPlaybackStreamProps =
+            if inputIsMono then monoToStereoOutputProps else stereoStreamProps;
 
           micProcessingSetup =
             if cfg.micProcess.enable then
@@ -438,6 +367,64 @@ in
                   };
                 }
               ];
+
+          mkAppChain = categoryName: categoryConfig: {
+            name = "libpipewire-module-filter-chain";
+
+            args = {
+              "capture.props" = {
+                "audio.position" = "FL,FR";
+                "media.class" = "Audio/Sink";
+                "node.description" = "${categoryName} (Raw)";
+                "node.name" = "${categoryName}";
+              };
+
+              "filter.graph".nodes = [
+                {
+                  control = {
+                    "Limit (dB)" = categoryConfig.limitThreshold;
+                    "Release time (s)" = 0.1;
+                  };
+
+                  label = "fastLookaheadLimiter";
+                  plugin = "fast_lookahead_limiter_1913";
+                  type = "ladspa";
+                }
+              ];
+
+              "playback.props" = {
+                "media.class" = "Audio/Source";
+                "node.description" = "${categoryName} (Processed)";
+                "node.name" = "${categoryName}Processed";
+              };
+            };
+          };
+          mkMainLoopback = name: {
+            name = "libpipewire-module-loopback";
+
+            args = {
+              "capture.props"."node.target" = "${name}Processed";
+              "node.description" = "${name} ➜ Main";
+              "playback.props"."node.target" = if cfg.eq.enable then "MainEQ" else cfg.output;
+            };
+          };
+          monoStreamProps = {
+            "audio.channels" = 1;
+            "audio.position" = "[ MONO ]";
+          };
+          # Upmix at the processed source output; loopback channelmix is unreliable for MONO→FL/FR.
+          monoToStereoOutputProps = {
+            "audio.channels" = 2;
+            "audio.position" = "FL,FR";
+            "channelmix.normalize" = false;
+            "channelmix.upmix" = true;
+            "channelmix.upmix-method" = "simple";
+            "stream.dont-remix" = false;
+          };
+          rnnoiseLabel = if inputIsMono then "noise_suppressor_mono" else "noise_suppressor_stereo";
+          stereoStreamProps = {
+            "audio.position" = "FL,FR";
+          };
 
         in
         {
