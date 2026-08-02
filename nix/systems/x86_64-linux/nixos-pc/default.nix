@@ -34,6 +34,7 @@
 
       httpProxy = {
         enable = true;
+        http3.enable = true;
 
         websocketHttp11Urls = [
           "https://api.openai.com/v1/live/rtc_*"
