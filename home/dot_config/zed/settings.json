@@ -63,6 +63,9 @@
     "agent_buffer_font_size": 18.0,
     "agent_servers": {
         "opencode": {
+            "default_config_options": {
+                "model": "opencode/deepseek-v4-flash-free"
+            },
             "type": "registry",
         },
     },
