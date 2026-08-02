@@ -75,9 +75,6 @@
     "search": {
         "include_ignored": true,
     },
-    "message_editor": {
-        "auto_replace_emoji_shortcode": true,
-    },
     "preferred_line_length": 100,
     "vim": {
         "toggle_relative_line_numbers": true,
