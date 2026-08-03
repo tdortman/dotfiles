@@ -118,6 +118,7 @@ branchSummary:
   enabled: false
 ttsr: 
   contextMode: discard
+  repeatMode: after-gap
 readLineNumbers: true
 exa: 
   enableResearcher: true
