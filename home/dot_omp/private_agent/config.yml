@@ -79,7 +79,7 @@ providers:
     []
 setupVersion: 1
 bashInterceptor: 
-  enabled: true
+  enabled: false
 python: 
   kernelMode: session
 dev: 
@@ -130,6 +130,8 @@ steeringMode: one-at-a-time
 tui: 
   tight: false
   textSizing: true
+  codexResetFireworks: true
+  titleState: true
 bash: 
   autoBackground: 
     enabled: true
@@ -137,3 +139,5 @@ shellMinimizer:
   sourceOutlineLevel: default
 generate_image: 
   enabled: true
+read: 
+  renderMarkdown: true
