@@ -84,6 +84,10 @@
             "~/.local/share/cursor-agent"
           ];
         }
+        {
+          package = pkgs.custom.prime-agent;
+          readwriteDirs = [ "~/.prime" ];
+        }
       ];
 
     readonlyDirs = [
