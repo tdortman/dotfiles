@@ -34,6 +34,7 @@
       fd
       ffmpeg-full
       file
+      fooyin
       fzf
       gdb
       gh
