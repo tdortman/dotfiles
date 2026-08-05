@@ -134,7 +134,7 @@ tui:
   titleState: true
 bash: 
   autoBackground: 
-    enabled: true
+    enabled: false
 shellMinimizer: 
   sourceOutlineLevel: default
 generate_image: 
