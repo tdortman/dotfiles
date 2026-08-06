@@ -79,7 +79,7 @@ providers:
     []
 setupVersion: 1
 bashInterceptor: 
-  enabled: true
+  enabled: false
 python: 
   kernelMode: session
 dev: 
