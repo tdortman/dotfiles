@@ -11,7 +11,7 @@ modelRoles:
 startup: 
   checkUpdate: false
   quiet: false
-  changelogMode: expanded
+  changelogMode: hidden
 symbolPreset: nerd
 stt: 
   enabled: false
@@ -79,7 +79,7 @@ providers:
     []
 setupVersion: 1
 bashInterceptor: 
-  enabled: false
+  enabled: true
 python: 
   kernelMode: session
 dev: 
