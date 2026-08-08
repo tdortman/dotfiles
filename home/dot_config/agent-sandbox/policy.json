@@ -58,6 +58,8 @@
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/usage", "comment": "global" },
         { "methods": ["GET"], "url": "https://codeload.github.com/", "comment": "global" },
         { "methods": ["GET"], "url": "https://crates.io/", "comment": "global" },
+        { "methods": ["GET"], "url": "https://cursor.com/api/auth/me", "comment": "global" },
+        { "methods": ["GET"], "url": "https://cursor.com/api/usage-summary", "comment": "global" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:fetchAvailableModels", "comment": "global" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent", "comment": "global" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.sandbox.googleapis.com/v1internal:streamGenerateContent", "comment": "global" },

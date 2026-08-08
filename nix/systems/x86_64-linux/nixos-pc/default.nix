@@ -62,7 +62,11 @@
         }
         {
           package = agents.omp;
-          readwriteDirs = [ "~/.omp" ];
+
+          readwriteDirs = [
+            "~/.omp"
+            "~/.local/state/omp"
+          ];
         }
         {
           package = agents.opencode;
