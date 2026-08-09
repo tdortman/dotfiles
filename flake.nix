@@ -143,6 +143,8 @@
       url = "github:nix-community/disko";
     };
 
+    flake-utils-plus.url = "github:Dines97/flake-utils-plus";
+
     home-manager = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/home-manager";
@@ -161,9 +163,7 @@
       url = "github:nix-community/NixOS-WSL/main";
     };
 
-    # https://github.com/gytis-ivaskevicius/flake-utils-plus/issues/162
-    # https://github.com/snowfallorg/lib/issues/192
-    nixpkgs.url = "github:NixOS/nixpkgs/b7c2ada94fe99c15b0dbcf4d11fd7850b957a436";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/540416/head";
@@ -187,7 +187,11 @@
     };
 
     snowfall-lib = {
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        flake-utils-plus.follows = "flake-utils-plus";
+        nixpkgs.follows = "nixpkgs";
+      };
+
       url = "github:anntnzrb/snowfall-lib";
     };
 
