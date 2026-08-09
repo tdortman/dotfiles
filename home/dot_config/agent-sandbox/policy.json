@@ -20,6 +20,7 @@
     },
     "http": {
       "allow": [
+        { "methods": ["GET"], "url": "http://export.arxiv.org/api/query", "comment": "global" },
         { "methods": ["GET"], "url": "http://specifications.freedesktop.org/", "comment": "global" },
         { "methods": ["POST"], "url": "https://api.deepseek.com/chat/completions", "comment": "global" },
         { "methods": ["GET"], "url": "https://api.deepseek.com/models", "comment": "global" },
@@ -87,6 +88,7 @@
         { "methods": ["GET"], "url": "https://models.opencode.ai/api.json", "comment": "global" },
         { "methods": ["GET"], "url": "https://nixos.org/manual", "comment": "global" },
         { "methods": ["POST"], "url": "https://oauth2.googleapis.com/token", "comment": "global" },
+        { "methods": ["POST"], "url": "https://opencode.ai/zen/go/v1/chat/completions", "comment": "global" },
         { "methods": ["GET"], "url": "https://opencode.ai/zen/go/v1/models", "comment": "global" },
         { "methods": ["POST"], "url": "https://opencode.ai/zen/v1/chat/completions", "comment": "global" },
         { "methods": ["POST"], "url": "https://opencode.ai/zen/v1/messages", "comment": "global" },
