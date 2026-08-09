@@ -55,10 +55,7 @@ let
 
       export VPN_RUN_HOST_DNS_TARGET="${dnsTarget}"
 
-      exec unshare -m /bin/sh -c "
-        mount -t tmpfs tmpfs /run/nscd 2>/dev/null || true
-        exec vpn-run -i ${cfg.interface} -n jgu-vpn-ns \"\$@\"
-      " _ "$@"
+      exec vpn-run -i ${cfg.interface} -n jgu-vpn-ns "$@"
     '';
   };
   xfrmIdPattern = "(${toString cfg.ifId}|0x${lib.toHexString cfg.ifId})";
