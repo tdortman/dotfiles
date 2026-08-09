@@ -261,6 +261,38 @@ in
     };
 
     systemd.services = {
+      jgu-vpn-resume = {
+        description = "Terminate JGU VPN IKE SA after resume from suspend or hibernate";
+
+        after = [
+          "hibernate.target"
+          "hybrid-sleep.target"
+          "suspend-then-hibernate.target"
+          "suspend.target"
+        ];
+
+        wantedBy = [
+          "hibernate.target"
+          "hybrid-sleep.target"
+          "suspend-then-hibernate.target"
+          "suspend.target"
+        ];
+
+        serviceConfig.Type = "oneshot";
+
+        script = ''
+          if swanctl --list-sas --ike jgu 2>/dev/null | grep -q 'jgu:'; then
+            swanctl --terminate --ike jgu
+          fi
+        '';
+
+        path = [
+          pkgs.coreutils
+          pkgs.gnugrep
+          pkgs.strongswan
+        ];
+      };
+
       jgu-vpn-xfrm = {
         description = "Create JGU VPN XFRM interface ${cfg.interface}";
         before = [ "strongswan-swanctl.service" ];
