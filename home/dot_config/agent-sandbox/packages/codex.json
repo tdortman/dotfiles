@@ -1,0 +1,28 @@
+{
+  "network": {
+    "direct": {
+      "allow": [],
+      "deny": []
+    },
+    "http": {
+      "allow": [],
+      "deny": []
+    }
+  },
+  "sudo": {
+    "allow": [],
+    "deny": []
+  },
+  "filesystem": {
+    "allow": [
+      { "path": "~/.cache/codex-runtimes", "access": "read_write", "comment": "global_package" }
+    ],
+    "deny": []
+  },
+  "resources": {
+    "allow": [
+      { "kind": "unix_socket", "path": "~/.codex/app-server-control/app-server-control.sock", "access": "connect", "comment": "global_package" }
+    ],
+    "deny": []
+  }
+}

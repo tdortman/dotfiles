@@ -1,0 +1,27 @@
+{
+  "network": {
+    "direct": {
+      "allow": [],
+      "deny": []
+    },
+    "http": {
+      "allow": [],
+      "deny": []
+    }
+  },
+  "sudo": {
+    "allow": [],
+    "deny": []
+  },
+  "filesystem": {
+    "allow": [
+      { "path": "./.omp", "access": "read", "comment": "global_package" },
+      { "path": "~/dotfiles/home/dot_omp", "access": "read", "comment": "global_package" }
+    ],
+    "deny": []
+  },
+  "resources": {
+    "allow": [],
+    "deny": []
+  }
+}
