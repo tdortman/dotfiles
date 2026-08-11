@@ -20,7 +20,7 @@
 }:
 
 let
-  appimageContents = appimageTools.extractType2 {
+  appimageContents = appimageTools.extract {
     inherit pname src version;
   };
   artifact = artifacts.${system} or (throw "Unsupported system: ${system}");
