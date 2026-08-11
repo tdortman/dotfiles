@@ -11,7 +11,7 @@ modelRoles:
 startup: 
   checkUpdate: false
   quiet: false
-  changelogMode: hidden
+  changelogMode: expanded
 symbolPreset: nerd
 stt: 
   enabled: false
@@ -120,9 +120,6 @@ ttsr:
   contextMode: discard
   repeatMode: after-gap
 readLineNumbers: true
-exa: 
-  enableResearcher: true
-  enableWebsets: true
 doubleEscapeAction: tree
 astGrep: 
   enabled: true
