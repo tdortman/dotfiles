@@ -34,7 +34,7 @@ display:
   showTokenUsage: false
   tabWidth: 2
 compaction: 
-  strategy: snapcompact
+  strategy: context-full
   thresholdPercent: 80
   thresholdTokens: -1
   handoffSaveToDisk: false
