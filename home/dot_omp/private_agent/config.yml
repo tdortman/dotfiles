@@ -138,3 +138,4 @@ generate_image:
   enabled: true
 read: 
   renderMarkdown: true
+externalThinking: true
