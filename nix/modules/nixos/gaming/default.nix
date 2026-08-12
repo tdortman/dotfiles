@@ -29,7 +29,6 @@ in
         mangohud
         protonup-qt
         lutris
-        bottles
         faugus-launcher
         # heroic
         winetricks
