@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Committing changes: planning commit series, writing commit messages, and applying version bumps. Invoke when committing changes, drafting or auditing a commit message, or bumping the software version. Hunk staging and splitting stay with the git-surgeon skill.
+description: Committing changes. planning commit series, writing commit messages, and applying version bumps. Invoke when committing changes, drafting or auditing a commit message, or bumping the software version. Hunk staging and splitting stay with the git-surgeon skill.
 ---
 
 # git-commit

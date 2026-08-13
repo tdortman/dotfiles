@@ -8,6 +8,7 @@
         { "host": "127.0.0.1", "port": 8080, "comment": "llama.cpp" },
         { "host": "127.0.0.1", "port": 11434, "comment": "ollama" },
         { "host": "127.0.0.1", "port": 32124, "comment": "opencode-cursor" },
+        { "host": "127.0.0.1", "port": 33225, "comment": "orca" },
         { "host": "135.220.40.201", "port": 3478, "comment": "gpt-live" },
         { "host": "169.254.100.1", "port": 53, "comment": "dns forwarder" },
         { "host": "169.254.100.1", "port": 47657, "comment": "hunk daemon" },

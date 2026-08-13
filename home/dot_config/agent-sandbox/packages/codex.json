@@ -5,7 +5,9 @@
       "deny": []
     },
     "http": {
-      "allow": [],
+      "allow": [
+        { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/settings/user", "comment": "global_package" }
+      ],
       "deny": []
     }
   },
@@ -15,6 +17,8 @@
   },
   "filesystem": {
     "allow": [
+      { "path": "./tmp/*/codex-*/*", "access": "write", "comment": "global_package" },
+      { "path": "./tmp/*/codex-*/.lock", "access": "read_write", "comment": "global_package" },
       { "path": "~/.cache/codex-runtimes", "access": "read_write", "comment": "global_package" }
     ],
     "deny": []
