@@ -9,9 +9,9 @@ Turn the working tree into a series of atomic commits, then bump the version onc
 
 ## 1. Plan the series
 
-Use the `git-surgeon` skill for every step it covers: inspection, staging, splitting, validation, commit preparation. Use raw Git only when git-surgeon has no matching operation, or the prompt fixes the exact command format.
+Use the `git-surgeon` skill for every step it covers: inspection, staging, splitting, validation, commit preparation. Use raw Git only when `git-surgeon` has no matching operation, or the prompt fixes the exact command format.
 
-Inspect the full working tree with git-surgeon: changed files, hunks, lines, untracked files, dependencies between changes, safe staging boundaries.
+Inspect the full working tree with `git-surgeon`: changed files, hunks, lines, untracked files, dependencies between changes, safe staging boundaries.
 
 Group changes by intent, not by file or diff chunk. Each commit holds one coherent reason for change: the smallest group that still keeps a working state. Unrelated edits go in separate commits.
 
@@ -31,8 +31,54 @@ Every rule applies to every commit message in the series.
 - One blank line between title and body.
 - Body lines: 70 characters or fewer.
 - No line starts with `#`. No emojis, em dashes, or semicolons.
-- Wrap code symbols in `backticks`.
+- Every code symbol MUST be wrapped in `backticks`. A bare code symbol is a commit-message validation failure.
 - British spelling and wording (`optimise`, `favour`, `colour`, `behaviour`).
+
+### Code symbol formatting
+
+Every code-related symbol in a commit message body MUST be enclosed in backticks.
+
+This is a hard formatting requirement, not a style preference.
+
+Code-related symbols include, but are not limited to:
+
+- function, method, type, trait, struct, enum, module, and variable names
+- filenames and directory paths
+- command names and command-line flags
+- configuration keys and option names
+- environment variables
+- package, crate, and dependency names when referring to their code identity
+- API names, field names, protocol identifiers, and literal code expressions
+
+Examples:
+
+Bad:
+
+    "Move parse_path into the parser so callers share normalisation."
+
+Good:
+
+    "Move `parse_path` into the parser so callers share normalisation."
+
+Bad:
+
+    "Keep Cargo.toml and Cargo.lock on the same version."
+
+Good:
+
+    "Keep `Cargo.toml` and `Cargo.lock` on the same version."
+
+Bad:
+
+    "The allow_network option now applies to connect."
+
+Good:
+
+    "The `allow_network` option now applies to `connect`."
+
+Before creating each commit, inspect every word in the proposed message that names or refers to a code symbol. If any such symbol is not inside backticks, fix the message before running `git commit`.
+
+Do not consider a commit message ready merely because its prose is otherwise correct. Missing backticks around a code symbol are a formatting error and must be corrected before the commit is created.
 
 ### Rationale
 
@@ -66,7 +112,28 @@ Good body:
 
 Create the commits in the planned order.
 
-When the series is complete, audit every message with `git-surgeon` or Git history inspection: title length, body line length, semantic prefix, British English, quoting, formatting. Fix any message that fails.
+Before running each `git commit`, audit the proposed message against every rule in step 2. In particular, explicitly inspect it for bare code symbols rather than treating backtick formatting as part of a general prose review.
+
+When the series is complete, audit every message again with `git-surgeon` or Git history inspection.
+
+For every commit, verify each requirement individually:
+
+- semantic prefix is valid
+- title uses present tense
+- title is 50 characters or fewer
+- body lines are 70 characters or fewer
+- title and body use British English
+- exactly one blank line separates title and body
+- every code symbol is wrapped in `backticks`
+- no line starts with `#`
+- no emojis are present
+- no em dashes are present
+- no semicolons are present
+- the message contains repository rationale rather than agent-process rationale
+
+Treat every bare code symbol as an audit failure. Amend the affected commit before considering the series complete.
+
+Do not consider the audit successful until every listed check passes for every commit.
 
 Done when every planned commit exists and every message passes every rule in step 2.
 

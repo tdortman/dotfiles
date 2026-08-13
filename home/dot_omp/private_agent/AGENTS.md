@@ -155,9 +155,55 @@ For each commit message, you must strictly adhere to these rules:
 - For every commit body, explain the cause or pressure behind the change,
   not merely the resulting code difference.
 - Focus the body on the most important context.
-- Wrap code symbols in \`backticks\`.
+- MUST wrap every code symbol in \`backticks\`. A bare code symbol is a
+  commit-message validation failure.
 - Do not start any line with \`#\`.
 - Do not use emojis, em dashes, or semicolons.
+
+### Code Symbol Formatting
+
+Every code-related symbol in a commit message body MUST be enclosed in
+backticks.
+
+This is a hard formatting requirement, not a style preference.
+
+Code-related symbols include, but are not limited to:
+
+- function, method, type, trait, struct, enum, module, and variable names
+- filenames and directory paths
+- command names and command-line flags
+- configuration keys and option names
+- environment variables
+- package, crate, and dependency names when referring to their code identity
+- API names, field names, protocol identifiers, and literal code expressions
+
+Examples:
+
+Bad:
+"Move parse_path into the parser so callers share normalisation."
+
+Good:
+"Move \`parse_path\` into the parser so callers share normalisation."
+
+Bad:
+"Keep Cargo.toml and Cargo.lock on the same version."
+
+Good:
+"Keep \`Cargo.toml\` and \`Cargo.lock\` on the same version."
+
+Bad:
+"The allow_network option now applies to connect."
+
+Good:
+"The \`allow_network\` option now applies to \`connect\`."
+
+Before creating each commit, inspect every word in the proposed commit
+message that names or refers to a code symbol. If any such symbol is not
+inside backticks, fix the message before running \`git commit\`.
+
+After creating the commit series, audit every commit message again for
+unquoted code symbols. Treat a missing pair of backticks as a commit
+message validation failure and amend the affected commit.
 
 Commit bodies must not explain the agent's process, commit-planning
 decision, or validation workflow unless that information is directly useful
@@ -220,10 +266,21 @@ inspecting the diff and session history, say so in the commit body using
 careful wording, or keep the body limited to the observable reason.
 
 After creating the commit series, audit the commit messages using
-\`git-surgeon\`, Git history inspection, or an equivalent command. Verify
-that every commit message satisfies the title length, body line length,
-semantic prefix, British English, quoting, and formatting constraints. Fix
-any commit message that fails the audit.
+\`git-surgeon\`, Git history inspection, or an equivalent command.
+
+For every commit, verify all of the following individually:
+
+- semantic prefix is valid
+- title is at most 50 characters
+- body lines are at most 70 characters
+- wording uses British English
+- every code symbol is wrapped in \`backticks\`
+- no line starts with \`#\`
+- no emojis, em dashes, or semicolons are present
+- the commit message uses the required title, blank line, and body layout
+
+Do not consider the message audit successful until every check passes.
+Fix any commit message that fails the audit.
 
 ### Semantic Versioning
 
