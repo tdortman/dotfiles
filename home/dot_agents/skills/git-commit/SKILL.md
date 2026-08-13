@@ -33,6 +33,8 @@ Every rule applies to every commit message in the series.
 - No line starts with `#`. No emojis, em dashes, or semicolons.
 - Every code symbol MUST be wrapped in `backticks`. A bare code symbol is a commit-message validation failure.
 - British spelling and wording (`optimise`, `favour`, `colour`, `behaviour`).
+- Separate distinct ideas with blank lines rather than building dense multi-purpose paragraphs.
+- Bullet lists are encouraged when the body describes multiple parallel cases, conditions, execution paths, or constraints.
 
 ### Code symbol formatting
 
@@ -82,31 +84,90 @@ Do not consider a commit message ready merely because its prose is otherwise cor
 
 ### Rationale
 
-The body explains why the repository needs the change, from the project's perspective. Keep it to the most important context. It usually answers:
+Explain why the repository needs the change from the project's perspective.
+Include only the context a future maintainer needs to understand the change
+and any non-obvious implementation choice.
 
-- What project problem, limitation, or design pressure made the change necessary?
-- Why is this approach appropriate for the codebase?
-- What behaviour, API, workflow, or future change does this enable?
-- What compatibility or migration constraint matters to future maintainers?
+Prefer the smallest amount of rationale that makes the change clear. Do not
+preserve implementation detail merely because it is available from the diff
+or session history.
 
-For a mechanical change, state the non-mechanical reason: preparing for an API split, removing duplicated state, enabling later validation, syncing generated artefacts.
+When relevant, explain:
 
-Vague praise such as "improves maintainability" or "cleans up the code" stays only when followed by the specific reason it matters in this project.
+- the problem, limitation, or design pressure behind the change
+- a non-obvious reason for the chosen approach
+- important resulting behaviour
+- compatibility or migration constraints
 
-Write the repository story only. The body never describes the agent's workflow, commit planning, series splitting, or validation. Process phrases such as "this stays one commit", "this was split", "validated earlier", "the workspace would not compile otherwise", "tested in a temporary worktree", and "validation checks" belong in the final response, not the message. A compile-time constraint may appear only as a real architectural reason, not as a splitting justification.
+Do not force every body to cover every item above.
 
-If the reason is unclear after reading the diff, check the session history under `$HOME/.omp/agent/sessions` before writing. Never invent rationale: if it stays unclear, write the observable reason only.
+### Body structure
+
+Optimise for scanability as well as completeness.
+
+- Keep one main idea per paragraph.
+- Prefer short paragraphs over dense prose.
+- Use a small bullet list when describing parallel cases, execution paths,
+  conditions, behaviours, or constraints.
+- Introduce a list with one short sentence rather than embedding all cases
+  into a long paragraph.
+- Do not repeat details that are obvious from the diff.
+- Do not narrate implementation steps unless understanding them explains
+  why the change exists.
+- Do not make the body longer merely to demonstrate that the change was
+  thoroughly understood.
+
+A body with several distinct cases should normally look like:
+
+    Problem or motivation in one short paragraph.
+
+    The change handles three cases:
+
+    - first case and why it matters
+    - second case and why it matters
+    - third case and why it matters
+
+    Any important non-obvious constraint in a final short paragraph.
+
+Do not flatten this structure into one or two dense paragraphs.
+
+For a mechanical change, state the non-mechanical reason: preparing for an
+API split, removing duplicated state, enabling later validation, or syncing
+generated artefacts.
+
+Vague praise such as "improves maintainability" or "cleans up the code"
+stays only when followed by the specific reason it matters in this project.
+
+Write the repository story only. The body never describes the agent's
+workflow, commit planning, series splitting, or validation. Process phrases
+such as "this stays one commit", "this was split", "validated earlier",
+"the workspace would not compile otherwise", "tested in a temporary
+worktree", and "validation checks" belong in the final response, not the
+message. A compile-time constraint may appear only as a real architectural
+reason, not as a splitting justification.
+
+If the reason is unclear after reading the diff, check the session history
+under `$HOME/.omp/agent/sessions` before writing. Never invent rationale:
+if it stays unclear, write the observable reason only.
 
 Bad body:
 
     "Updates parser handling and refactors helpers."
 
+Also bad:
+
+    "The parser now accepts shared input paths from multiple call sites,
+    requiring the normalisation step to live behind a single helper while
+    also avoiding duplicated path handling and preparing later callers to
+    reuse the same parser behaviour."
+
 Good body:
 
-    "The parser now accepts shared input paths from multiple call sites, so
-    the normalisation step needs to live behind a single helper. Keeping the
-    helper inside the parser avoids duplicating path handling before later
-    callers are added."
+    "Multiple callers now pass shared input paths through the parser.
+    Normalisation therefore needs a single source of truth.
+
+    Keep `parse_path` inside the parser so new callers reuse the same path
+    handling instead of duplicating it."
 
 ## 3. Create and audit
 

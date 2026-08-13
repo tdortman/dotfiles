@@ -128,17 +128,40 @@ such as "improves maintainability", "cleans up the code", "updates logic",
 or "makes things better" unless they are immediately followed by the
 specific reason this matters in the project.
 
-A good commit body should usually answer:
+When relevant, a commit body may explain:
 
-- What project problem, limitation, or design pressure made this change
-  necessary?
-- Why is this implementation approach appropriate for the codebase?
-- What behaviour, API, workflow, or future change does this enable?
-- What compatibility or migration constraint matters to future maintainers?
+- the project problem, limitation, or design pressure behind the change
+- a non-obvious reason for the chosen implementation
+- important resulting behaviour or compatibility constraints
+
+Do not force every commit body to cover every category. Prefer the smallest
+amount of context that makes the rationale clear.
 
 If the change is mechanical, explain the non-mechanical reason it is
 needed, such as preparing for an API split, reducing duplicated state,
 making later validation possible, or keeping generated artefacts in sync.
+
+### Commit Body Style
+
+Prefer concise, scannable commit bodies over dense prose.
+
+The body does not need to answer every rationale question above. Include
+only the context that a future maintainer needs to understand why the
+change exists and why a non-obvious implementation choice was necessary.
+
+Use short paragraphs. When a change has distinct cases, execution paths,
+constraints, or behaviours, prefer a short introductory paragraph followed
+by a small bullet list rather than encoding all cases in continuous prose.
+
+Avoid repeating implementation details that are clear from the diff.
+Do not narrate every step of the implementation merely because it
+contributed to the change.
+
+Aim for one main idea per paragraph or bullet. If a paragraph explains
+multiple independent conditions or branches, split it.
+
+A longer body is appropriate when the rationale is genuinely complex, but
+length alone must not be used to demonstrate completeness.
 
 ### Commit Message Constraints
 
