@@ -282,7 +282,7 @@ in
 
         script = ''
           if swanctl --list-sas --ike jgu 2>/dev/null | grep -q 'jgu:'; then
-            swanctl --terminate --ike jgu
+            swanctl --terminate --ike jgu --force
           fi
         '';
 
