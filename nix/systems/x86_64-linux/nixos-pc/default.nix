@@ -69,7 +69,7 @@
           ];
         }
         {
-          package = agents.opencode;
+          package = agents.opencode2;
 
           readonlyFiles = [
             "~/.config/cursor/auth.json" # For opencode-cursor

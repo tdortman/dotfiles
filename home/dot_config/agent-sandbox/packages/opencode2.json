@@ -1,0 +1,31 @@
+{
+  "network": {
+    "direct": {
+      "allow": [
+        { "host": "127.0.0.1", "port": 49374, "comment": "opencode server" }
+      ],
+      "deny": []
+    },
+    "http": {
+      "allow": [],
+      "deny": []
+    }
+  },
+  "sudo": {
+    "allow": [],
+    "deny": []
+  },
+  "filesystem": {
+    "allow": [
+      { "path": "~/Projects/bloom-filter/subprojects/packagefiles/superbloom-cpu/vendor/memchr/.ignore", "access": "read", "comment": "global_package" },
+      { "path": "~/go/pkg/**/.gitignore", "access": "read", "comment": "global_package" },
+      { "path": "~/miniforge3/**/.gitignore", "access": "read", "comment": "global_package" },
+      { "path": "~/wine/**/.gitignore", "access": "read", "comment": "global_package" }
+    ],
+    "deny": []
+  },
+  "resources": {
+    "allow": [],
+    "deny": []
+  }
+}
