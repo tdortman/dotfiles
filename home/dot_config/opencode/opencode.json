@@ -1920,6 +1920,15 @@
         },
         "cursor-grok-4.6-xhigh-fast": {
           "name": "Cursor Grok 4.6 Extra High Fast"
+        },
+        "gemini-3.7-flash-high": {
+          "name": "Gemini 3.7 Flash"
+        },
+        "gemini-3.7-flash-low": {
+          "name": "Gemini 3.7 Flash Low"
+        },
+        "gemini-3.7-flash-medium": {
+          "name": "Gemini 3.7 Flash Medium"
         }
       }
     }
