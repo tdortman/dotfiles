@@ -142,3 +142,5 @@ read:
 externalThinking: true
 security: 
   enabled: true
+computer: 
+  enabled: true
