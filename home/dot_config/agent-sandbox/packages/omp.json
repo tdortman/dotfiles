@@ -17,7 +17,7 @@
     "allow": [
       { "path": "./.omp", "access": "read", "comment": "global_package" },
       { "path": "~/.config/orca/agent-hooks", "access": "read", "comment": "global_package" },
-      { "path": "~/dotfiles/home/dot_omp", "access": "read", "comment": "global_package" }
+      { "path": "~/dotfiles/home/dot_omp", "access": "read_write", "comment": "global_package" }
     ],
     "deny": []
   },

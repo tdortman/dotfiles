@@ -62,6 +62,8 @@ task:
   showResolvedModelBadge: true
   batch: true
   maxConcurrency: 0
+  agentAdvisor: 
+    task: "off"
 secrets: 
   enabled: true
 contextPromotion: 
@@ -88,7 +90,6 @@ dev:
     endpoint: ""
 advisor: 
   enabled: true
-  subagents: false
   syncBacklog: "1"
 completion: 
   notify: "on"
