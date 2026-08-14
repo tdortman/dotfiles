@@ -1,13 +1,13 @@
 modelRoles: 
-  default: openai-codex/gpt-5.6-luna:max
-  commit: openai-codex/gpt-5.6-luna:xhigh
-  vision: openai-codex/gpt-5.6-luna:high
+  default: opencode-go/deepseek-v4-flash:xhigh
+  commit: openai-codex/gpt-5.6-luna:max
+  vision: openai-codex/gpt-5.6-luna:max
   plan: openai-codex/gpt-5.6-luna:max
-  smol: openai-codex/gpt-5.6-luna:medium
-  task: openai-codex/gpt-5.6-luna:xhigh
+  smol: opencode-go/deepseek-v4-flash:max
+  task: opencode-go/deepseek-v4-flash:xhigh
   slow: openai-codex/gpt-5.6-luna:max
   advisor: openai-codex/gpt-5.6-luna:max
-  tiny: openai-codex/gpt-5.6-luna:low
+  tiny: opencode-go/deepseek-v4-flash:low
 startup: 
   checkUpdate: false
   quiet: false
