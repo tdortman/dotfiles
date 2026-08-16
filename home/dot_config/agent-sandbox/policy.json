@@ -258,6 +258,7 @@
       { "path": "~/.npm/_update-notifier-last-checked", "access": "read", "comment": "global" },
       { "path": "~/.nv/ComputeCache", "access": "read_write", "comment": "global" },
       { "path": "~/.pulse-cookie", "access": "read", "comment": "global" },
+      { "path": "~/.ssh/allowed_signers", "access": "read", "comment": "global" },
       { "path": "~/.ssh/config", "access": "read", "comment": "global" },
       { "path": "~/.zcompdump", "access": "read", "comment": "global" },
       { "path": "~/.zshrc.zwc", "access": "read", "comment": "global" },
@@ -306,6 +307,7 @@
       { "kind": "unix_socket", "path": "~/.config/herdr/herdr.sock", "access": "connect", "comment": "global" },
       { "kind": "device", "path": "/dev/dri/render*", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/nvidia*", "access": "open_read_write", "comment": "global" },
+      { "kind": "device", "path": "/dev/nvidia-caps", "access": "open_read", "comment": "global" },
       { "kind": "device", "path": "/dev/shm/cuda_injection_path_shm", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/shm/sem.*", "access": "open_read_write", "comment": "global" }
     ],
