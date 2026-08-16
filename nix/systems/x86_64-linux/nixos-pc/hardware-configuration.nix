@@ -43,7 +43,6 @@
 
     kernelParams = [
       "resume_offset=33307031"
-      "drm.edid_firmware=DP-3:edid/odyssey-g7-8bpc.bin"
       "amd_pstate=active"
       "acpi_enforce_resources=lax"
     ];
@@ -95,8 +94,9 @@
 
   hardware = {
     cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+    display.outputs.DP-3.edid = "odyssey-g7-8bpc.bin";
 
-    firmware = [
+    display.edid.packages = [
       (pkgs.runCommand "firmware-custom-edid" { } ''
         mkdir -p $out/lib/firmware/edid/
         cp "${./odyssey-g7-8bpc-edid.bin}" $out/lib/firmware/edid/odyssey-g7-8bpc.bin

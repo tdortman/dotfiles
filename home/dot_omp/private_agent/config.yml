@@ -144,3 +144,5 @@ security:
   enabled: true
 computer: 
   enabled: true
+disabledExtensions: 
+  []

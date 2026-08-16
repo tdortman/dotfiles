@@ -22,7 +22,9 @@
     "deny": []
   },
   "resources": {
-    "allow": [],
+    "allow": [
+      { "kind": "unix_socket", "path": "~/.local/state/omp", "access": "connect", "comment": "global_package" }
+    ],
     "deny": []
   }
 }
