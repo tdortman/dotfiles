@@ -121,6 +121,7 @@
       ],
       "deny": [
         { "methods": ["POST"], "url": "https://ab.chatgpt.com/otlp", "comment": "global" },
+        { "methods": ["GET"], "url": "https://antigravity-hub-auto-updater-974169037036.us-central1.run.app/manifest/latest-arm64-mac.yml", "comment": "global_package" },
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/analytics-events/events", "comment": "global" },
         { "methods": ["POST"], "url": "https://otel-collector-*.us-central1.run.app/v1/metrics", "comment": "global" },
         { "methods": ["POST"], "url": "https://telemetry.factory.ai/", "comment": "global" }
