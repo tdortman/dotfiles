@@ -94,7 +94,7 @@
 
   hardware = {
     cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-    display.outputs.DP-3.edid = "odyssey-g7-8bpc.bin";
+    # display.outputs.DP-3.edid = "odyssey-g7-8bpc.bin";
 
     display.edid.packages = [
       (pkgs.runCommand "firmware-custom-edid" { } ''
