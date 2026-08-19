@@ -273,7 +273,7 @@
 
   hdr = {
     enable = true;
-    defaultOutput = "DP-3";
+    defaultOutput = "DP-1";
     extraScripts = true;
   };
 
