@@ -79,7 +79,7 @@ providers:
   tinyModelDevice: default
   webSearchGeminiModel: gemini-3-flash
   webSearchOrder: 
-    []
+    - codex
 setupVersion: 1
 bashInterceptor: 
   enabled: false
