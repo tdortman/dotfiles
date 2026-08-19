@@ -94,14 +94,17 @@
 
   hardware = {
     cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-    display.outputs.DP-2.edid = "odyssey-g7-8bpc.bin";
 
-    display.edid.packages = [
-      (pkgs.runCommand "firmware-custom-edid" { } ''
-        mkdir -p $out/lib/firmware/edid/
-        cp "${./odyssey-g7-8bpc-edid.bin}" $out/lib/firmware/edid/odyssey-g7-8bpc.bin
-      '')
-    ];
+    display = {
+      edid.packages = [
+        (pkgs.runCommand "firmware-custom-edid" { } ''
+          mkdir -p $out/lib/firmware/edid/
+          cp "${./odyssey-g7-8bpc-edid.bin}" $out/lib/firmware/edid/odyssey-g7-8bpc.bin
+        '')
+      ];
+
+      outputs.DP-2.edid = "odyssey-g7-8bpc.bin";
+    };
 
     nvidia.powerManagement.enable = true;
   };
