@@ -82,6 +82,7 @@
       pkg-config
       podman
       python3
+      python3Packages.subliminal
       qemu
       rclone
       ripgrep
