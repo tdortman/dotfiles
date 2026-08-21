@@ -139,13 +139,14 @@ tui:
 bash: 
   autoBackground: 
     enabled: false
+  direnv: auto
 shellMinimizer: 
   sourceOutlineLevel: default
 generate_image: 
   enabled: true
 read: 
   renderMarkdown: true
-externalThinking: true
+externalThinking: false
 security: 
   enabled: true
 computer: 
