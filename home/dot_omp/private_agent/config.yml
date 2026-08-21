@@ -24,6 +24,8 @@ statusLine:
   separator: powerline-thin
   sessionAccent: true
   showHookStatus: true
+  transparent: false
+  compactThinkingLevel: false
 terminal: 
   showImages: true
   showProgress: true
@@ -136,6 +138,7 @@ tui:
   textSizing: true
   codexResetFireworks: true
   titleState: true
+  hyperlinks: auto
 bash: 
   autoBackground: 
     enabled: false
