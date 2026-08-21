@@ -259,6 +259,7 @@
   hardware = {
     bluetooth = {
       enable = true;
+      input.General.UserspaceHID = false;
       powerOnBoot = true;
       settings.General.Experimental = true;
     };
