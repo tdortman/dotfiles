@@ -308,6 +308,7 @@
       { "kind": "device", "path": "/dev/dri/render*", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/nvidia*", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/nvidia-caps", "access": "open_read", "comment": "global" },
+      { "kind": "device", "path": "/dev/pts", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/shm/cuda_injection_path_shm", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/shm/sem.*", "access": "open_read_write", "comment": "global" }
     ],
