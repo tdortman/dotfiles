@@ -32,6 +32,13 @@
     console.useXkbConfig = true;
 
     environment = {
+      etc."librewolf/policies/policies.json".text = builtins.toJSON {
+        policies.ExtensionSettings."firefox-extension@deepl.com".runtime_blocked_hosts = [
+          "*://openrouter.ai"
+          "*://*.openrouter.ai"
+        ];
+      };
+
       interactiveShellInit = ''
         flake-template() {
           nix flake init --template $NH_FLAKE#$1
