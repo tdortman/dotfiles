@@ -180,6 +180,10 @@
         useXkbConfig = true;
       };
 
+      udev.packages = with pkgs; [
+        game-devices-udev-rules
+      ];
+
       xserver.xkb = {
         layout = "us,de";
         variant = "altgr-intl,";
