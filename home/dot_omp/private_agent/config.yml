@@ -35,10 +35,15 @@ display:
   showTokenUsage: false
   tabWidth: 2
 compaction: 
-  strategy: context-full
   thresholdPercent: 80
   thresholdTokens: -1
   handoffSaveToDisk: false
+  methodOrder: 
+    - remote
+    - snapcompact
+    - soft
+    - shake
+    - handoff
 memory: 
   backend: mnemopi
 edit: 
@@ -80,7 +85,7 @@ providers:
   webSearchGeminiModel: gemini-3-flash
   webSearchOrder: 
     - codex
-setupVersion: 1
+setupVersion: 2
 bashInterceptor: 
   enabled: false
 python: 
@@ -147,3 +152,5 @@ computer:
   enabled: true
 disabledExtensions: 
   []
+composer: 
+  shape: box
