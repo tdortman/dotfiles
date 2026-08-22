@@ -65,7 +65,9 @@
 
           readwriteDirs = [
             "~/.omp"
+            "~/.cache/omp"
             "~/.local/state/omp"
+            "~/.local/share/omp"
           ];
         }
         {
