@@ -141,8 +141,6 @@
           "foobar2000 Application"
           "spotify"
         ];
-
-        limitThreshold = -12.0;
       };
 
       System = { };
