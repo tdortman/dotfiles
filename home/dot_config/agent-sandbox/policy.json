@@ -104,6 +104,7 @@
         { "methods": ["POST"], "url": "https://opencode.ai/zen/v1/messages", "comment": "global" },
         { "methods": ["GET"], "url": "https://opencode.ai/zen/v1/models", "comment": "global" },
         { "methods": ["GET"], "url": "https://openrouter.ai/api/v1/models", "comment": "global" },
+        { "methods": ["POST"], "url": "https://openrouter.ai/api/v1/responses", "comment": "global" },
         { "methods": ["GET"], "url": "https://peps.python.org/", "comment": "global" },
         { "methods": ["GET"], "url": "https://pypi.org/simple", "comment": "global" },
         { "methods": ["GET"], "url": "https://r.jina.ai/", "comment": "global" },
