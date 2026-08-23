@@ -138,6 +138,7 @@
         "debugToolBar.background": "#000000",
         "editorWidget.background": "#000000",
         "editorSuggestWidget.background": "#000000",
+        "statusBar.background": "#000000",
     },
     "[c]": {
         "editor.defaultFormatter": "KylinIdeTeam.kylin-clangd",

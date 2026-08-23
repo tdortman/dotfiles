@@ -32,7 +32,7 @@
         "bindings": {
             "ctrl-shift-t": "workspace::NewTerminal",
             "ctrl-shift-c": "terminal::Copy",
-            "ctrl-shift-v": "terminal::Paste"
+            "ctrl-shift-v": "terminal::Paste",
         },
     },
     {
@@ -40,6 +40,17 @@
         "bindings": {
             "tab": "editor::MoveToEndOfLargerSyntaxNode",
             "shift-tab": "editor::Tab",
+        },
+    },
+    {
+        "context": "Workspace",
+        "bindings": {
+            "ctrl-alt-s": [
+                "task::Spawn",
+                {
+                    "task_name": "CodeSnap",
+                },
+            ],
         },
     },
 ]

@@ -92,6 +92,7 @@
       secretspec
       shellcheck
       shfmt
+      silicon
       sqlite
       sqlitebrowser
       statix

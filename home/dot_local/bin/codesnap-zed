@@ -1,7 +1,33 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-printf '%s' "$ZED_SELECTED_TEXT" | codesnap -c \
-    -o clipboard \
-    --file-path "$ZED_FILE" \
-    --has-line-number \
-    --start-line-number "$ZED_ROW"
+FILE="${1:-}"
+FILENAME="${2:-}"
+
+tmp="$(mktemp --suffix=.png)"
+trap 'rm -f "$tmp"' EXIT
+
+ext="${FILE##*.}"
+lang="$ext"
+
+case "$ext" in
+cu | cuh | hpp | hxx | cc | cxx)
+    lang="cpp"
+    ;;
+jsm | mjs)
+    lang="js"
+    ;;
+*)
+    ;;
+esac
+
+silicon \
+    --no-window-controls \
+    --theme 'OneDarkPro' \
+    -f 'ComicCodeLigatures Nerd Font Mono' \
+    --background '#0000' \
+    -l "$lang" \
+    --window-title "$FILENAME" \
+    -o "$tmp"
+
+wl-copy --type image/png <"$tmp"

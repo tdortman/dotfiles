@@ -83,7 +83,7 @@ export VCPKG_DEFAULT_TRIPLET="x64-linux"
 export WASMER_DIR="$HOME/.wasmer"
 [ -s "$WASMER_DIR/wasmer.sh" ] && source "$WASMER_DIR/wasmer.sh"
 
-export BAT_THEME="OneDark"
+export BAT_THEME="OneDarkPro"
 
 [ -s "$HOME/.atuin/bin/env" ] && . "$HOME/.atuin/bin/env"
 
