@@ -136,12 +136,10 @@
         ];
       };
 
-      Music = {
-        appNames = [
-          "foobar2000 Application"
-          "spotify"
-        ];
-      };
+      Music.appNames = [
+        "foobar2000 Application"
+        "spotify"
+      ];
 
       System = { };
     };
@@ -188,6 +186,19 @@
   disableWakeFromHibernate.enable = true;
 
   environment = {
+    sessionVariables = {
+      CARGO_BUILD_JOBS = 22;
+      CARGO_MAKEFLAGS = "-j 22";
+      GHIDRA_ROOT = "${pkgs.ghidra}";
+      MAKEFLAGS = "-j 22";
+      MOZ_DISABLE_RDD_SANDBOX = 1;
+      MOZ_ENABLE_WAYLAND = 1;
+      NINJAFLAGS = "-j 22";
+      NIXOS_OZONE_WL = "1";
+      # Setting gfx.webrender.compositor.force-enabled to true breaks the direct backend
+      NVD_BACKEND = "direct";
+    };
+
     systemPackages = with pkgs; [
       (discord.override {
         commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
@@ -231,16 +242,10 @@
     ];
 
     variables = {
-      GHIDRA_ROOT = "${pkgs.ghidra}";
       # Hunk inside agent-sandbox
       HUNK_MCP_HOST = "169.254.100.1";
       HUNK_MCP_PORT = 47657;
       HUNK_MCP_UNSAFE_ALLOW_REMOTE = 1;
-      MOZ_DISABLE_RDD_SANDBOX = 1;
-      MOZ_ENABLE_WAYLAND = 1;
-      NIXOS_OZONE_WL = "1";
-      # Setting gfx.webrender.compositor.force-enabled to true breaks the direct backend
-      NVD_BACKEND = "direct";
     };
   };
 

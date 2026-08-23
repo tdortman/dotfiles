@@ -45,7 +45,10 @@
         }
       '';
 
-      sessionVariables.NH_FLAKE = "$HOME/dotfiles";
+      sessionVariables = {
+        NH_FLAKE = "$HOME/dotfiles";
+        SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
+      };
 
       shellAliases = {
         flake-update = "nix flake update --flake $NH_FLAKE";
@@ -55,8 +58,6 @@
         nixos-switch = "nh os switch";
         update = "flake-update && nixos-switch";
       };
-
-      variables.SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
     };
 
     fonts = {
