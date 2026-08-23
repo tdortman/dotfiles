@@ -5,7 +5,9 @@
       "deny": []
     },
     "http": {
-      "allow": [],
+      "allow": [
+        { "methods": ["GET"], "url": "https://catalog.stencil.so/models.json.zstd", "comment": "global_package" }
+      ],
       "deny": []
     }
   },
