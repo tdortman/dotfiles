@@ -8,4 +8,5 @@ in
   "login-password.age".publicKeys = [ pubKey ];
   "nextdns-resolved.conf.age".publicKeys = [ pubKey ];
   "restic-password.age".publicKeys = [ pubKey ];
+  "sonarr-api-key.age".publicKeys = [ pubKey ];
 }
