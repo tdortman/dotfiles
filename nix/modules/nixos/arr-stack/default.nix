@@ -12,13 +12,6 @@ in
   options.arr-stack = {
     enable = lib.mkEnableOption "the media automation stack (Sonarr, Prowlarr, FlareSolverr)";
 
-    sonarrApiSecretPath = lib.mkOption {
-      type = lib.types.str;
-      default = config.age.secrets."sonarr-api-key".path;
-      defaultText = lib.literalExpression "config.age.secrets.\"sonarr-api-key\".path";
-      description = "Runtime path of the file containing the Sonarr API key.";
-    };
-
     extraBackupPaths = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];
@@ -29,6 +22,13 @@ in
       type = lib.types.bool;
       default = true;
       description = "Whether to open firewall ports for each service.";
+    };
+
+    sonarrApiSecretPath = lib.mkOption {
+      type = lib.types.str;
+      default = config.age.secrets."sonarr-api-key".path;
+      defaultText = lib.literalExpression "config.age.secrets.\"sonarr-api-key\".path";
+      description = "Runtime path of the file containing the Sonarr API key.";
     };
   };
 
