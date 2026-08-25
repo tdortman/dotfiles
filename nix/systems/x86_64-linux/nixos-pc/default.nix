@@ -48,6 +48,13 @@
       in
       [
         {
+          package = agents.dsh;
+          readwriteDirs = [
+            "~/.dsh"
+            "~/.local/share/ponytail/skills"
+          ];
+        }
+        {
           package = agents.codex;
           readwriteDirs = [ "~/.codex" ];
         }

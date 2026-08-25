@@ -1,0 +1,37 @@
+{
+  "network": {
+    "direct": {
+      "allow": [],
+      "deny": []
+    },
+    "http": {
+      "allow": [],
+      "deny": []
+    }
+  },
+  "sudo": {
+    "allow": [],
+    "deny": []
+  },
+  "filesystem": {
+    "allow": [
+      { "path": "/run/mount/utab", "access": "read", "comment": "global_package" },
+      { "path": "/var/lib/flatpak/exports/share/icons/hicolor/index.theme", "access": "read", "comment": "global_package" },
+      { "path": "/var/lib/flatpak/exports/share/mime/mime.cache", "access": "read", "comment": "global_package" },
+      { "path": "/var/lib/flatpak/exports/share/mime/types", "access": "read", "comment": "global_package" },
+      { "path": "~/.config/kcminputrc", "access": "read", "comment": "global_package" },
+      { "path": "~/.config/kdedefaults/kcminputrc", "access": "read", "comment": "global_package" },
+      { "path": "~/.config/kdedefaults/kdeglobals", "access": "read", "comment": "global_package" },
+      { "path": "~/.config/kdedefaults/kwinrc", "access": "read", "comment": "global_package" },
+      { "path": "~/.config/kdeglobals", "access": "read", "comment": "global_package" },
+      { "path": "~/.config/kwinrc", "access": "read", "comment": "global_package" },
+      { "path": "~/.local/share/mime/mime.cache", "access": "read", "comment": "global_package" },
+      { "path": "~/.local/share/mime/types", "access": "read", "comment": "global_package" }
+    ],
+    "deny": []
+  },
+  "resources": {
+    "allow": [],
+    "deny": []
+  }
+}
