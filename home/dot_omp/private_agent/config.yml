@@ -102,7 +102,7 @@ advisor:
 completion: 
   notify: "on"
 features: 
-  unexpectedStopDetection: true
+  unexpectedStopDetection: smart
 snapcompact: 
   toolResults: true
   systemPrompt: none
