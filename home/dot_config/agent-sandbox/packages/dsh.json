@@ -25,6 +25,7 @@
       { "path": "~/.config/kdedefaults/kwinrc", "access": "read", "comment": "global_package" },
       { "path": "~/.config/kdeglobals", "access": "read", "comment": "global_package" },
       { "path": "~/.config/kwinrc", "access": "read", "comment": "global_package" },
+      { "path": "~/.dsh/profiles/web/node_modules/dsh-codex/lib/bin.js", "access": "execute", "comment": "global_package" },
       { "path": "~/.local/share/mime/mime.cache", "access": "read", "comment": "global_package" },
       { "path": "~/.local/share/mime/types", "access": "read", "comment": "global_package" }
     ],
