@@ -18,6 +18,7 @@
   "filesystem": {
     "allow": [
       { "path": "~/Projects/bloom-filter/subprojects/packagefiles/superbloom-cpu/vendor/memchr/.ignore", "access": "read", "comment": "global_package" },
+      { "path": "~/go/**/.gitignore", "access": "read_write", "comment": "global_package" },
       { "path": "~/go/pkg/**/.gitignore", "access": "read", "comment": "global_package" },
       { "path": "~/miniforge3/**/.gitignore", "access": "read", "comment": "global_package" },
       { "path": "~/wine/**/.gitignore", "access": "read", "comment": "global_package" }

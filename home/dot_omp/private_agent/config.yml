@@ -1,4 +1,4 @@
-modelRoles: 
+modelRoles:
   default: openai-codex/gpt-5.6-sol:xhigh
   commit: openai-codex/gpt-5.6-luna:max
   vision: google-antigravity/gemini-3.7-flash:medium
@@ -9,58 +9,58 @@ modelRoles:
   advisor: openai-codex/gpt-5.6-luna:max
   tiny: openai-codex/gpt-5.6-luna:low
   designer: openai-codex/gpt-5.6-sol:high
-startup: 
+startup:
   checkUpdate: false
   quiet: false
   changelogMode: expanded
 symbolPreset: nerd
-stt: 
+stt:
   enabled: false
   modelName: base.en
-theme: 
+theme:
   dark: dark-one
-statusLine: 
+statusLine:
   preset: default
   separator: powerline-thin
   sessionAccent: true
   showHookStatus: true
   transparent: false
   compactThinkingLevel: false
-terminal: 
+terminal:
   showImages: true
   showProgress: true
-images: 
+images:
   autoResize: true
   blockImages: false
-display: 
+display:
   shimmer: classic
   showTokenUsage: false
   tabWidth: 2
-compaction: 
+compaction:
   thresholdPercent: 80
   thresholdTokens: -1
   handoffSaveToDisk: false
-  methodOrder: 
+  methodOrder:
     - remote
     - snapcompact
     - soft
     - shake
     - handoff
-memory: 
+memory:
   backend: mnemopi
-edit: 
+edit:
   mode: hashline
-lsp: 
+lsp:
   formatOnWrite: true
   diagnosticsOnEdit: true
-calc: 
+calc:
   enabled: true
-inspect_image: 
+inspect_image:
   mode: "on"
-checkpoint: 
+checkpoint:
   enabled: true
-task: 
-  isolation: 
+task:
+  isolation:
     mode: auto
     merge: patch
     commits: ai
@@ -70,94 +70,94 @@ task:
   showResolvedModelBadge: true
   batch: true
   maxConcurrency: 0
-  agentAdvisor: 
+  agentAdvisor:
     task: "off"
-secrets: 
+secrets:
   enabled: true
-contextPromotion: 
+contextPromotion:
   enabled: false
-renderMermaid: 
+renderMermaid:
   enabled: true
-providers: 
+providers:
   memoryModel: online
-  maxInFlightRequests: 
+  maxInFlightRequests:
     neuralwatt: 3
   tinyModel: online
   tinyModelDevice: default
   webSearchGeminiModel: gemini-3-flash
-  webSearchOrder: 
+  webSearchOrder:
     - codex
-  openai-codex: 
+  openai-codex:
     codeMode: "on"
 setupVersion: 2
-bashInterceptor: 
+bashInterceptor:
   enabled: false
-python: 
+python:
   kernelMode: session
-dev: 
+dev:
   autoqa: false
-  autoqaPush: 
+  autoqaPush:
     endpoint: ""
-advisor: 
+advisor:
   enabled: true
   syncBacklog: "1"
-completion: 
+completion:
   notify: "on"
-features: 
+features:
   unexpectedStopDetection: smart
-snapcompact: 
+snapcompact:
   toolResults: true
   systemPrompt: none
   shape: auto
-tools: 
+tools:
   format: auto
-autolearn: 
+autolearn:
   enabled: true
-mnemopi: 
+mnemopi:
   llmMode: smol
   polyphonicRecall: true
   enhancedRecall: true
-github: 
+github:
   enabled: false
-plan: 
+plan:
   defaultOnStartup: false
 defaultThinkingLevel: medium
-codexResets: 
+codexResets:
   autoRedeem: "no"
 hideThinkingBlock: false
-branchSummary: 
+branchSummary:
   enabled: false
-ttsr: 
+ttsr:
   contextMode: discard
   repeatMode: after-gap
 readLineNumbers: true
 doubleEscapeAction: tree
-astGrep: 
+astGrep:
   enabled: true
 steeringMode: one-at-a-time
-tui: 
+tui:
   tight: false
   textSizing: true
   codexResetFireworks: true
   titleState: true
   hyperlinks: auto
-bash: 
-  autoBackground: 
+bash:
+  autoBackground:
     enabled: false
   direnv: auto
-shellMinimizer: 
+shellMinimizer:
   sourceOutlineLevel: default
-generate_image: 
+generate_image:
   enabled: true
-read: 
+read:
   renderMarkdown: true
 externalThinking: false
-security: 
+security:
   enabled: true
-computer: 
+computer:
   enabled: true
-disabledExtensions: 
+disabledExtensions:
   []
-composer: 
+composer:
   shape: box
 extendedContext: false
