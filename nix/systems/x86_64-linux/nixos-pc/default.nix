@@ -362,6 +362,8 @@
     hostName = "NixOS--PC";
   };
 
+  nix.settings.cores = 22;
+
   nvidia = {
     cuda = {
       enable = true;
