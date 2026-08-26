@@ -32,6 +32,14 @@
     network = {
       enable = true;
 
+      exposedPorts = [
+        3080 # DSH
+      ];
+
+      hostPorts = [
+        47657 # hunk
+      ];
+
       httpProxy = {
         enable = true;
         http3.enable = true;
@@ -247,13 +255,6 @@
       xdg-utils
       zed-editor-fhs
     ];
-
-    variables = {
-      # Hunk inside agent-sandbox
-      HUNK_MCP_HOST = "169.254.100.1";
-      HUNK_MCP_PORT = 47657;
-      HUNK_MCP_UNSAFE_ALLOW_REMOTE = 1;
-    };
   };
 
   flatpak = {
