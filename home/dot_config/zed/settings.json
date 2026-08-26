@@ -14,6 +14,17 @@
                 }
             ],
             "nickname": "dev vm"
+        },
+        {
+            "host": "gracehopper",
+            "args": [],
+            "projects": [
+                {
+                    "paths": [
+                        "/home/tdortman/dynamic-demi-log"
+                    ]
+                }
+            ]
         }
     ],
     "language_models": {
