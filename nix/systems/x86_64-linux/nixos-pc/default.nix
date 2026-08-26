@@ -56,13 +56,6 @@
       in
       [
         {
-          package = agents.dsh;
-          readwriteDirs = [
-            "~/.dsh"
-            "~/.local/share/ponytail/skills"
-          ];
-        }
-        {
           package = agents.codex;
           readwriteDirs = [ "~/.codex" ];
         }
@@ -73,6 +66,14 @@
             "~/.cursor"
             "~/.config/cursor"
             "~/.cache/cursor-compile-cache"
+          ];
+        }
+        {
+          package = agents.dsh;
+
+          readwriteDirs = [
+            "~/.dsh"
+            "~/.local/share/ponytail/skills"
           ];
         }
         {

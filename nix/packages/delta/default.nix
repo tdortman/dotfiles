@@ -2,11 +2,11 @@
   lib,
   stdenv,
   autoPatchelfHook,
+  libxkbcommon,
   makeWrapper,
   requireFile,
   vulkan-loader,
   wayland,
-  libxkbcommon,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
