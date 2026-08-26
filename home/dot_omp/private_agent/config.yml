@@ -87,6 +87,8 @@ providers:
   webSearchGeminiModel: gemini-3-flash
   webSearchOrder: 
     - codex
+  openai-codex: 
+    codeMode: "on"
 setupVersion: 2
 bashInterceptor: 
   enabled: false
