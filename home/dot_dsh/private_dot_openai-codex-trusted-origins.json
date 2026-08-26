@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "mode": "allowlist",
+  "origins": [
+    "http://127.0.0.1:3080"
+  ]
+}

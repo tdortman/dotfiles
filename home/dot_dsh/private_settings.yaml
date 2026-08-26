@@ -1,0 +1,27 @@
+ui-onboarding:
+  welcomeNoticeVersion: 2026-08-13.1
+agent-default-model:
+  provider: openai-codex
+  model: gpt-5.6-sol
+  reasoningEffort: xhigh
+agent-presets:
+  default: custom-ptc
+skill-injector:
+  mode: each-prompt
+  selected:
+    - ponytail
+    - unslop
+llm-pi-ai:
+  providers:
+    opencode-go:
+      apiKeyEnv: OPENCODE_GO_API_KEY
+openai-codex:
+  useNativeCompaction: true
+  useWebSocketContextReuse: true
+  useStatefulResponses: false
+  models:
+    - gpt-5.3-codex-spark
+    - gpt-5.6-luna
+    - gpt-5.6-sol
+permission:
+  defaultPreset: danger-full-access
