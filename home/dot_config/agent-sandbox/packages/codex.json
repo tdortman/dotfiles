@@ -1,12 +1,17 @@
 {
   "network": {
     "direct": {
-      "allow": [],
+      "allow": [
+        { "host": "127.0.0.1", "port": 3773, "comment": "t3code" }
+      ],
       "deny": []
     },
     "http": {
       "allow": [
-        { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/settings/user", "comment": "global_package" }
+        { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/ps/apps/batch", "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/settings/user", "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://github.com/DietrichGebert/ponytail.git", "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://github.com/DietrichGebert/ponytail.git/git-upload-pack", "comment": "global_package" }
       ],
       "deny": []
     }
@@ -20,13 +25,17 @@
       { "path": "./tmp/*/codex-*/*", "access": "write", "comment": "global_package" },
       { "path": "./tmp/*/codex-*/.lock", "access": "read_write", "comment": "global_package" },
       { "path": "~/.cache/codex-runtimes", "access": "read_write", "comment": "global_package" },
+      { "path": "~/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node", "access": "execute", "comment": "global_package" },
+      { "path": "~/.codex/plugins/cache/openai-curated-remote/codex-security/*/scripts/launch_codex_security_mcp", "access": "execute", "comment": "global_package" },
       { "path": "~/.config/orca/codex-runtime-home", "access": "read_write", "comment": "global_package" },
-      { "path": "~/.orca/agent-hooks/codex-hook.sh", "access": "read", "comment": "global_package" }
+      { "path": "~/.cursor/hooks.json", "access": "read", "comment": "global_package" },
+      { "path": "~/.orca/agent-hooks/codex-hook.sh", "access": "read_write", "comment": "global_package" }
     ],
     "deny": []
   },
   "resources": {
     "allow": [
+      { "kind": "unix_socket", "path": "/tmp/codex-browser-use", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.codex/app-server-control/app-server-control.sock", "access": "connect", "comment": "global_package" }
     ],
     "deny": []

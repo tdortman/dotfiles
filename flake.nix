@@ -138,6 +138,11 @@
       url = "github:tdortman/agent-sandbox";
     };
 
+    codex-desktop-linux = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:ilysenko/codex-desktop-linux";
+    };
+
     disko = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/disko";

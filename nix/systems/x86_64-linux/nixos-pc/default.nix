@@ -205,6 +205,7 @@
     sessionVariables = {
       CARGO_BUILD_JOBS = 22;
       CARGO_MAKEFLAGS = "-j 22";
+      CODEX_CLI_PATH = "/run/current-system/sw/bin/codex";
       GHIDRA_ROOT = "${pkgs.ghidra}";
       MAKEFLAGS = "-j 22";
       MOZ_DISABLE_RDD_SANDBOX = 1;
@@ -215,47 +216,53 @@
       NVD_BACKEND = "direct";
     };
 
-    systemPackages = with pkgs; [
-      (discord.override {
-        commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
-        withVencord = true;
-      })
-      btrfs-progs
-      cuda.llama-cpp
-      cuda.lmstudio
-      custom.danbooru-rs
-      custom.fluxer
-      custom.shiru
-      dbeaver-bin
-      ghidra
-      ghostty
-      glib
-      google-chrome # Used by antigravity
-      gvfs
-      inputs.agenix.packages."${system}".default
-      kdePackages.xdg-desktop-portal-kde
-      libnotify
-      libratbag
-      libreoffice-qt6
-      librewolf
-      lsfg-vk
-      lsfg-vk-ui
-      master.antigravity-ide-fhs
-      master.code-cursor-fhs
-      master.vscode-fhs
-      mpv
-      nheko
-      ntfs3g
-      piper
-      podman-compose
-      samba
-      teams-for-linux
-      vlc
-      winboat
-      xdg-desktop-portal
-      xdg-utils
-      zed-editor-fhs
-    ];
+    systemPackages =
+      with pkgs;
+      [
+        (discord.override {
+          commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
+          withVencord = true;
+        })
+        btrfs-progs
+        cuda.llama-cpp
+        cuda.lmstudio
+        custom.danbooru-rs
+        custom.fluxer
+        custom.shiru
+        dbeaver-bin
+        ghidra
+        ghostty
+        glib
+        google-chrome # Used by antigravity
+        gvfs
+        inputs.agenix.packages."${system}".default
+        inputs.codex-desktop-linux.packages.${system}.default
+        kdePackages.xdg-desktop-portal-kde
+        libnotify
+        libratbag
+        libreoffice-qt6
+        librewolf
+        lsfg-vk
+        lsfg-vk-ui
+        master.antigravity-ide-fhs
+        master.code-cursor-fhs
+        master.vscode-fhs
+        mpv
+        nheko
+        ntfs3g
+        piper
+        podman-compose
+        samba
+        teams-for-linux
+        vlc
+        winboat
+        xdg-desktop-portal
+        xdg-utils
+        zed-editor-fhs
+      ]
+      ++ (with inputs.llm-agents.packages.${system}; [
+        (t3code.override { providerPackages = [ ]; }).desktop
+      ]);
   };
 
   flatpak = {
