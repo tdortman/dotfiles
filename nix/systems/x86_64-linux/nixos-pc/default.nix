@@ -32,14 +32,6 @@
     network = {
       enable = true;
 
-      exposedPorts = [
-        3080 # DSH
-      ];
-
-      hostPorts = [
-        47657 # hunk
-      ];
-
       httpProxy = {
         enable = true;
         http3.enable = true;
@@ -48,6 +40,11 @@
           "https://api.openai.com/v1/live/rtc_*"
         ];
       };
+
+      loopback.tcpPorts = [
+        3080 # DSH
+        47657 # hunk
+      ];
     };
 
     packages =
@@ -315,7 +312,6 @@
   mime.librewolf.enable = true;
 
   networking = {
-    firewall.interfaces.asbx-host.allowedTCPPorts = [ 47657 ];
     hostName = "nixos-pc";
     networkmanager.enable = true;
 
