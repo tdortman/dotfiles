@@ -274,7 +274,7 @@
       { "path": "~/Pictures/Screenshots/Screenshot_*", "access": "read_write", "comment": "global" },
       { "path": "~/dotfiles/.chezmoiroot", "access": "read_write", "comment": "global" },
       { "path": "~/dotfiles/home/dot_agents/skills", "access": "read_write", "comment": "global" },
-      { "path": "~/dotfiles/home/dot_bashrc", "access": "read", "comment": "global" },
+      { "path": "~/dotfiles/home/dot_bashrc", "access": "read_write", "comment": "global" },
       { "path": "~/dotfiles/home/dot_cargo/rustfmt.toml", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/dot_config/NVIDIA Corporation/nsys-config.ini", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/dot_config/bat/config", "access": "read", "comment": "global" },
