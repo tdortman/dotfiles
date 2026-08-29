@@ -26,6 +26,7 @@ statusLine:
   showHookStatus: true
   transparent: false
   compactThinkingLevel: false
+  contextLine: annotated
 terminal:
   showImages: true
   showProgress: true
