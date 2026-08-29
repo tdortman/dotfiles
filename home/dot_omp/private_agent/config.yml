@@ -122,7 +122,7 @@ github:
   enabled: false
 plan:
   defaultOnStartup: false
-defaultThinkingLevel: medium
+defaultThinkingLevel: high
 codexResets:
   autoRedeem: "no"
 hideThinkingBlock: false
