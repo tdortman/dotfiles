@@ -190,6 +190,10 @@
         provider: spawn
         toolName: subagent
         backgroundMode: continuable
+        agentOptions:
+          provider: openai-codex
+          model: gpt-5.6-luna
+          reasoningEffort: max
 
     - id: tool-subagent-fork
       name: '@deepseek-ai/dsh-tool-subagent'
@@ -197,6 +201,10 @@
         provider: fork
         toolName: subagent_fork
         backgroundMode: continuable
+        agentOptions:
+          provider: openai-codex
+          model: gpt-5.6-luna
+          reasoningEffort: max
 
     # Production dsh does not install these optional providers. Install the
     # matching Bundle in this Profile and restart the Host, then copy this

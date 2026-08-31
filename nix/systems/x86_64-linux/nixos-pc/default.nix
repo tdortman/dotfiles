@@ -67,7 +67,15 @@
           ];
         }
         {
-          package = agents.dsh;
+          # Backport https://github.com/deepseek-ai/deepseek-harness/commit/2e8a9eb1744ec5892ab1515ef4655f3fa50bf6a3
+          package = agents.dsh.overrideAttrs (oldAttrs: {
+            postInstall = (oldAttrs.postInstall or "") + ''
+              substituteInPlace "$out/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-agent-loop/lib/index.js" \
+                --replace-fail \
+                'const reasoningEffort = persistedConfig?.provider === route.provider && persistedConfig.model === route.model && persistedHeader?.adapterDefaults?.reasoningEffort !== true ? persistedConfig.reasoningEffort : void 0;' \
+                'const reasoningEffort = persistedConfig?.provider === route.provider && persistedConfig.model === route.model && persistedHeader?.adapterDefaults?.reasoningEffort !== true ? persistedConfig.reasoningEffort : this.options.reasoningEffort;'
+            '';
+          });
 
           readwriteDirs = [
             "~/.dsh"
