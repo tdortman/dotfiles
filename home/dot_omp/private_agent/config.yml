@@ -119,7 +119,7 @@ mnemopi:
   polyphonicRecall: true
   enhancedRecall: true
 github:
-  enabled: false
+  enabled: true
 plan:
   defaultOnStartup: false
 defaultThinkingLevel: high
