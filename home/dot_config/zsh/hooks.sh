@@ -1,48 +1,44 @@
-# Keep track of the directory containing the active venv
-export VENV_ROOT=""
+#!/usr/bin/env zsh
 
-# Function to handle venv activation/deactivation
 auto_venv() {
-  local venv_path=".venv"
+    local dir="$PWD"
+    local target=""
 
-  # Find venv directory in current or parent directories
-  local current_dir="$PWD"
-  local found_venv_root=""
+    # Find nearest .venv in this directory or a parent.
+    while [[ "$dir" != "/" ]]; do
+        if [[ -d "$dir/.venv" ]]; then
+            target="$dir/.venv"
+            break
+        fi
+        dir="${dir:h}"
+    done
 
-  while [[ "$current_dir" != "/" ]]; do
-    if [[ -d "$current_dir/$venv_path" ]]; then
-      found_venv_root="$current_dir"
-      break
+    # Already using the correct environment.
+    if [[ -n "$target" && "$VIRTUAL_ENV" == "$target" ]]; then
+        return
     fi
-    current_dir=$(dirname "$current_dir")
-  done
 
-  # If we're no longer in a directory tree with a venv
-  if [[ -z "$found_venv_root" && -n "$VIRTUAL_ENV" ]]; then
-    echo "🐍 Deactivating venv from $VIRTUAL_ENV"
-    deactivate
-    VENV_ROOT=""
-    return
-  fi
+    # Leave the current environment.
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        echo "🐍 Deactivating venv from $VIRTUAL_ENV"
 
-  # If we found a venv
-  if [[ -n "$found_venv_root" ]]; then
-    # If it's a different venv than what's currently active
-    if [[ "$found_venv_root" != "$VENV_ROOT" ]]; then
-      # Deactivate existing venv if any
-      if [[ -n "$VIRTUAL_ENV" ]]; then
-        deactivate
-      fi
-      echo "🐍 Activating venv from $found_venv_root/$venv_path"
-      source "$found_venv_root/$venv_path/bin/activate"
-      VENV_ROOT="$found_venv_root"
+        if (($+functions[deactivate])); then
+            deactivate
+        else
+            # We inherited an activated venv from a parent shell, so there is
+            # no shell-local `deactivate` function. Remove it manually.
+            path=("${(@)path:#$VIRTUAL_ENV/bin}")
+            unset VIRTUAL_ENV VIRTUAL_ENV_PROMPT
+        fi
     fi
-  fi
+
+    # Enter the desired environment.
+    if [[ -n "$target" ]]; then
+        echo "🐍 Activating venv from $target"
+        source "$target/bin/activate"
+    fi
 }
 
-# Register the auto_venv function to run when changing directories
-autoload -U add-zsh-hook
+autoload -Uz add-zsh-hook
 add-zsh-hook chpwd auto_venv
-
-# Run once for the initial shell
 auto_venv
