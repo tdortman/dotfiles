@@ -1,0 +1,28 @@
+diff --git a/lib/src-DgGnBPMe.js b/lib/src-DgGnBPMe.js
+index f2dcc19c0c70e53756c780716cd49aa77afc3f61..504584d14a98b2abbbbbf8a9514aa3c2be9550c7 100644
+--- a/lib/src-DgGnBPMe.js
++++ b/lib/src-DgGnBPMe.js
+@@ -765,6 +765,9 @@ function createOpenAICodexAdapter(credentials, resolveAttachments, responsePrefe
+ 		provider: OPENAI_CODEX_PROVIDER,
+ 		displayName: "OpenAI Codex",
+ 		streamIdleTimeoutMs: OPENAI_CODEX_STREAM_IDLE_TIMEOUT_MS,
++		maxRequestImageBytes: 20 * 1024 * 1024,
++		requestImagePixelBudget: 2048 * 2048,
++		requestImageMaxBytes: 1024 * 1024,
+ 		retryPolicy: OPENAI_CODEX_RETRY_POLICY,
+ 		configuredMaxTokens: /* @__PURE__ */ new Map(),
+ 		piProvider: responses.wrap(requestProvider(provider, fastMode))
+diff --git a/src/adapter.ts b/src/adapter.ts
+index ba1734e1e0d694e57d7568d58a3b1c3a97372ac7..1a7f97434edd7471558fe7dc808d1e083492eded 100644
+--- a/src/adapter.ts
++++ b/src/adapter.ts
+@@ -176,6 +176,9 @@ export function createOpenAICodexAdapter(
+     provider: OPENAI_CODEX_PROVIDER,
+     displayName: 'OpenAI Codex',
+     streamIdleTimeoutMs: OPENAI_CODEX_STREAM_IDLE_TIMEOUT_MS,
++    maxRequestImageBytes: 20 * 1024 * 1024,
++    requestImagePixelBudget: 2048 * 2048,
++    requestImageMaxBytes: 1024 * 1024,
+     retryPolicy: OPENAI_CODEX_RETRY_POLICY,
+     configuredMaxTokens: new Map(),
+     piProvider: responses.wrap(requestProvider(provider, fastMode)),

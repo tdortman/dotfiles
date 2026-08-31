@@ -27,7 +27,10 @@
       { "path": "~/.config/kwinrc", "access": "read", "comment": "global_package" },
       { "path": "~/.dsh/profiles/web/node_modules/dsh-codex/lib/bin.js", "access": "execute", "comment": "global_package" },
       { "path": "~/.local/share/mime/mime.cache", "access": "read", "comment": "global_package" },
-      { "path": "~/.local/share/mime/types", "access": "read", "comment": "global_package" }
+      { "path": "~/.local/share/mime/types", "access": "read", "comment": "global_package" },
+      { "path": "~/dotfiles/home/dot_dsh", "access": "read", "comment": "global_package" },
+      { "path": "~/dotfiles/home/dot_dsh/profiles/web/cordis.patch.yml", "access": "read", "comment": "global_package" },
+      { "path": "~/dotfiles/home/dot_dsh/profiles/web/package.json", "access": "read", "comment": "global_package" }
     ],
     "deny": []
   },

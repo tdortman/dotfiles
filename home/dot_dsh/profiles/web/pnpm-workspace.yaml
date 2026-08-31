@@ -1,0 +1,7 @@
+packages:
+  - .
+
+nodeLinker: hoisted
+autoInstallPeers: false
+patchedDependencies:
+  dsh-codex@0.2.5: patches/dsh-codex@0.2.5.patch
