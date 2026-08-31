@@ -127,16 +127,7 @@
       url = "github:ryantm/agenix";
     };
 
-    agent-sandbox = {
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        pedantix.follows = "pedantix";
-        snowfall-lib.follows = "snowfall-lib";
-        treefmt-nix.follows = "treefmt-nix";
-      };
-
-      url = "github:tdortman/agent-sandbox";
-    };
+    agent-sandbox.url = "github:tdortman/agent-sandbox";
 
     codex-desktop-linux = {
       inputs.nixpkgs.follows = "nixpkgs";
