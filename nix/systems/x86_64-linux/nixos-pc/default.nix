@@ -22,6 +22,7 @@
 
   agent-sandbox = {
     enable = true;
+    policy.dbus.enable = true;
 
     gates = {
       filesystem.enable = true;

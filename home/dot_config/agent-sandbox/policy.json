@@ -151,6 +151,7 @@
       { "path": "/nix/var/nix/db", "access": "read", "comment": "global" },
       { "path": "/run/systemd/resolve/stub-resolv.conf", "access": "read_write", "comment": "global" },
       { "path": "/run/udev/data/*:*", "access": "read", "comment": "global" },
+      { "path": "/run/user/*/agent-sandbox-dbus.*", "access": "write", "comment": "dbus proxy" },
       { "path": "/run/wrappers/wrappers.*/agent-sandbox-enter", "access": "all", "comment": "global" },
       { "path": "/var/tmp", "access": "read_write", "comment": "global" },
       { "path": "./**/.clang-format", "access": "read_write", "comment": "global" },
@@ -347,6 +348,71 @@
           "member": "NameAcquired",
           "message_kind": "signal",
           "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.secrets",
+          "object_path": "/org/freedesktop/secrets",
+          "interface": "org.freedesktop.DBus.Properties",
+          "member": "Get",
+          "message_kind": "method_call",
+          "signature": "(ss)",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.secrets",
+          "object_path": "/org/freedesktop/secrets",
+          "interface": "org.freedesktop.Secret.Service",
+          "member": "OpenSession",
+          "message_kind": "method_call",
+          "signature": "(sv)",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.secrets",
+          "object_path": "/org/freedesktop/secrets",
+          "interface": "org.freedesktop.Secret.Service",
+          "member": "Unlock",
+          "message_kind": "method_call",
+          "signature": "ao",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.secrets",
+          "object_path": "/org/freedesktop/secrets/aliases/default",
+          "interface": "org.freedesktop.Secret.Collection",
+          "member": "SearchItems",
+          "message_kind": "method_call",
+          "signature": "a{ss}",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.secrets",
+          "object_path": "/org/freedesktop/secrets/session/*",
+          "interface": "org.freedesktop.Secret.Session",
+          "member": "Close",
+          "message_kind": "method_call",
+          "signature": "",
           "fd_metadata": []
         },
         "comment": "global"
