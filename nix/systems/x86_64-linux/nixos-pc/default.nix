@@ -22,7 +22,6 @@
 
   agent-sandbox = {
     enable = true;
-    policy.dbus.enable = true;
 
     gates = {
       filesystem.enable = true;
@@ -54,19 +53,6 @@
       in
       [
         {
-          package = agents.codex;
-          readwriteDirs = [ "~/.codex" ];
-        }
-        {
-          package = agents.cursor-agent;
-
-          readwriteDirs = [
-            "~/.cursor"
-            "~/.config/cursor"
-            "~/.cache/cursor-compile-cache"
-          ];
-        }
-        {
           # Backport https://github.com/deepseek-ai/deepseek-harness/commit/2e8a9eb1744ec5892ab1515ef4655f3fa50bf6a3
           package = agents.dsh.overrideAttrs (oldAttrs: {
             postInstall = (oldAttrs.postInstall or "") + ''
@@ -80,6 +66,19 @@
           readwriteDirs = [
             "~/.dsh"
             "~/.local/share/ponytail/skills"
+          ];
+        }
+        {
+          package = agents.codex;
+          readwriteDirs = [ "~/.codex" ];
+        }
+        {
+          package = agents.cursor-agent;
+
+          readwriteDirs = [
+            "~/.cursor"
+            "~/.config/cursor"
+            "~/.cache/cursor-compile-cache"
           ];
         }
         {
@@ -113,6 +112,8 @@
           ];
         }
       ];
+
+    policy.dbus.enable = true;
 
     readonlyDirs = [
       "~/.local/bin"
