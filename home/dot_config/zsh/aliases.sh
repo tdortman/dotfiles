@@ -664,8 +664,8 @@ for Bash using \`'\\''\`, for example \`don'\\''t\`. Otherwise, completely
 avoid apostrophes.
 
 If there is even a sliver of uncertainty about the reason behind a change,
-check the project's session history under \`$HOME/.omp/agent/sessions\`
-before writing the commit message.
+check the project's session history under \`~/.omp/agent/sessions\` or
+\`~/.dsh/sessions\` or \`~/.codex/sessions\` before writing the commit message.
 
 Do not invent rationale. If the reason for a change is unclear after
 inspecting the diff and session history, say so in the commit body using
