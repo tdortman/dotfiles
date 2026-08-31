@@ -22,11 +22,11 @@ theme:
 statusLine:
   preset: default
   separator: powerline-thin
-  sessionAccent: true
+  sessionAccent: false
   showHookStatus: true
   transparent: false
   compactThinkingLevel: false
-  contextLine: annotated
+  contextLine: embedded
 terminal:
   showImages: true
   showProgress: true
@@ -160,5 +160,5 @@ computer:
 disabledExtensions:
   []
 composer:
-  shape: box
+  shape: band
 extendedContext: false
