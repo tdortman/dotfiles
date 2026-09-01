@@ -53,7 +53,7 @@
         kwinrc = {
           # Disable overview when moving to top left corner
           Effect-overview.BorderActivate = 9;
-          Plugins."auto-minimize-coveredEnabled" = true;
+          Plugins.auto-minimize-coveredEnabled = true;
           # For some reason the workspace setting does not persist this setting
           # so we write it directly into the config file (disable middle click paste)
           Wayland.EnablePrimarySelection = false;
@@ -315,23 +315,6 @@
     enable = true;
   };
 
-  xdg.dataFile = {
-    "kwin/scripts/auto-minimize-covered/metadata.json".text = builtins.toJSON {
-      KPackageStructure = "KWin/Script";
-      KPlugin = {
-        Description = "Minimize selected apps when a maximized window covers them";
-        Id = "auto-minimize-covered";
-        License = "MIT";
-        Name = "Auto-minimize covered apps";
-        Version = "1.0";
-      };
-      "X-Plasma-API" = "javascript";
-      "X-Plasma-MainScript" = "code/main.js";
-    };
-
-    "kwin/scripts/auto-minimize-covered/contents/code/main.js".source = ./auto-minimize-covered.js;
-  };
-
   systemd.user.services.voxtype.Service.Environment = lib.mkAfter (
     let
       cudaLibPath = lib.makeLibraryPath (
@@ -355,4 +338,23 @@
       "XKB_DEFAULT_OPTIONS="
     ]
   );
+
+  xdg.dataFile = {
+    "kwin/scripts/auto-minimize-covered/contents/code/main.js".source = ./auto-minimize-covered.js;
+
+    "kwin/scripts/auto-minimize-covered/metadata.json".text = builtins.toJSON {
+      KPackageStructure = "KWin/Script";
+
+      KPlugin = {
+        Description = "Minimize selected apps when a maximized window covers them";
+        Id = "auto-minimize-covered";
+        License = "MIT";
+        Name = "Auto-minimize covered apps";
+        Version = "1.0";
+      };
+
+      X-Plasma-API = "javascript";
+      X-Plasma-MainScript = "code/main.js";
+    };
+  };
 }
