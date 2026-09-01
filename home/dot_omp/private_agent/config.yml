@@ -51,6 +51,8 @@ memory:
   backend: mnemopi
 edit:
   mode: hashline
+  modelVariants:
+     codex: apply_patch
 lsp:
   formatOnWrite: true
   diagnosticsOnEdit: true
