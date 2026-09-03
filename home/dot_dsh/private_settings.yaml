@@ -11,10 +11,10 @@ skill-injector:
   selected:
     - ponytail
     - unslop
+    - forward-implementation-first
+    - i-have-adhd
 llm-pi-ai:
-  providers:
-    opencode-go:
-      apiKeyEnv: OPENCODE_GO_API_KEY
+  providers: {}
 openai-codex:
   useNativeCompaction: true
   useWebSocketContextReuse: true
@@ -23,8 +23,34 @@ openai-codex:
     - gpt-5.3-codex-spark
     - gpt-5.6-luna
     - gpt-5.6-sol
+    - gpt-5.6-terra
 permission:
   defaultPreset: danger-full-access
 subagent-effort:
   model: gpt-5.6-luna
   reasoningEffort: max
+llm-opencode-go:
+  models:
+    - id: deepseek-v4-pro
+      name: DeepSeek V4 Pro
+      contextWindow: 1000000
+      maxTokens: 384000
+      vision: false
+      thinking: true
+      defaultEffort: high
+      api: openai-completions
+    - id: deepseek-v4-flash-vision-exp
+      name: DeepSeek V4 Flash Vision Exp
+      contextWindow: 1000000
+      maxTokens: 384000
+      vision: true
+      thinking: true
+      defaultEffort: high
+      api: openai-completions
+    - id: muse-spark-1.3-contributor
+      name: Muse Spark 1.3 Contributor
+      vision: false
+      thinking: false
+      api: openai-responses
+auto-continue:
+  locale: en
