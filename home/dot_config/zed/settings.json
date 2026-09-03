@@ -321,6 +321,10 @@
             "tab_size": 2,
             "language_servers": ["nixd", "!nil"],
         },
+        "YAML": {
+            "tab_size": 2,
+            "hard_tabs": false
+        }
     },
     "lsp": {
         "nil": {
