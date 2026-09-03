@@ -52,7 +52,7 @@ memory:
 edit:
   mode: hashline
   modelVariants:
-     codex: apply_patch
+    codex: apply_patch
 lsp:
   formatOnWrite: true
   diagnosticsOnEdit: true
@@ -102,8 +102,8 @@ dev:
   autoqaPush:
     endpoint: ""
 advisor:
-  enabled: true
-  syncBacklog: "1"
+  enabled: false
+  syncBacklog: "off"
 completion:
   notify: "on"
 features:
