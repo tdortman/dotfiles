@@ -4,7 +4,7 @@ packages:
 nodeLinker: hoisted
 autoInstallPeers: false
 minimumReleaseAgeExclude:
-  - dsh-codex@0.2.6
+  - dsh-codex@0.2.6 || 0.2.7
   - '@michengai/dsh-archive-manager@0.1.24'
   - dsh-context@0.41.0
   - dsh-rewind-plugin@0.7.3

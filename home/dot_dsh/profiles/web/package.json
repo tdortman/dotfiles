@@ -2,14 +2,14 @@
   "name": "dsh-profile-web",
   "private": true,
   "dependencies": {
-    "@michengai/dsh-archive-manager": "^0.1.24",
+    "@michengai/dsh-archive-manager": "^0.1.30",
     "dsh-anchored-standard": "github:Jungod1121/dsh-anchored-standard",
-    "dsh-client-auto-continue": "^0.11.0",
-    "dsh-codex": "^0.2.6",
-    "dsh-context": "^0.41.0",
+    "dsh-client-auto-continue": "^0.11.4",
+    "dsh-codex": "^0.2.7",
+    "dsh-context": "^0.42.0",
     "dsh-llm-opencode-go": "github:NOirBRight/dsh-llm-opencode-go#v0.1.8",
     "dsh-notification": "github:omdsh-dev/dsh-notification",
-    "dsh-rewind-plugin": "^0.7.3",
+    "dsh-rewind-plugin": "^0.7.5",
     "skill-injector-plugin": "github:Zenjibad/skill-injector-plugin"
   },
   "dsh": {
