@@ -116,6 +116,7 @@
           "https://cache.nixos-cuda.org"
           "https://cache.numtide.com"
           "https://agent-sandbox.cachix.org"
+          "https://codex-desktop-linux.cachix.org"
         ];
 
         extra-trusted-public-keys = [
@@ -124,6 +125,7 @@
           "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
           "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
           "agent-sandbox.cachix.org-1:x7WgdtZjoPgbKdyk5oxP2QvN7B3SfuHmGvXKJ8xtTu0="
+          "codex-desktop-linux.cachix.org-1:nX/xy6AdK9hQE24A8ALGjkCKj2ObFmcnemiL5Cid4nk="
         ];
 
         trusted-users = [

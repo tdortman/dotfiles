@@ -243,7 +243,7 @@
         google-chrome # Used by antigravity
         gvfs
         inputs.agenix.packages."${system}".default
-        inputs.codex-desktop-linux.packages.${system}.default
+        inputs.codex-desktop-linux.packages.${system}.codex-desktop-maximal-directory-watch
         kdePackages.xdg-desktop-portal-kde
         libnotify
         libratbag
