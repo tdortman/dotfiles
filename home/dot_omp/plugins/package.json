@@ -1,8 +1,0 @@
-{
-  "name": "omp-plugins",
-  "private": true,
-  "dependencies": {
-    "@dietrichgebert/ponytail": "^4.9.0",
-    "pi-rewind": "^0.5.0"
-  }
-}

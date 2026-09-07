@@ -1,12 +1,12 @@
 {
   "plugins": {
-    "@dietrichgebert/ponytail": {
-      "version": "4.9.0",
+    "checkpoint-pi": {
+      "version": "1.0.5",
       "enabledFeatures": null,
       "enabled": true
     },
-    "checkpoint-pi": {
-      "version": "1.0.5",
+    "@dietrichgebert/ponytail": {
+      "version": "4.9.0",
       "enabledFeatures": null,
       "enabled": true
     }

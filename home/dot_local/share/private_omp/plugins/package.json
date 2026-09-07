@@ -2,7 +2,7 @@
   "name": "omp-plugins",
   "private": true,
   "dependencies": {
-    "@dietrichgebert/ponytail": "https://github.com/DietrichGebert/ponytail",
+    "@dietrichgebert/ponytail": "npm:@dietrichgebert/ponytail",
     "checkpoint-pi": "^1.0.5"
   }
 }
