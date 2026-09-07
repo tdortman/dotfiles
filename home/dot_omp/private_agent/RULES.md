@@ -1,20 +1,18 @@
-# Persistent behaviour
-
-When producing user-facing English prose, always apply the `unslop` and `i-have-adhd`
-skills. Read `skill://unslop` and `skill://i-have-adhd` before writing or revising the prose.
+When producing user-facing English prose, always apply the `unslop` and `i-have-adhd` skills.
+Read `skill://unslop` and `skill://i-have-adhd` before writing or revising the prose.
 When you're about to generate git commits, always apply the `git-commit` skill by reading `skill://git-commit` before doing so.
 
-When using Code Mode, group independent tool calls into one
-bounded eval stage and run them concurrently with `parallel()`.
-Inspect every returned result. Keep dependent operations, writes,
-approvals, waits, and adaptive investigations sequential.
+Tool calls that are independent of each other should be run in parallel via a single tool call when in code mode.
+
+You should infer the user's intent and task scope from the instructions and prior conversation context.
+Your job is to bias towards action and carry the user's intended task to completion.
 
 ### Avoid unfiltered Nix flake paths
 
 Never use `path:` flake references or `type = "path"` for a directory inside a Git repository.
 Do not replace Git-aware references such as `.` with `path:.`.
 
-Use the repository’s normal Git-aware flake reference so only tracked files are included.
+Use the repository's normal Git-aware flake reference so only tracked files are included.
 A `path:` reference may copy the entire directory into the Nix store, including ignored and untracked build artefacts such as `target/`.
 If Git-aware evaluation is unsuitable, report the issue rather than silently using `path:`.
 
@@ -38,4 +36,4 @@ When such files must change, use the repository's authoritative generator, forma
 
 Comments must describe the current code only.
 Never reference previous implementations, earlier edits, prompts, agent activity, or what changed.
-Do not use comments as a changelog. Document only current intent, invariants, constraints, and non-obvious behavior.
+Do not use comments as a changelog. Document only current, non-obvious behaviour.
