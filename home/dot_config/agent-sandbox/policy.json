@@ -16,7 +16,8 @@
         { "host": "20.203.144.245", "port": 3478, "comment": "gpt-live" },
         { "host": "72.146.20.246", "port": 3478, "comment": "gpt-live" },
         { "host": "::", "port": 1455, "comment": "omp oauth" },
-        { "host": "::1", "port": 6000, "comment": "x11" }
+        { "host": "::1", "port": 6000, "comment": "x11" },
+        { "host": "hpcgate.zdv.uni-mainz.de", "port": 22, "comment": "global" }
       ],
       "deny": []
     },
@@ -77,6 +78,7 @@
         { "methods": ["GET"], "url": "https://cursor.com/api/auth/me", "comment": "global" },
         { "methods": ["GET"], "url": "https://cursor.com/api/usage-summary", "comment": "global" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:fetchAvailableModels", "comment": "global" },
+        { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary", "comment": "global" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent", "comment": "global" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.sandbox.googleapis.com/v1internal:streamGenerateContent", "comment": "global" },
         { "methods": ["GET"], "url": "https://develop.kde.org/docs", "comment": "global" },
@@ -148,6 +150,7 @@
         { "methods": ["GET"], "url": "https://zenmux.ai/api/v1/models", "comment": "global" }
       ],
       "deny": [
+        { "methods": ["POST"], "url": "https://*.ingest.us.sentry.io/api/*/envelope", "comment": "global" },
         { "methods": ["POST"], "url": "https://ab.chatgpt.com/otlp", "comment": "global" },
         { "methods": ["GET"], "url": "https://antigravity-hub-auto-updater-974169037036.us-central1.run.app/manifest/latest-arm64-mac.yml", "comment": "global_package" },
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/analytics-events/events", "comment": "global" },
@@ -175,6 +178,7 @@
       { "path": "/run/systemd/resolve/stub-resolv.conf", "access": "read_write", "comment": "global" },
       { "path": "/run/udev/data/*:*", "access": "read", "comment": "global" },
       { "path": "/run/user/*/agent-sandbox-dbus.*", "access": "write", "comment": "dbus proxy" },
+      { "path": "/run/utmp", "access": "read", "comment": "global" },
       { "path": "/run/wrappers/wrappers.*/agent-sandbox-enter", "access": "all", "comment": "global" },
       { "path": "/var/tmp", "access": "read_write", "comment": "global" },
       { "path": "./**/.clang-format", "access": "read_write", "comment": "global" },
@@ -187,7 +191,7 @@
       { "path": "./**/tsconfig.json", "access": "read", "comment": "global" },
       { "path": "./.cache", "access": "read", "comment": "global" },
       { "path": "./.cargo", "access": "read_write", "comment": "global" },
-      { "path": "./.clangd", "access": "read", "comment": "global" },
+      { "path": "./.clangd", "access": "read_write", "comment": "global" },
       { "path": "./.claude/settings.json", "access": "read", "comment": "global" },
       { "path": "./.claude/skills", "access": "read", "comment": "global" },
       { "path": "./.codegraph", "access": "read_write", "comment": "global" },
@@ -242,6 +246,7 @@
       { "path": "~/.cache/pnpm", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/treefmt", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/uv", "access": "read_write", "comment": "global" },
+      { "path": "~/.cache/uv/archive-v0/*/bin/ruff", "access": "execute", "comment": "global" },
       { "path": "~/.cache/zsh-snap", "access": "read_write", "comment": "global" },
       { "path": "~/.cargo/.global-cache", "access": "read_write", "comment": "global" },
       { "path": "~/.cargo/.global-cache-journal", "access": "read_write", "comment": "global" },
@@ -280,6 +285,7 @@
       { "path": "~/.local/share/pnpm/store", "access": "read", "comment": "global" },
       { "path": "~/.local/share/uv/credentials", "access": "read_write", "comment": "global" },
       { "path": "~/.local/share/uv/python/cpython-*-linux-x86_64-gnu/**", "access": "all", "comment": "global" },
+      { "path": "~/.local/share/uv/tools/.lock", "access": "read_write", "comment": "global" },
       { "path": "~/.local/share/uv/tools/trafilatura", "access": "all", "comment": "raw html -> structured" },
       { "path": "~/.local/share/zsh/site-functions", "access": "read_write", "comment": "global" },
       { "path": "~/.local/state/nix-output-monitor", "access": "read", "comment": "global" },
@@ -292,6 +298,7 @@
       { "path": "~/.pulse-cookie", "access": "read", "comment": "global" },
       { "path": "~/.ssh/allowed_signers", "access": "read", "comment": "global" },
       { "path": "~/.ssh/config", "access": "read", "comment": "global" },
+      { "path": "~/.ssh/mogon.pub", "access": "read", "comment": "global" },
       { "path": "~/.zcompdump", "access": "read", "comment": "global" },
       { "path": "~/.zshrc.zwc", "access": "read", "comment": "global" },
       { "path": "~/3rd-party/znap", "access": "read_write", "comment": "global" },
@@ -380,6 +387,71 @@
       {
         "target": {
           "bus": "session",
+          "destination": "org.a11y.Bus",
+          "object_path": "/org/a11y/bus",
+          "interface": "org.a11y.Bus",
+          "member": "GetAddress",
+          "message_kind": "method_call",
+          "signature": "",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.a11y.Bus",
+          "object_path": "/org/a11y/bus",
+          "interface": "org.freedesktop.DBus.Properties",
+          "member": "Get",
+          "message_kind": "method_call",
+          "signature": "(ss)",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.DBus",
+          "object_path": "/org/freedesktop/DBus",
+          "interface": "org.freedesktop.DBus",
+          "member": "GetConnectionCredentials",
+          "message_kind": "method_call",
+          "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.DBus",
+          "object_path": "/org/freedesktop/DBus",
+          "interface": "org.freedesktop.DBus",
+          "member": "GetNameOwner",
+          "message_kind": "method_call",
+          "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.DBus.Properties",
+          "member": "GetAll",
+          "message_kind": "method_call",
+          "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
           "destination": "org.freedesktop.secrets",
           "object_path": "/org/freedesktop/secrets",
           "interface": "org.freedesktop.DBus.Properties",
@@ -438,6 +510,19 @@
           "member": "Close",
           "message_kind": "method_call",
           "signature": "",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.kde.KWin",
+          "object_path": "/Scripting",
+          "interface": "org.freedesktop.DBus.Properties",
+          "member": "GetAll",
+          "message_kind": "method_call",
+          "signature": "s",
           "fd_metadata": []
         },
         "comment": "global"

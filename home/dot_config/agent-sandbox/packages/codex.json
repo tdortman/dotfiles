@@ -8,6 +8,12 @@
     },
     "http": {
       "allow": [
+        { "methods": ["POST"], "url": "https://ab.chatgpt.com/v1/initialize", "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://ab.chatgpt.com/v1/rgstr", "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/alpha/history/v2", "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/alpha/notes/v2", "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/alpha/notes/v2/thread_hint", "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/alpha/notes/v2/write_file", "comment": "global_package" },
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/ps/apps/batch", "comment": "global_package" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/settings/user", "comment": "global_package" },
         { "methods": ["GET"], "url": "https://github.com/DietrichGebert/ponytail.git", "comment": "global_package" },
@@ -22,10 +28,12 @@
   },
   "filesystem": {
     "allow": [
+      { "path": "./.codex", "access": "execute", "comment": "global_package" },
       { "path": "./tmp/*/codex-*/*", "access": "write", "comment": "global_package" },
       { "path": "./tmp/*/codex-*/.lock", "access": "read_write", "comment": "global_package" },
       { "path": "~/.cache/codex-runtimes", "access": "read_write", "comment": "global_package" },
       { "path": "~/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node", "access": "execute", "comment": "global_package" },
+      { "path": "~/.codex/plugins/cache/openai-bundled", "access": "execute", "comment": "global_package" },
       { "path": "~/.codex/plugins/cache/openai-curated-remote/codex-security/*/scripts/launch_codex_security_mcp", "access": "execute", "comment": "global_package" },
       { "path": "~/.config/orca/codex-runtime-home", "access": "read_write", "comment": "global_package" },
       { "path": "~/.cursor/hooks.json", "access": "read", "comment": "global_package" },
@@ -35,8 +43,109 @@
   },
   "resources": {
     "allow": [
+      { "kind": "unix_socket", "path": "/run/user/*/codex-desktop/app-server-bridge/app-server.sock", "access": "connect", "comment": "global_package" },
+      { "kind": "unix_socket", "path": "/run/user/1000/at-spi/bus_0", "access": "connect", "comment": "global_package" },
+      { "kind": "unix_socket", "path": "/run/user/1000/wayland-0", "access": "connect", "comment": "global_package" },
+      { "kind": "unix_socket", "path": "/run/ydotoold/socket", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "/tmp/codex-browser-use", "access": "connect", "comment": "global_package" },
-      { "kind": "unix_socket", "path": "~/.codex/app-server-control/app-server-control.sock", "access": "connect", "comment": "global_package" }
+      { "kind": "unix_socket", "path": "~/.codex/app-server-control/app-server-control.sock", "access": "connect", "comment": "global_package" },
+      { "kind": "device", "path": "/dev/uinput", "access": "open_read_write", "comment": "global_package" }
+    ],
+    "deny": []
+  },
+  "dbus": {
+    "allow": [
+      {
+        "target": {
+          "bus": "session",
+          "destination": "com.openai.Codex.WindowControl",
+          "object_path": "/com/openai/Codex/WindowControl",
+          "interface": "com.openai.Codex.WindowControl",
+          "member": "CaptureScreenshot",
+          "message_kind": "method_call",
+          "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global_package"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "com.openai.Codex.WindowControl",
+          "object_path": "/com/openai/Codex/WindowControl",
+          "interface": "com.openai.Codex.WindowControl",
+          "member": "ListWindows",
+          "message_kind": "method_call",
+          "signature": "",
+          "fd_metadata": []
+        },
+        "comment": "global_package"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.gnome.Shell",
+          "object_path": "/org/gnome/Shell/Introspect",
+          "interface": "org.gnome.Shell.Introspect",
+          "member": "GetWindows",
+          "message_kind": "method_call",
+          "signature": "",
+          "fd_metadata": []
+        },
+        "comment": "global_package"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.gnome.Shell.Screenshot",
+          "object_path": "/org/gnome/Shell/Screenshot",
+          "interface": "org.gnome.Shell.Screenshot",
+          "member": "Screenshot",
+          "message_kind": "method_call",
+          "signature": "(bbs)",
+          "fd_metadata": []
+        },
+        "comment": "global_package"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.kde.KWin",
+          "object_path": "/Scripting",
+          "interface": "org.kde.kwin.Scripting",
+          "member": "loadScript",
+          "message_kind": "method_call",
+          "signature": "(ss)",
+          "fd_metadata": []
+        },
+        "comment": "global_package"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.kde.KWin",
+          "object_path": "/Scripting",
+          "interface": "org.kde.kwin.Scripting",
+          "member": "start",
+          "message_kind": "method_call",
+          "signature": "",
+          "fd_metadata": []
+        },
+        "comment": "global_package"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.kde.KWin",
+          "object_path": "/Scripting",
+          "interface": "org.kde.kwin.Scripting",
+          "member": "unloadScript",
+          "message_kind": "method_call",
+          "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global_package"
+      }
     ],
     "deny": []
   }
