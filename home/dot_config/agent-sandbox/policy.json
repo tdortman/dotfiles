@@ -28,6 +28,7 @@
         { "methods": ["GET"], "url": "http://specifications.freedesktop.org/", "port": 80, "comment": "global" },
         { "methods": ["GET"], "url": "http://www.biorxiv.org/content/*/*.full", "port": 80, "comment": "global" },
         { "methods": ["GET"], "url": "https://*.readthedocs.io/**", "port": 443, "comment": "global" },
+        { "methods": ["GET"], "url": "https://api.commandcode.ai/provider/v1/models", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://api.deepseek.com/chat/completions", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.deepseek.com/models", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://api.deepseek.com/responses", "port": 443, "comment": "global" },
