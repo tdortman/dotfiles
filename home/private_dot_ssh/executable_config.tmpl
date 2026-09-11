@@ -1,7 +1,11 @@
 Host github.com
     HostName github.com
     User git
+{{- if eq .chezmoi.hostname "hifumi" }}
+    IdentityFile ~/.ssh/github-hetzner
+{{- else }}
     IdentityFile ~/.ssh/github.pub
+{{- end }}
     IdentitiesOnly yes
 
 Host hifumi
@@ -36,7 +40,9 @@ Host hpcgate sshgate mogon mogon-nhr monster? dungeonkeeper gracehopper
     User {{ .uni_username }}
     IdentityFile ~/.ssh/mogon.pub
     IdentitiesOnly yes
+{{- if output "ssh" "-G" "-F" "none" "-T" "localhost" | contains "\nwarnweakcrypto " }}
     WarnWeakCrypto no
+{{- end }}
     PubkeyAuthentication yes
     PasswordAuthentication no
     SetEnv TERM=xterm-256color

@@ -5,7 +5,7 @@
 {{- if eq .chezmoi.os "windows" }}
     sshCommand = C:/Windows/System32/OpenSSH/ssh.exe
 {{- else if eq .chezmoi.hostname "hifumi" }}
-    sshCommand = ssh -i ~/.ssh/git
+    sshCommand = ssh -i ~/.ssh/github-hetzner
 {{- end }}
 
 {{- if eq .chezmoi.os "windows" }}
