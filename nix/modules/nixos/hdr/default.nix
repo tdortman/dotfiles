@@ -37,7 +37,8 @@ let
     text = scriptText;
   };
 
-  # Read the script and substitute config values
+  # Read the script and substitute config values. escapeShellArg keeps
+  # arbitrary paths safe; the template assigns them unquoted.
   scriptText =
     builtins.replaceStrings
       [
@@ -45,8 +46,8 @@ let
         "@defaultIccProfile@"
       ]
       [
-        cfg.defaultOutput
-        cfg.defaultIccProfile
+        (lib.escapeShellArg (if cfg.defaultOutput == null then "" else cfg.defaultOutput))
+        (lib.escapeShellArg cfg.defaultIccProfile)
       ]
       (builtins.readFile ./hdr-toggle.sh);
 in
@@ -77,12 +78,14 @@ in
     };
 
     defaultOutput = lib.mkOption {
-      type = lib.types.str;
+      type = lib.types.nullOr lib.types.str;
       example = "HDMI-A-1";
-      default = "DP-1";
+      default = null;
 
       description = ''
         Default display output to use when no output is specified.
+        When null (the default), the enabled, connected Plasma primary
+        output (priority 1 in 'kscreen-doctor -j') is resolved at invocation.
         Use 'kscreen-doctor -o' to list available outputs.
       '';
     };
