@@ -205,7 +205,11 @@
     snapshots.enable = true;
   };
 
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot = {
+    initrd.kernelModules = [ "i915" ];
+    kernelPackages = pkgs.linuxPackages_latest;
+  };
+
   disableWakeFromHibernate.enable = true;
 
   environment = {
@@ -214,13 +218,12 @@
       CARGO_MAKEFLAGS = "-j 22";
       CODEX_CLI_PATH = "/run/current-system/sw/bin/codex";
       GHIDRA_ROOT = "${pkgs.ghidra}";
+      # Stable PCI selection keeps the desktop on Arc regardless of DRM enumeration.
+      KWIN_DRM_DEVICES = "/dev/dri/intel-arc:/dev/dri/nvidia-gaming";
       MAKEFLAGS = "-j 22";
-      MOZ_DISABLE_RDD_SANDBOX = 1;
       MOZ_ENABLE_WAYLAND = 1;
       NINJAFLAGS = "-j 22";
       NIXOS_OZONE_WL = "1";
-      # Setting gfx.webrender.compositor.force-enabled to true breaks the direct backend
-      NVD_BACKEND = "direct";
     };
 
     systemPackages =
@@ -297,14 +300,26 @@
     ];
 
     logitech.wireless.enable = true;
+
+    nvidia.prime = {
+      intelBusId = "PCI:7:0:0";
+      nvidiaBusId = "PCI:13:0:0";
+
+      offload = {
+        enable = true;
+        enableOffloadCmd = true;
+      };
+    };
+
     nvidia-container-toolkit.enable = true;
   };
 
   hdr = {
     enable = true;
-    defaultOutput = "DP-1";
     extraScripts = true;
   };
+
+  intel.enable = true;
 
   jgu-vpn = {
     enable = true;
@@ -456,6 +471,10 @@
     ratbagd.enable = true;
 
     udev.extraRules = ''
+      # Colon-free aliases avoid escaping PCI paths in KWin's device list.
+      SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:07:00.0", SYMLINK+="dri/intel-arc"
+      SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:0d:00.0", SYMLINK+="dri/nvidia-gaming"
+
       # StreamController text input
       KERNEL=="uinput", SUBSYSTEM=="misc", OPTIONS+="static_node=uinput", TAG+="uaccess", GROUP="input", MODE="0660"
     '';
