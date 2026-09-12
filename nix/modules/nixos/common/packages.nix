@@ -80,6 +80,7 @@
       p7zip-rar
       pixi
       pkg-config
+      pkgs.nvtopPackages.full
       podman
       python3
       python3Packages.subliminal

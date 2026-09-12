@@ -64,7 +64,6 @@ in
       # Base CUDA configuration
       (lib.mkIf cfg.cuda.enable {
         environment.systemPackages = [
-          pkgs.cuda.nvtopPackages.nvidia
           cfg.cuda.packages.nsight_systems
           cfg.cuda.packages.nsight_compute
         ];
