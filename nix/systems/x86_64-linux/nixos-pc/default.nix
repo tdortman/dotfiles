@@ -9,6 +9,7 @@
 {
   imports = [
     ./disko.nix
+    ./display-layout.nix
     ./hardware-configuration.nix
   ];
 

@@ -221,6 +221,11 @@
           '';
         };
 
+        display-layout = {
+          runAlways = true;
+          text = "${osConfig.system.build.displayLayout}/bin/display-layout intel";
+        };
+
         spotify = {
           runAlways = true;
 
@@ -235,7 +240,6 @@
         #   '';
         #   runAlways = true;
         # };
-
         steam = {
           runAlways = true;
 
