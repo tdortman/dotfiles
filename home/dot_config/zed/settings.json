@@ -174,12 +174,12 @@
     },
     "rounded_selection": true,
     "project_panel": {
+        "folder_indicator": "icon",
         "hide_hidden": false,
         "scrollbar": {
             "show": "auto",
         },
         "indent_size": 20.0,
-        "folder_icons": true,
         "dock": "left",
         "button": true,
         "auto_reveal_entries": false,
