@@ -223,7 +223,10 @@
 
         display-layout = {
           runAlways = true;
-          text = "${osConfig.system.build.displayLayout}/bin/display-layout intel";
+
+          text = "${osConfig.system.build.displayLayout}/bin/display-layout ${
+            osConfig."display-layout".loginLayout
+          }";
         };
 
         spotify = {

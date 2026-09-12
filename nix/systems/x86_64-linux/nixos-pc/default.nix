@@ -9,7 +9,6 @@
 {
   imports = [
     ./disko.nix
-    ./display-layout.nix
     ./hardware-configuration.nix
   ];
 
@@ -212,6 +211,56 @@
   };
 
   disableWakeFromHibernate.enable = true;
+
+  display-layout = {
+    enable = true;
+    ddc.enable = true;
+
+    layouts = [
+      {
+        disabledOutputs = [ "DP-4" ];
+        name = "intel";
+
+        outputs = [
+          {
+            input = 15;
+            output = "DP-1";
+            gpu = "0000:07:00.0";
+            primary = true;
+          }
+          {
+            output = "DP-2";
+            gpu = "0000:07:00.0";
+          }
+        ];
+      }
+      {
+        disabledOutputs = [ "DP-4" ];
+        name = "nvidia";
+
+        outputs = [
+          {
+            input = 17;
+            output = "HDMI-A-5";
+
+            ddcControl = {
+              output = "DP-1";
+              gpu = "0000:07:00.0";
+            };
+
+            gpu = "0000:0d:00.0";
+            primary = true;
+          }
+          {
+            output = "DP-2";
+            gpu = "0000:07:00.0";
+          }
+        ];
+      }
+    ];
+
+    loginLayout = "intel";
+  };
 
   environment = {
     sessionVariables = {
