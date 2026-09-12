@@ -1,0 +1,229 @@
+--- a/src/btop_shared.hpp
++++ b/src/btop_shared.hpp
+@@ -141,7 +141,9 @@
+ 				 mem_used = true,
+ 				 pcie_txrx = true,
+ 				 encoder_utilization = true,
+-				 decoder_utilization = true;
++				 decoder_utilization = true,
++				 fan_speed = false,
++				 video_utilization = false;
+ 	};
+ 
+ 	//* Per-device container for GPU info
+@@ -171,6 +173,12 @@
+ 		long long encoder_utilization = 0;
+ 		long long decoder_utilization = 0;
+ 
++		long long fan_speed = -1;
++		deque<long long> fan_speed_history = {0};
++		long long power_limit = 0;
++		string pwr_state_name;
++		long long video_utilization = -1;
++
+ 		gpu_info_supported supported_functions;
+ 
+ 		// vector<proc_info> graphics_processes = {}; // TODO
+--- a/src/linux/btop_collect.cpp
++++ b/src/linux/btop_collect.cpp
+@@ -318,6 +318,12 @@
+ 		static long long hwmon_prev_time = 0;
+ 		static long long hwmon_pwr_max = 0;
+ 		static bool hwmon_has_prev = false;
++		static fs::path hwmon_fan_path;
++		static fs::path hwmon_pwr_limit_path;
++		static fs::path pci_power_state_path;
++		static bool fan_warned = false;
++		static bool pwr_limit_warned = false;
++		static bool pwr_state_warned = false;
+ 		// Locate temp1_input/energy1_input under the same detected <gpu_path>/device/hwmon/hwmon*.
+ 		// Seeds energy baseline so first collect<1> pushes real watts (never empty+true, never fake 0).
+ 		static void discover_intel_hwmon(const char* gpu_path) {
+@@ -334,7 +340,11 @@
+ 						if (!max_s.empty()) hwmon_pwr_max = std::stoll(max_s) / 1000;
+ 						if (hwmon_pwr_max <= 0) hwmon_pwr_max = std::stoll(readfile(e.path() / "power1_rated_max", "0")) / 1000;
+ 					}
+-					if (!hwmon_temp_path.empty() && !hwmon_energy_path.empty()) break;
++					if (hwmon_fan_path.empty() && fs::exists(e.path() / "fan1_input"))
++						hwmon_fan_path = e.path() / "fan1_input";
++					if (hwmon_pwr_limit_path.empty() && fs::exists(e.path() / "power1_max"))
++						hwmon_pwr_limit_path = e.path() / "power1_max";
++					if (!hwmon_temp_path.empty() && !hwmon_energy_path.empty() && !hwmon_fan_path.empty() && !hwmon_pwr_limit_path.empty()) break;
+ 				}
+ 				if (!hwmon_energy_path.empty()) {
+ 					try {
+@@ -354,6 +364,21 @@
+ 				Logger::warning("Intel GPU hwmon discovery failed ({}), hwmon disabled", e.what());
+ 				if (!hwmon_has_prev) hwmon_energy_path.clear();
+ 			}
++			try {
++				const fs::path pstate = fs::path(gpu_path) / "device" / "power_state";
++				if (fs::exists(pstate)) pci_power_state_path = pstate;
++			} catch (const std::filesystem::filesystem_error& e) {
++				Logger::warning("Intel GPU power state discovery failed ({}), power state disabled", e.what());
++			}
++		}
++
++		static bool has_video_engines() {
++			if (!engines) return false;
++			for (unsigned int i = 0; i < engines->num_engines; i++) {
++				const struct engine* e = &(&engines->engine)[i];
++				if (e->class_ == I915_ENGINE_CLASS_VIDEO && e->busy.present) return true;
++			}
++			return false;
+ 		}
+ 
+ 		static int vram_drm_fd = -1;
+@@ -2118,6 +2143,10 @@
+ 			vram_blob.clear();
+ 			vram_valid_len = 0;
+ 			vram_has_device = vram_used_reliable = vram_warned = false;
++			hwmon_fan_path.clear();
++			hwmon_pwr_limit_path.clear();
++			pci_power_state_path.clear();
++			fan_warned = pwr_limit_warned = pwr_state_warned = false;
+ 			initialized = false;
+ 			return true;
+ 		}
+@@ -2132,15 +2161,24 @@
+ 					.gpu_clock = true,
+ 					.mem_clock = false,
+ 					.pwr_usage = true,
+-					.pwr_state = false,
++					.pwr_state = !pci_power_state_path.empty(),
+ 					.temp_info = !hwmon_temp_path.empty(),
+ 					.mem_total = vram_has_device,
+ 					.mem_used = vram_has_device and vram_used_reliable,
+ 					.pcie_txrx = false,
+ 					.encoder_utilization = false,
+-					.decoder_utilization = false
++					.decoder_utilization = false,
++					.fan_speed = !hwmon_fan_path.empty(),
++					.video_utilization = has_video_engines()
+ 				};
+ 
++				gpus_slice->pwr_state = 32;
++				gpus_slice->pwr_state_name.clear();
++				gpus_slice->fan_speed = -1;
++				gpus_slice->fan_speed_history = {0};
++				gpus_slice->power_limit = 0;
++				gpus_slice->video_utilization = -1;
++
+ 				gpus_slice->pwr_max_usage = hwmon_pwr_max > 0 ? hwmon_pwr_max : 10'000; //? 10W
+ 				if (!engines->r_gpu.present && hwmon_energy_path.empty())
+ 					gpus_slice->supported_functions.pwr_usage = false;
+@@ -2149,6 +2187,29 @@
+ 			pmu_sample(engines);
+ 			double t = (double)(engines->ts.cur - engines->ts.prev) / 1e9;
+ 
++			const bool had_pwr_limit = (gpus_slice->power_limit > 0);
++			if (!hwmon_pwr_limit_path.empty()) {
++				const std::string lim_s = readfile(hwmon_pwr_limit_path, "");
++				if (lim_s.empty()) {
++					gpus_slice->power_limit = 0;
++					if (!pwr_limit_warned) { pwr_limit_warned = true; Logger::warning("Intel GPU power limit unavailable, power limit disabled"); }
++				} else try {
++					const long long lim = std::stoll(lim_s) / 1000;
++					if (lim > 0) {
++						gpus_slice->power_limit = lim;
++						gpus_slice->pwr_max_usage = lim;
++						pwr_limit_warned = false;
++					} else gpus_slice->power_limit = 0;
++				} catch (const std::invalid_argument& e) {
++					gpus_slice->power_limit = 0;
++					if (!pwr_limit_warned) { pwr_limit_warned = true; Logger::warning("Intel GPU power limit parse failed ({}), power limit disabled", e.what()); }
++				} catch (const std::out_of_range& e) {
++					gpus_slice->power_limit = 0;
++					if (!pwr_limit_warned) { pwr_limit_warned = true; Logger::warning("Intel GPU power limit out of range ({}), power limit disabled", e.what()); }
++				}
++			} else gpus_slice->power_limit = 0;
++			if ((gpus_slice->power_limit > 0) != had_pwr_limit) Runner::redraw = true;
++
+ 			double max_util = 0;
+ 			for (unsigned int i = 0; i < engines->num_engines; i++) {
+ 				struct engine *engine = &(&engines->engine)[i];
+@@ -2162,7 +2223,7 @@
+ 			if (engines->r_gpu.present) {
+ 				double pwr = pmu_calc(&engines->r_gpu.val, 1, t, engines->r_gpu.scale); // in Watts
+ 				gpus_slice->pwr_usage = (long long)round(pwr * 1000);
+-				if (gpus_slice->pwr_usage > gpus_slice->pwr_max_usage)
++				if (gpus_slice->power_limit <= 0 && gpus_slice->pwr_usage > gpus_slice->pwr_max_usage)
+ 					gpus_slice->pwr_max_usage = gpus_slice->pwr_usage;
+ 
+ 				gpus_slice->gpu_percent.at("gpu-pwr-totals").push_back(clamp((long long)round((double)gpus_slice->pwr_usage * 100.0 / (double)gpus_slice->pwr_max_usage), 0ll, 100ll));
+@@ -2178,7 +2239,7 @@
+ 						const long long dT = cur_time - hwmon_prev_time;
+ 						if (dE >= 0 && dT > 0) {
+ 							gpus_slice->pwr_usage = (long long)round((double)dE * 1000.0 / (double)dT);
+-							if (gpus_slice->pwr_usage > gpus_slice->pwr_max_usage)
++							if (gpus_slice->power_limit <= 0 && gpus_slice->pwr_usage > gpus_slice->pwr_max_usage)
+ 								gpus_slice->pwr_max_usage = gpus_slice->pwr_usage;
+ 							gpus_slice->gpu_percent.at("gpu-pwr-totals").push_back(clamp((long long)round((double)gpus_slice->pwr_usage * 100.0 / (double)gpus_slice->pwr_max_usage), 0ll, 100ll));
+ 							if (!gpus_slice->supported_functions.pwr_usage) {
+@@ -2212,6 +2273,66 @@
+ 			double freq = pmu_calc(&engines->freq_act.val, 1, t, 1); // in MHz
+ 			gpus_slice->gpu_clock_speed = (unsigned int)round(freq);
+ 
++			gpus_slice->pwr_state = 32;
++			if (pci_power_state_path.empty()) gpus_slice->pwr_state_name.clear();
++			else {
++				const std::string ps = readfile(pci_power_state_path, "");
++				if (ps.empty()) {
++					gpus_slice->pwr_state_name = "N/A";
++					if (!pwr_state_warned) { pwr_state_warned = true; Logger::warning("Intel GPU power state unavailable, power state will not be reported"); }
++				} else {
++					gpus_slice->pwr_state_name = ps;
++					pwr_state_warned = false;
++				}
++			}
++
++			if (gpus_slice->supported_functions.fan_speed) {
++				const std::string f_s = readfile(hwmon_fan_path, "");
++				if (f_s.empty()) {
++					gpus_slice->fan_speed = -1;
++					if (!fan_warned) { fan_warned = true; Logger::warning("Intel GPU fan unavailable, fan will not be reported"); }
++				} else try {
++					const long long rpm = std::stoll(f_s);
++					if (rpm < 0) {
++						gpus_slice->fan_speed = -1;
++						if (!fan_warned) { fan_warned = true; Logger::warning("Intel GPU fan out of range, fan will not be reported"); }
++					} else {
++						gpus_slice->fan_speed = rpm;
++						fan_warned = false;
++						gpus_slice->fan_speed_history.push_back(rpm);
++						const size_t fan_bound = (size_t)max(12, 2 * Term::width.load());
++						while (cmp_greater(gpus_slice->fan_speed_history.size(), fan_bound)) gpus_slice->fan_speed_history.pop_front();
++					}
++				} catch (const std::invalid_argument& e) {
++					gpus_slice->fan_speed = -1;
++					if (!fan_warned) { fan_warned = true; Logger::warning("Intel GPU fan parse failed ({}), fan will not be reported", e.what()); }
++				} catch (const std::out_of_range& e) {
++					gpus_slice->fan_speed = -1;
++					if (!fan_warned) { fan_warned = true; Logger::warning("Intel GPU fan out of range ({}), fan will not be reported", e.what()); }
++				}
++			} else gpus_slice->fan_speed = -1;
++
++			if (gpus_slice->supported_functions.video_utilization) {
++				bool vok = (t > 0) && std::isfinite(t);
++				double vsum = 0;
++				int vn = 0;
++				if (vok) {
++					for (unsigned int i = 0; i < engines->num_engines; i++) {
++						struct engine* ve = &(&engines->engine)[i];
++						if (ve->class_ != I915_ENGINE_CLASS_VIDEO) continue;
++						if (!ve->busy.present) continue;
++						if (ve->busy.val.cur < ve->busy.val.prev) { vok = false; break; }
++						double v = pmu_calc(&ve->busy.val, 1e9, t, 100);
++						if (!std::isfinite(v) || v < 0) { vok = false; break; }
++						if (v > 100) v = 100;
++						vsum += v;
++						vn++;
++					}
++					if (vn == 0) vok = false;
++				}
++				gpus_slice->video_utilization = vok ? (long long)round(vsum / vn) : -1;
++			} else gpus_slice->video_utilization = -1;
++
+ 			//? VRAM from one reusable ioctl; the init pass reuses the probe-validated blob
+ 			if (vram_has_device && vram_drm_fd >= 0) {
+ 				uint64_t vram_total = 0, vram_used = 0;

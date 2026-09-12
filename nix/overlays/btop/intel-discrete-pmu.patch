@@ -1,0 +1,34 @@
+--- a/src/linux/btop_collect.cpp
++++ b/src/linux/btop_collect.cpp
+@@ -287,6 +287,22 @@
+ 	namespace Intel {
+ 		const char* device = "i915";
+ 		struct engines *engines = nullptr;
++		static std::string device_storage;
++		// Derive the i915 perf PMU name from the detected GPU's PCI slot,
++		// mirroring intel_gpu_top's i915_perf_device(): per-device
++		// i915_<slot> for discrete GPUs, legacy "i915" for 0000:00:02.0.
++		static const char* resolve_intel_pmu_device(const char* gpu_path) {
++			std::error_code ec;
++			const auto slot = fs::read_symlink(fs::path(gpu_path) / "device", ec).filename().string();
++			if (ec) {
++				Logger::debug("Failed to resolve Intel GPU PCI slot ({}), Intel GPUs will not be detected", ec.message());
++				return nullptr;
++			}
++			if (slot == "0000:00:02.0") return "i915";
++			device_storage = "i915_" + slot;
++			for (auto& c : device_storage) if (c == ':') c = '_';
++			return device_storage.c_str();
++		}
+ 
+ 		bool initialized = false;
+ 		bool init();
+@@ -1891,6 +1907,8 @@
+ 				Logger::debug("Failed to find Intel GPU sysfs path, Intel GPUs will not be detected");
+ 				return false;
+ 			}
++			device = resolve_intel_pmu_device(gpu_path);
++			if (!device) return false;
+ 
+ 			char *gpu_device_id = get_intel_device_id(gpu_path);
+ 			if (!gpu_device_id) {

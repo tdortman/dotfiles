@@ -1,0 +1,141 @@
+--- a/src/linux/btop_collect.cpp
++++ b/src/linux/btop_collect.cpp
+@@ -293,6 +293,49 @@
+ 		bool shutdown();
+ 		template <bool is_init> bool collect(gpu_info* gpus_slice);
+ 		uint32_t device_count = 0;
++		static fs::path hwmon_temp_path;
++		static fs::path hwmon_energy_path;
++		static long long hwmon_prev_energy = 0;
++		static long long hwmon_prev_time = 0;
++		static long long hwmon_pwr_max = 0;
++		static bool hwmon_has_prev = false;
++		// Locate temp1_input/energy1_input under the same detected <gpu_path>/device/hwmon/hwmon*.
++		// Seeds energy baseline so first collect<1> pushes real watts (never empty+true, never fake 0).
++		static void discover_intel_hwmon(const char* gpu_path) {
++			try {
++				const fs::path base = fs::path(gpu_path) / "device" / "hwmon";
++				if (!fs::exists(base)) return;
++				for (const auto& e : fs::directory_iterator(base)) {
++					if (!e.is_directory()) continue;
++					if (hwmon_temp_path.empty() && fs::exists(e.path() / "temp1_input"))
++						hwmon_temp_path = e.path() / "temp1_input";
++					if (hwmon_energy_path.empty() && fs::exists(e.path() / "energy1_input")) {
++						hwmon_energy_path = e.path() / "energy1_input";
++						const std::string max_s = readfile(e.path() / "power1_max", "");
++						if (!max_s.empty()) hwmon_pwr_max = std::stoll(max_s) / 1000;
++						if (hwmon_pwr_max <= 0) hwmon_pwr_max = std::stoll(readfile(e.path() / "power1_rated_max", "0")) / 1000;
++					}
++					if (!hwmon_temp_path.empty() && !hwmon_energy_path.empty()) break;
++				}
++				if (!hwmon_energy_path.empty()) {
++					try {
++						const std::string e0 = readfile(hwmon_energy_path, "");
++						const long long v0 = e0.empty() ? 0 : std::stoll(e0);
++						if (v0 > 0) {
++							hwmon_prev_energy = v0;
++							hwmon_prev_time = get_monotonicTimeUSec();
++							hwmon_has_prev = true;
++						} else hwmon_energy_path.clear();
++					} catch (const std::exception& e) {
++						Logger::warning("Intel GPU hwmon energy baseline failed ({}), power disabled", e.what());
++						hwmon_energy_path.clear();
++					}
++				}
++			} catch (const std::exception& e) {
++				Logger::warning("Intel GPU hwmon discovery failed ({}), hwmon disabled", e.what());
++				if (!hwmon_has_prev) hwmon_energy_path.clear();
++			}
++		}
+ 	}
+ }
+ 
+@@ -1904,6 +1947,7 @@
+ 			}
+ 
+ 			free(gpu_device_id);
++			discover_intel_hwmon(gpu_path);
+ 
+ 			engines = discover_engines(device);
+ 			if (!engines) {
+@@ -1959,7 +2003,7 @@
+ 					.mem_clock = false,
+ 					.pwr_usage = true,
+ 					.pwr_state = false,
+-					.temp_info = false,
++					.temp_info = !hwmon_temp_path.empty(),
+ 					.mem_total = false,
+ 					.mem_used = false,
+ 					.pcie_txrx = false,
+@@ -1967,7 +2011,9 @@
+ 					.decoder_utilization = false
+ 				};
+ 
+-				gpus_slice->pwr_max_usage = 10'000; //? 10W
++				gpus_slice->pwr_max_usage = hwmon_pwr_max > 0 ? hwmon_pwr_max : 10'000; //? 10W
++				if (!engines->r_gpu.present && hwmon_energy_path.empty())
++					gpus_slice->supported_functions.pwr_usage = false;
+ 			}
+ 
+ 			pmu_sample(engines);
+@@ -1983,12 +2029,55 @@
+ 			}
+ 			gpus_slice->gpu_percent.at("gpu-totals").push_back((long long)round(max_util));
+ 
+-			double pwr = pmu_calc(&engines->r_gpu.val, 1, t, engines->r_gpu.scale); // in Watts
+-			gpus_slice->pwr_usage = (long long)round(pwr * 1000);
+-			if (gpus_slice->pwr_usage > gpus_slice->pwr_max_usage)
+-				gpus_slice->pwr_max_usage = gpus_slice->pwr_usage;
++			if (engines->r_gpu.present) {
++				double pwr = pmu_calc(&engines->r_gpu.val, 1, t, engines->r_gpu.scale); // in Watts
++				gpus_slice->pwr_usage = (long long)round(pwr * 1000);
++				if (gpus_slice->pwr_usage > gpus_slice->pwr_max_usage)
++					gpus_slice->pwr_max_usage = gpus_slice->pwr_usage;
++
++				gpus_slice->gpu_percent.at("gpu-pwr-totals").push_back(clamp((long long)round((double)gpus_slice->pwr_usage * 100.0 / (double)gpus_slice->pwr_max_usage), 0ll, 100ll));
++			} else if (!hwmon_energy_path.empty()) {
++				const std::string e_s = readfile(hwmon_energy_path, "");
++				if (e_s.empty()) {
++					if constexpr(is_init) gpus_slice->supported_functions.pwr_usage = false;
++				} else {
++					const long long cur_energy = std::stoll(e_s);
++					const long long cur_time = get_monotonicTimeUSec();
++					if (hwmon_has_prev && cur_energy > 0) {
++						const long long dE = cur_energy - hwmon_prev_energy;
++						const long long dT = cur_time - hwmon_prev_time;
++						if (dE >= 0 && dT > 0) {
++							gpus_slice->pwr_usage = (long long)round((double)dE * 1000.0 / (double)dT);
++							if (gpus_slice->pwr_usage > gpus_slice->pwr_max_usage)
++								gpus_slice->pwr_max_usage = gpus_slice->pwr_usage;
++							gpus_slice->gpu_percent.at("gpu-pwr-totals").push_back(clamp((long long)round((double)gpus_slice->pwr_usage * 100.0 / (double)gpus_slice->pwr_max_usage), 0ll, 100ll));
++							if (!gpus_slice->supported_functions.pwr_usage) {
++								gpus_slice->supported_functions.pwr_usage = true;
++								Runner::redraw = true;
++							}
++						}
++					}
++					if (cur_energy > 0) {
++						hwmon_prev_energy = cur_energy;
++						hwmon_prev_time = cur_time;
++						hwmon_has_prev = true;
++					} else if constexpr(is_init) {
++						gpus_slice->supported_functions.pwr_usage = false;
++					}
++				}
++			}
++
++			if (gpus_slice->supported_functions.temp_info) {
++				if (Config::getB("check_temp") or is_init) {
++					const std::string t_s = readfile(hwmon_temp_path, "");
++					if (t_s.empty()) {
++						if constexpr(is_init) gpus_slice->supported_functions.temp_info = false;
++					} else gpus_slice->temp.push_back((long long)std::stoll(t_s) / 1000);
++				}
++			}
+ 
+-			gpus_slice->gpu_percent.at("gpu-pwr-totals").push_back(clamp((long long)round((double)gpus_slice->pwr_usage * 100.0 / (double)gpus_slice->pwr_max_usage), 0ll, 100ll));
++			if (gpus_slice->supported_functions.pwr_usage && gpus_slice->gpu_percent.at("gpu-pwr-totals").empty())
++				gpus_slice->supported_functions.pwr_usage = false;
+ 
+ 			double freq = pmu_calc(&engines->freq_act.val, 1, t, 1); // in MHz
+ 			gpus_slice->gpu_clock_speed = (unsigned int)round(freq);

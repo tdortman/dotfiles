@@ -1,0 +1,193 @@
+--- a/src/linux/btop_collect.cpp
++++ b/src/linux/btop_collect.cpp
+@@ -34,10 +34,12 @@
+ 
+ #include <arpa/inet.h> // for inet_ntop()
+ #include <dlfcn.h>
++#include <fcntl.h>
+ #include <ifaddrs.h>
+ #include <net/if.h>
+ #include <netdb.h>
+ #include <sys/statvfs.h>
++#include <sys/ioctl.h>
+ #include <unistd.h>
+ 
+ #include <fmt/format.h>
+@@ -68,6 +70,7 @@
+ 	#define class class_
+ extern "C" {
+ 	#include "intel_gpu_top/intel_gpu_top.h"
++	#include "intel_gpu_top/i915_drm.h"
+ }
+ 	#undef class
+ 
+@@ -352,6 +355,107 @@
+ 				if (!hwmon_has_prev) hwmon_energy_path.clear();
+ 			}
+ 		}
++
++		static int vram_drm_fd = -1;
++		static std::vector<unsigned long long> vram_blob; // 8-byte aligned reusable query blob
++		static size_t vram_valid_len = 0; // bytes returned by the last successful query
++		static bool vram_has_device = false;
++		static bool vram_used_reliable = false;
++		static bool vram_warned = false;
++
++		// One native DRM_IOCTL_I915_QUERY into the reusable blob.
++		static bool query_intel_vram() {
++			struct drm_i915_query_item item = { .query_id = DRM_I915_QUERY_MEMORY_REGIONS, .length = (int)(vram_blob.size() * sizeof(unsigned long long)), .flags = 0, .data_ptr = (uint64_t)(uintptr_t)vram_blob.data() };
++			struct drm_i915_query query = { .num_items = 1, .flags = 0, .items_ptr = (uint64_t)(uintptr_t)&item };
++			if (::ioctl(vram_drm_fd, DRM_IOCTL_I915_QUERY, &query) != 0) return false;
++			if (item.length <= 0 || (size_t)item.length > vram_blob.size() * sizeof(unsigned long long)) return false;
++			vram_valid_len = (size_t)item.length;
++			return true;
++		}
++
++		// Validate regions against the returned length and sum DEVICE local memory
++		// only; SYSTEM region never carries usage.
++		static bool sum_intel_vram(uint64_t& total, uint64_t& used) {
++			const size_t bytes = vram_valid_len;
++			if (bytes == 0 || bytes > vram_blob.size() * sizeof(unsigned long long)) return false;
++			const auto* info = (const struct drm_i915_query_memory_regions*)vram_blob.data();
++			if (bytes < sizeof(*info)) return false;
++			if (sizeof(*info) + (size_t)info->num_regions * sizeof(struct drm_i915_memory_region_info) > bytes) return false;
++			total = 0;
++			used = 0;
++			bool found = false;
++			for (uint32_t i = 0; i < info->num_regions; i++) {
++				const auto& region = info->regions[i];
++				if (region.region.memory_class != I915_MEMORY_CLASS_DEVICE) continue;
++				if (region.probed_size == 0 || region.unallocated_size > region.probed_size) return false;
++				total += region.probed_size;
++				used += region.probed_size - region.unallocated_size;
++				found = true;
++			}
++			return found && total > 0;
++		}
++
++		// unallocated_size needs CAP_PERFMON (38) or CAP_SYS_ADMIN (21); without
++		// either it mirrors probed_size and used would fabricate zero.
++		// readfile removes line separators, so parse status lines intact.
++		static bool vram_accounting_ok() {
++			ifstream status("/proc/self/status");
++			if (not status.is_open()) {
++				Logger::warning("Intel GPU: cannot open /proc/self/status, VRAM used will not be reported");
++				return false;
++			}
++			std::string line;
++			while (std::getline(status, line)) {
++				if (line.compare(0, 7, "CapEff:") != 0) continue;
++				try {
++					const unsigned long long eff = std::stoull(line.substr(7), nullptr, 16);
++					return ((eff >> 38) & 1ULL) != 0 || ((eff >> 21) & 1ULL) != 0;
++				}
++				catch (const std::exception& e) {
++					Logger::warning("Intel GPU: cannot parse CapEff ({}), VRAM used will not be reported", e.what());
++					return false;
++				}
++			}
++			Logger::warning("Intel GPU: CapEff not found, VRAM used will not be reported");
++			return false;
++		}
++
++		// Length query once, single allocation, single fill; same card node as detection.
++		static bool probe_intel_vram(const char* gpu_path) {
++			const std::string node = std::string("/dev/dri/") + fs::path(gpu_path).filename().string();
++			vram_drm_fd = ::open(node.c_str(), O_RDONLY | O_CLOEXEC);
++			if (vram_drm_fd < 0) {
++				Logger::debug("Intel GPU: cannot open {} for VRAM query, VRAM will not be reported", node);
++				return false;
++			}
++			struct drm_i915_query_item item = { .query_id = DRM_I915_QUERY_MEMORY_REGIONS, .length = 0, .flags = 0, .data_ptr = 0 };
++			struct drm_i915_query query = { .num_items = 1, .flags = 0, .items_ptr = (uint64_t)(uintptr_t)&item };
++			size_t need = 0;
++			if (::ioctl(vram_drm_fd, DRM_IOCTL_I915_QUERY, &query) == 0 && item.length > 0)
++				need = (size_t)item.length;
++			if (need < sizeof(struct drm_i915_query_memory_regions)
++			 || (need - sizeof(struct drm_i915_query_memory_regions)) % sizeof(struct drm_i915_memory_region_info) != 0) {
++				Logger::warning("Intel GPU: unexpected VRAM region size, VRAM will not be reported");
++				::close(vram_drm_fd);
++				vram_drm_fd = -1;
++				return false;
++			}
++			vram_blob.assign((need + sizeof(unsigned long long) - 1) / sizeof(unsigned long long), 0);
++			uint64_t total = 0, used = 0;
++			if (not query_intel_vram() || not sum_intel_vram(total, used)) {
++				Logger::warning("Intel GPU: no usable device memory region, VRAM will not be reported");
++				::close(vram_drm_fd);
++				vram_drm_fd = -1;
++				vram_blob.clear();
++				vram_blob.shrink_to_fit();
++				return false;
++			}
++			vram_has_device = true;
++			vram_used_reliable = vram_accounting_ok();
++			if (not vram_used_reliable)
++				Logger::warning("Intel GPU: no CAP_PERFMON, VRAM total is shown but used cannot be measured");
++			return true;
++		}
+ 	}
+ }
+ 
+@@ -1980,6 +2084,7 @@
+ 			}
+ 
+ 			pmu_sample(engines);
++			probe_intel_vram(gpu_path);
+ 
+ 			device_count = 1;
+ 
+@@ -2006,6 +2111,13 @@
+ 				free_engines(engines);
+ 				engines = nullptr;
+ 			}
++			if (vram_drm_fd >= 0) {
++				::close(vram_drm_fd);
++				vram_drm_fd = -1;
++			}
++			vram_blob.clear();
++			vram_valid_len = 0;
++			vram_has_device = vram_used_reliable = vram_warned = false;
+ 			initialized = false;
+ 			return true;
+ 		}
+@@ -2022,8 +2134,8 @@
+ 					.pwr_usage = true,
+ 					.pwr_state = false,
+ 					.temp_info = !hwmon_temp_path.empty(),
+-					.mem_total = false,
+-					.mem_used = false,
++					.mem_total = vram_has_device,
++					.mem_used = vram_has_device and vram_used_reliable,
+ 					.pcie_txrx = false,
+ 					.encoder_utilization = false,
+ 					.decoder_utilization = false
+@@ -2100,6 +2212,28 @@
+ 			double freq = pmu_calc(&engines->freq_act.val, 1, t, 1); // in MHz
+ 			gpus_slice->gpu_clock_speed = (unsigned int)round(freq);
+ 
++			//? VRAM from one reusable ioctl; the init pass reuses the probe-validated blob
++			if (vram_has_device && vram_drm_fd >= 0) {
++				uint64_t vram_total = 0, vram_used = 0;
++				if ((is_init || query_intel_vram()) && sum_intel_vram(vram_total, vram_used)) {
++					gpus_slice->mem_total = (long long)vram_total;
++					vram_warned = false;
++					if (vram_used_reliable && vram_total > 0) {
++						gpus_slice->mem_used = (long long)vram_used;
++						gpus_slice->gpu_percent.at("gpu-vram-totals").push_back((long long)round((double)vram_used * 100.0 / (double)vram_total));
++					}
++				}
++				else if (is_init) {
++					gpus_slice->supported_functions.mem_total = false;
++					gpus_slice->supported_functions.mem_used = false;
++					Logger::warning("Intel GPU: VRAM probe data invalid, VRAM will not be reported");
++				}
++				else if (not vram_warned) {
++					vram_warned = true;
++					Logger::warning("Intel GPU: VRAM query failed, retaining last reported values");
++				}
++			}
++
+ 			return true;
+ 		}
+ 	}
