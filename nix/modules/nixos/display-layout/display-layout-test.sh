@@ -90,12 +90,61 @@ PINNED_CFG='
         }
       ];
 '
+SCALED_CFG='
+      enable = true;
+      loginLayout = "lo";
+      ddc.enable = false;
+      layouts = [
+        {
+          name = "lo";
+          outputs = [
+            { gpu = "0000:00:0a.0"; output = "DP-1"; primary = true; scale = 1; }
+            { gpu = "0000:00:0a.0"; output = "DP-2"; }
+          ];
+          disabledOutputs = [ ];
+        }
+        {
+          name = "hi";
+          outputs = [
+            { gpu = "0000:00:0a.0"; output = "DP-1"; primary = true; scale = 2; }
+            { gpu = "0000:00:0a.0"; output = "DP-2"; }
+          ];
+          disabledOutputs = [ ];
+        }
+      ];
+'
+
+SOLO_CFG='
+      enable = true;
+      loginLayout = "s1";
+      ddc.enable = false;
+      layouts = [
+        {
+          name = "s1";
+          outputs = [
+            { gpu = "0000:00:0a.0"; output = "DP-1"; primary = true; scale = 1; }
+          ];
+          disabledOutputs = [ ];
+        }
+        {
+          name = "s2";
+          outputs = [
+            { gpu = "0000:00:0a.0"; output = "DP-1"; primary = true; scale = 2; }
+          ];
+          disabledOutputs = [ ];
+        }
+      ];
+'
 
 mk_frag "$TMP/main.nix" "$MAIN_CFG"
 mk_frag "$TMP/pinned.nix" "$PINNED_CFG"
+mk_frag "$TMP/scaled.nix" "$SCALED_CFG"
+mk_frag "$TMP/solo.nix" "$SOLO_CFG"
 
 BIN_MAIN=""
 BIN_PINNED=""
+BIN_SCALED=""
+BIN_SOLO=""
 if ! OUT_MAIN=$(nix build --impure --no-link --print-out-paths -f "$TMP/main.nix" 2>"$TMP/main-build.err" | tail -n 1); then
   echo "FAIL: main config did not build (generalized schema?): $(head -c 300 "$TMP/main-build.err")"
   FAIL=1
@@ -108,8 +157,22 @@ if ! OUT_PINNED=$(nix build --impure --no-link --print-out-paths -f "$TMP/pinned
 else
   BIN_PINNED="$OUT_PINNED/bin/display-layout"
 fi
+if ! OUT_SCALED=$(nix build --impure --no-link --print-out-paths -f "$TMP/scaled.nix" 2>"$TMP/scaled-build.err" | tail -n 1); then
+  echo "FAIL: scaled config did not build: $(head -c 300 "$TMP/scaled-build.err")"
+  FAIL=1
+else
+  BIN_SCALED="$OUT_SCALED/bin/display-layout"
+fi
+if ! OUT_SOLO=$(nix build --impure --no-link --print-out-paths -f "$TMP/solo.nix" 2>"$TMP/solo-build.err" | tail -n 1); then
+  echo "FAIL: solo config did not build: $(head -c 300 "$TMP/solo-build.err")"
+  FAIL=1
+else
+  BIN_SOLO="$OUT_SOLO/bin/display-layout"
+fi
 [[ -n "$BIN_MAIN" && -f "$BIN_MAIN" ]] || BIN_MAIN=""
 [[ -n "$BIN_PINNED" && -f "$BIN_PINNED" ]] || BIN_PINNED=""
+[[ -n "$BIN_SCALED" && -f "$BIN_SCALED" ]] || BIN_SCALED=""
+[[ -n "$BIN_SOLO" && -f "$BIN_SOLO" ]] || BIN_SOLO=""
 ACTIVE_BIN="$BIN_MAIN"
 
 # collect_targets <bin> <name>: store files for <name> referenced by <bin>
@@ -129,8 +192,8 @@ collect_targets() {
   return 0
 }
 
-KS_TARGETS=$( { [[ -n "$BIN_MAIN" ]] && collect_targets "$BIN_MAIN" kscreen-doctor; [[ -n "$BIN_PINNED" ]] && collect_targets "$BIN_PINNED" kscreen-doctor; } | sort -u || true)
-DDC_TARGETS=$( { [[ -n "$BIN_MAIN" ]] && collect_targets "$BIN_MAIN" ddcutil; [[ -n "$BIN_PINNED" ]] && collect_targets "$BIN_PINNED" ddcutil; } | sort -u || true)
+KS_TARGETS=$( { [[ -n "$BIN_MAIN" ]] && collect_targets "$BIN_MAIN" kscreen-doctor; [[ -n "$BIN_PINNED" ]] && collect_targets "$BIN_PINNED" kscreen-doctor; [[ -n "$BIN_SCALED" ]] && collect_targets "$BIN_SCALED" kscreen-doctor; [[ -n "$BIN_SOLO" ]] && collect_targets "$BIN_SOLO" kscreen-doctor; } | sort -u || true)
+DDC_TARGETS=$( { [[ -n "$BIN_MAIN" ]] && collect_targets "$BIN_MAIN" ddcutil; [[ -n "$BIN_PINNED" ]] && collect_targets "$BIN_PINNED" ddcutil; [[ -n "$BIN_SCALED" ]] && collect_targets "$BIN_SCALED" ddcutil; [[ -n "$BIN_SOLO" ]] && collect_targets "$BIN_SOLO" ddcutil; } | sort -u || true)
 
 setup_fakes() {
   mkdir -p "$TMP/bin"
@@ -238,8 +301,9 @@ expect_fail() { # <name> <frag>: package build evaluation must reject config
   else echo "FAIL: $name (rc=$rc err='$(head -c 300 <<<"$err")')"; FAIL=1; fi
 }
 
-mk_out() { # <name> <connected> <enabled> <priority> <posx> <posy> <w> <h>
-  printf '{"name":"%s","connected":%s,"enabled":%s,"priority":%s,"pos":{"x":%s,"y":%s},"size":{"width":%s,"height":%s},"scale":1,"currentModeId":1,"modes":[{"id":1,"size":{"width":%s,"height":%s}}]}' "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$7" "$8"
+mk_out() { # <name> <connected> <enabled> <priority> <posx> <posy> <w> <h> [scale]
+  local scale="${9:-1}"
+  printf '{"name":"%s","connected":%s,"enabled":%s,"priority":%s,"pos":{"x":%s,"y":%s},"size":{"width":%s,"height":%s},"scale":%s,"currentModeId":1,"modes":[{"id":1,"size":{"width":%s,"height":%s}}]}' "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$8" "$scale" "$7" "$8"
 }
 
 snap() { printf '{"outputs":[%s]}' "$1"; }
@@ -284,6 +348,18 @@ PRE_STAGE_REQMISS=$(snap "$DP1_DIS,$DP2_STAGE,$DP3_REQMISS,$HDMI_STAGE,$SPARE_DI
 DP1_PIN=$(mk_out DP-1 true true 1 0 10 100 100)
 DP2_PIN=$(mk_out DP-2 true true 2 200 30 100 200)
 PRE_PINNED_POST=$(snap "$DP1_PIN,$DP2_PIN,$DP3_DIS,$HDMI_DIS,$SPARE_DIS,$UNMANAGED")
+# Scaled hi: DP-1 at scale 2 is logically 50x50, so the row bottom-aligns at
+# maxH 200 as DP-1(0,150,p1,s2)+DP-2(50,0,p2,s1). Lo matches desk geometry.
+DP1_HI=$(mk_out DP-1 true true 1 0 150 100 100 2)
+DP2_HI=$(mk_out DP-2 true true 2 50 0 100 200)
+PRE_HI=$(snap "$DP1_HI,$DP2_HI,$DP3_DIS,$HDMI_DIS,$SPARE_DIS,$UNMANAGED")
+# Compositor ignored the scale change: hi positions but DP-1 still at scale 1.
+DP1_HI_IGNORED=$(mk_out DP-1 true true 1 0 150 100 100)
+PRE_HI_IGNORED=$(snap "$DP1_HI_IGNORED,$DP2_HI,$DP3_DIS,$HDMI_DIS,$SPARE_DIS,$UNMANAGED")
+# Solo single-output layouts differ only in scale: geometry is (0,0,p1) either way.
+DP1_S2=$(mk_out DP-1 true true 1 0 0 100 100 2)
+PRE_S1=$(snap "$DP1_ALT,$DP2_DIS,$DP3_DIS,$HDMI_DIS,$SPARE_DIS,$UNMANAGED")
+PRE_S2=$(snap "$DP1_S2,$DP2_DIS,$DP3_DIS,$HDMI_DIS,$SPARE_DIS,$UNMANAGED")
 
 setup_fakes
 
@@ -302,6 +378,7 @@ check "3-monitor third priority" 0 "" "output.DP-3.priority.3"
 check "3-monitor disables managed absent" 0 "" "output.DP-1.disable"
 check "3-monitor disables configured output" 0 "" "output.DP-4.disable"
 check "3-monitor leaves unmanaged untouched" 0 "" "!DP-9"
+check "unscaled layout sends no scale args" 0 "" "!scale."
 
 fixture "$PRE_DESK" "$PRE_ALT"; run
 check "same-primary cycle desk to desk-alt" 0 "" "output.DP-3.enable"
@@ -342,6 +419,30 @@ check "explicit second position verbatim" 0 "" "output.DP-2.position.200,30"
 check "explicit priorities kept" 0 "" "output.DP-1.priority.1"
 check "explicit second priority" 0 "" "output.DP-2.priority.2"
 check "explicit leaves unmanaged untouched" 0 "" "!DP-9"
+ACTIVE_BIN="$BIN_MAIN"
+fi
+
+if [[ -n "$BIN_SCALED" ]]; then
+ACTIVE_BIN="$BIN_SCALED"
+# Lo matches desk geometry; hi halves DP-1 to logical 50x50.
+fixture "$PRE_DESK" "$PRE_HI"; run hi
+check "target scale applied in same transaction" 0 "" "output.DP-1.scale.2"
+check "scaled primary bottom-aligns on target height" 0 "" "output.DP-1.position.0,150"
+check "follower x accumulates scaled width" 0 "" "output.DP-2.position.50,0"
+
+check "unscaled follower sends no scale arg" 0 "" "!output.DP-2.scale."
+fixture "$PRE_DESK" "$PRE_HI_IGNORED"; run hi
+check "ignored scale change fails postcondition" 1 "!empty" "output.DP-1.scale.2"
+fixture "$PRE_HI" "$PRE_DESK"; run cycle
+check "cycle wraps scaled hi to lo" 0 "" "output.DP-1.position.0,100"
+check "cycle restores layout scale" 0 "" "output.DP-1.scale.1"
+ACTIVE_BIN="$BIN_MAIN"
+fi
+
+if [[ -n "$BIN_SOLO" ]]; then
+ACTIVE_BIN="$BIN_SOLO"
+fixture "$PRE_S2" "$PRE_S1"; run cycle
+check "cycle distinguishes scale-only layouts" 0 "" "output.DP-1.scale.1"
 ACTIVE_BIN="$BIN_MAIN"
 fi
 
@@ -438,6 +539,15 @@ mk_frag "$TMP/bad-negpos.nix" '
       ];
 '
 expect_fail "negative position rejected at package build" "$TMP/bad-negpos.nix"
+mk_frag "$TMP/bad-scale.nix" '
+      enable = true;
+      loginLayout = "a";
+      ddc.enable = false;
+      layouts = [
+        { name = "a"; outputs = [ { gpu = "0000:00:0a.0"; output = "DP-1"; primary = true; scale = 0; } ]; }
+      ];
+'
+expect_fail "non-positive scale rejected at package build" "$TMP/bad-scale.nix"
 mk_frag "$TMP/old-globals.nix" '
       enable = true;
       loginLayout = "intel";

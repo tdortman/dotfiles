@@ -113,6 +113,12 @@ let
       };
 
       primary = lib.mkEnableOption "making this output the primary display";
+
+      scale = lib.mkOption {
+        type = lib.types.nullOr lib.types.numbers.positive;
+        default = null;
+        description = "Logical scale factor for this output. Null preserves the current scale.";
+      };
     };
   };
   positionType = lib.types.submodule {
@@ -147,6 +153,7 @@ let
       gpu = output.gpu;
       position = output.position;
       primary = output.primary;
+      scale = output.scale;
     }) layout.outputs;
   }) cfg.layouts;
   runtimeScript = pkgs.writeTextFile {

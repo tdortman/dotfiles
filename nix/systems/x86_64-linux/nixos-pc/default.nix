@@ -234,6 +234,7 @@
           {
             input = 15;
             output = "DP-1";
+            scale = 1.3;
             gpu = "0000:07:00.0";
             primary = true;
           }
@@ -251,6 +252,7 @@
           {
             input = 17;
             output = "HDMI-A-5";
+            scale = 1.0;
 
             ddcControl = {
               output = "DP-1";

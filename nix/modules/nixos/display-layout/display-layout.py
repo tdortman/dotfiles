@@ -63,7 +63,7 @@ def usage():
         "Managed outputs ("
         + (", ".join(MANAGED) if MANAGED else "none")
         + ") absent from the selected layout are disabled when present; unknown external connectors are left alone.",
-        "Existing mode, scale, refresh rate, and HDR settings are preserved.",
+        "Existing mode, refresh rate, and HDR settings are preserved; scale is preserved unless the layout sets it.",
     ]
     return "\n".join(lines) + "\n"
 
@@ -93,8 +93,9 @@ def by_name(snapshot):
     return {output.get("name"): output for output in snapshot["outputs"]}
 
 
-def logical_size(entry):
-    scale = entry.get("scale")
+def logical_size(entry, scale=None):
+    if scale is None:
+        scale = entry.get("scale")
     if isinstance(scale, bool) or not isinstance(scale, (int, float)) or scale <= 0:
         raise DimensionsError("invalid scale for " + str(entry.get("name")))
     size = entry.get("size") or {}
@@ -119,7 +120,7 @@ def prepare(layout, live):
         entry = live.get(output["output"])
         if entry is None or entry.get("connected") is not True:
             raise RequiredDisconnected(output["output"])
-        connected.append((output, logical_size(entry)))
+        connected.append((output, logical_size(entry, output.get("scale"))))
     max_height = max(height for (_, (_, height)) in connected)
     primaries = [
         index for index, (output, _) in enumerate(connected) if output.get("primary")
@@ -152,6 +153,7 @@ def prepare(layout, live):
                 "input": output["input"],
                 "ddcGpu": output["ddcGpu"],
                 "ddcOutput": output["ddcOutput"],
+                "scale": output.get("scale"),
             }
         )
         x += width
@@ -170,6 +172,8 @@ def state_matches(selected, live):
         if entry.get("priority") != item["priority"]:
             return False
         if (entry.get("pos") or {}) != {"x": item["x"], "y": item["y"]}:
+            return False
+        if item["scale"] is not None and entry.get("scale") != item["scale"]:
             return False
     wanted = {item["output"] for item in selected}
     for connector in MANAGED:
@@ -302,6 +306,8 @@ def apply_layout(layout, live):
             + str(item["y"]),
             "output." + item["output"] + ".priority." + str(item["priority"]),
         ]
+        if item["scale"] is not None:
+            args += ["output." + item["output"] + ".scale." + str(item["scale"])]
     wanted = {item["output"] for item in selected}
     for connector in MANAGED:
         if connector not in wanted and connector in live:
