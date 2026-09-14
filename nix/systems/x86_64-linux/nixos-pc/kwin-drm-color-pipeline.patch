@@ -1,0 +1,50 @@
+--- a/src/backends/drm/drm_colorop.cpp
++++ b/src/backends/drm/drm_colorop.cpp
+@@ -176,9 +176,12 @@
+         if (!nextHardwareOp) {
+             return std::nullopt;
+         }
+-        // in some cases, skipping hardware ops can find working configurations
+-        // as some hardware ops can only operate on specific color spaces
+-        if (auto ret = findColorPipelineAssignments(nextHardwareOp->next(), nextHardwareOp, ops, previousInverseOutputScaling)) {
++        // Retry the following block without consuming an operation. A block
++        // already holding operations does not need to be bypassable.
++        if (isInput && !hardwareOp->canBypass()) {
++            return std::nullopt;
++        }
++        if (auto ret = findColorPipelineAssignments(hardwareOp->next(), hardwareOp, ops, previousInverseOutputScaling)) {
+             backpropagateNextInputScaling(hardwareOp, previousHardwareOp, *ret);
+             return ret;
+         } else {
+@@ -1036,12 +1039,13 @@
+         invMat.translate(tf->tf.minLuminance, tf->tf.minLuminance, tf->tf.minLuminance);
+         invMat.scale(tf->tf.maxLuminance - tf->tf.minLuminance);
+         invMat.scale(1.0 / transferFunctionScale);
++        const QMatrix4x4 mat = invMat.inverted();
+         return Scaling{
+-            .scaling = ColorMatrix(invMat.inverted()),
++            .scaling = ColorMatrix(mat),
+             .inverse = ColorOp{
+                 .input = ValueRange{
+-                    .min = evaluateMat(invMat, op.output.min),
+-                    .max = evaluateMat(invMat, op.output.max),
++                    .min = evaluateMat(mat, op.output.min),
++                    .max = evaluateMat(mat, op.output.max),
+                 },
+                 // not linear, not normal nonlinear either though
+                 .inputSpace = ColorspaceType::AnyNonRGB,
+--- a/src/backends/drm/drm_output.cpp
++++ b/src/backends/drm/drm_output.cpp
+@@ -838,6 +838,12 @@
+ bool DrmOutput::setPostBlendPipeline(const ColorPipeline &pipeline, const std::shared_ptr<ColorDescription> &newLayerBlendColor)
+ {
++    // Keep HDR plane and CRTC colour transforms stable across cursor visibility
++    // changes on NVIDIA to avoid brightness flashes.
++    if (m_state.highDynamicRange && m_gpu->drmDevice()->isNvidia()) {
++        return false;
++    }
++
+     // like in tryKmsColorOffloading, and additionally only when we're doing color management
+     // on the CRTC, instead of in the shadow buffer
+     if (!m_pipeline->activePending() || m_pipeline->layers().empty() || m_lease || m_needsShadowBuffer) {
+         return false;

@@ -13,10 +13,14 @@ in
 
   config = lib.mkIf cfg.enable {
     environment = {
-      plasma6.excludePackages = with pkgs.kdePackages; [
-        plasma-browser-integration
-        kwin-x11
-      ];
+      plasma6.excludePackages =
+        with pkgs.kdePackages;
+        [
+          plasma-browser-integration
+        ]
+        ++ lib.optionals (lib.versionOlder pkgs.kdePackages.kwin.version "6.7.90") [
+          kwin-x11
+        ];
 
       systemPackages = with pkgs.kdePackages; [
         kcalc

@@ -11,7 +11,10 @@
   imports = [
     ./disko.nix
     ./hardware-configuration.nix
+    "${inputs.nixpkgs-plasma-beta}/nixos/modules/services/desktop-managers/plasma6.nix"
   ];
+
+  disabledModules = [ "services/desktop-managers/plasma6.nix" ];
 
   age.secrets = {
     airvpn-presharedkey.file = inputs.self + /nix/secrets/airvpn-presharedkey.age;
@@ -401,6 +404,26 @@
 
   kde.enable = true;
   mime.librewolf.enable = true;
+
+  nixpkgs.overlays = lib.mkBefore [
+    (final: prev: {
+      kdePackages =
+        (import inputs.nixpkgs-plasma-beta {
+          inherit (prev) config;
+          inherit system;
+        }).kdePackages.overrideScope
+          (
+            kfinal: kprev: {
+              kwin = kprev.kwin.overrideAttrs (oldAttrs: {
+                patches = (oldAttrs.patches or [ ]) ++ [ ./kwin-drm-color-pipeline.patch ];
+              });
+              ktnef = kprev.ktnef.overrideAttrs (oldAttrs: {
+                buildInputs = (oldAttrs.buildInputs or [ ]) ++ [ kfinal.kcalutils ];
+              });
+            }
+          );
+    })
+  ];
 
   networking = {
     hostName = "nixos-pc";

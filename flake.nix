@@ -167,6 +167,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
+    nixpkgs-plasma-beta.url = "github:NixOS/nixpkgs/pull/561955/head";
     nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/540416/head";
 
     kache = {
