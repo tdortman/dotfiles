@@ -1,0 +1,383 @@
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -16,6 +16,8 @@
+ #include <unordered_set>
+ #include <csignal>
+ #include <sys/mman.h>
++#include <sys/stat.h>
++#include <unistd.h>
+ #include <poll.h>
+ #include <linux/input-event-codes.h>
+ #include <xkbcommon/xkbcommon.h>
+@@ -744,6 +746,8 @@
+ 
+         void Wayland_Modifier( zwp_linux_dmabuf_v1 *pDmabuf, uint32_t uFormat, uint32_t uModifierHi, uint32_t uModifierLo );
+ 
++        bool InitDmabufDefaultFeedback();
++
+         void Wayland_Output_Geometry( wl_output *pOutput, int32_t nX, int32_t nY, int32_t nPhysicalWidth, int32_t nPhysicalHeight, int32_t nSubpixel, const char *pMake, const char *pModel, int32_t nTransform );
+         void Wayland_Output_Mode( wl_output *pOutput, uint32_t uFlags, int32_t nWidth, int32_t nHeight, int32_t nRefresh );
+         void Wayland_Output_Done( wl_output *pOutput );
+@@ -842,6 +846,9 @@
+ 
+         bool m_bCanUseModifiers = false;
+         std::unordered_map<uint32_t, std::vector<uint64_t>> m_FormatModifiers;
++
++        uint32_t m_uLinuxDmabufVersion = 0;
++        std::optional<dev_t> m_SamplingDevId;
+         std::unordered_map<uint32_t, wl_buffer *> m_ImportedFbs;
+ 
+         uint32_t m_uPointerEnterSerial = 0;
+@@ -2077,6 +2084,14 @@
+         {
+             return false;
+         }
++
++        // linux-dmabuf v6 reports formats per GPU, and the Vulkan device is
++        // only known now, so snapshot default feedback for the selected GPU.
++        if ( m_uLinuxDmabufVersion >= 6u )
++        {
++            if ( !InitDmabufDefaultFeedback() )
++                return false;
++        }
+         
+         if ( !wlsession_init() )
+         {
+@@ -2224,6 +2239,18 @@
+             return nullptr;
+         }
+ 
++        if ( m_uLinuxDmabufVersion >= 6u && m_SamplingDevId.has_value() )
++        {
++            dev_t samplingDev = *m_SamplingDevId;
++            wl_array samplingDevice =
++            {
++                .size = sizeof( samplingDev ),
++                .alloc = 0,
++                .data = &samplingDev,
++            };
++            zwp_linux_buffer_params_v1_set_sampling_device( pBufferParams, &samplingDevice );
++        }
++
+         for ( int i = 0; i < pDmaBuf->n_planes; i++ )
+         {
+             zwp_linux_buffer_params_v1_add(
+@@ -2510,13 +2537,24 @@
+         }
+         else if ( !strcmp( pInterface, zwp_linux_dmabuf_v1_interface.name ) && uVersion >= 3 )
+         {
+-            m_pLinuxDmabuf = (zwp_linux_dmabuf_v1 *)wl_registry_bind( pRegistry, uName, &zwp_linux_dmabuf_v1_interface, 3u );
+-            static constexpr zwp_linux_dmabuf_v1_listener s_Listener =
++            if ( uVersion >= 6u )
+             {
+-                .format   = WAYLAND_NULL(), // Formats are also advertised by the modifier event, ignore them here.
+-                .modifier = WAYLAND_USERDATA_TO_THIS( CWaylandBackend, Wayland_Modifier ),
+-            };
+-            zwp_linux_dmabuf_v1_add_listener( m_pLinuxDmabuf, &s_Listener, this );
++                // v6 advertises formats per GPU via default feedback once the
++                // Vulkan device is known; the legacy modifier event is gone.
++                m_pLinuxDmabuf = (zwp_linux_dmabuf_v1 *)wl_registry_bind( pRegistry, uName, &zwp_linux_dmabuf_v1_interface, 6u );
++                m_uLinuxDmabufVersion = 6u;
++            }
++            else
++            {
++                m_pLinuxDmabuf = (zwp_linux_dmabuf_v1 *)wl_registry_bind( pRegistry, uName, &zwp_linux_dmabuf_v1_interface, std::min( uVersion, 3u ) );
++                m_uLinuxDmabufVersion = std::min( uVersion, 3u );
++                static constexpr zwp_linux_dmabuf_v1_listener s_Listener =
++                {
++                    .format   = WAYLAND_NULL(), // Formats are also advertised by the modifier event, ignore them here.
++                    .modifier = WAYLAND_USERDATA_TO_THIS( CWaylandBackend, Wayland_Modifier ),
++                };
++                zwp_linux_dmabuf_v1_add_listener( m_pLinuxDmabuf, &s_Listener, this );
++            }
+         }
+         else if ( !strcmp( pInterface, wp_viewporter_interface.name ) )
+         {
+@@ -2576,6 +2614,287 @@
+         }
+     }
+ 
++    // linux-dmabuf v6 reports formats/modifiers per GPU tranche. Temporary
++    // parse state for the single default-feedback snapshot taken in Init once
++    // the Vulkan device is known. Every format on sampling tranches for the
++    // selected GPU is kept, including HDR-capable ones.
++    struct DmabufDefaultFeedbackState
++    {
++        struct FormatEntry
++        {
++            uint32_t uFormat;
++            uint32_t uPadding;
++            uint64_t ulModifier;
++        };
++        static_assert( sizeof( FormatEntry ) == 16u );
++
++        const FormatEntry *pTable = nullptr;
++        void *pMap = nullptr;
++        size_t uMapSize = 0;
++        size_t uTableCount = 0;
++
++        bool bTrancheHasTarget = false;
++        dev_t trancheTarget = 0;
++        bool bTrancheHasFlags = false;
++        uint32_t uTrancheFlags = 0;
++        std::vector<uint16_t> trancheIndices;
++
++        dev_t renderDev = 0;
++        dev_t primaryDev = 0;
++        bool bHasPrimaryDev = false;
++
++        std::unordered_map<uint32_t, std::vector<uint64_t>> formatModifiers;
++        bool bFoundSamplingTranche = false;
++        bool bDone = false;
++        bool bMalformed = false;
++        const char *pszMalformedReason = nullptr;
++
++        void UnmapTable()
++        {
++            if ( pMap != nullptr )
++                munmap( pMap, uMapSize );
++            pMap = nullptr;
++            uMapSize = 0;
++            pTable = nullptr;
++            uTableCount = 0;
++        }
++
++        void Fail( const char *pszReason )
++        {
++            if ( !bMalformed )
++            {
++                bMalformed = true;
++                pszMalformedReason = pszReason;
++            }
++        }
++
++        bool TargetIsSelectedGpu( dev_t target ) const
++        {
++            if ( target == renderDev )
++                return true;
++            return bHasPrimaryDev && target == primaryDev;
++        }
++
++        void ResetTranche()
++        {
++            bTrancheHasTarget = false;
++            trancheTarget = 0;
++            bTrancheHasFlags = false;
++            uTrancheFlags = 0;
++            trancheIndices.clear();
++        }
++
++        void OnDone( zwp_linux_dmabuf_feedback_v1 * )
++        {
++            bDone = true;
++        }
++
++        void OnFormatTable( zwp_linux_dmabuf_feedback_v1 *, int32_t fd, uint32_t uSize )
++        {
++            defer( close( fd ) );
++            if ( bMalformed )
++                return;
++            if ( uSize % sizeof( FormatEntry ) != 0u )
++            {
++                Fail( "format table size is not a multiple of 16 bytes" );
++                return;
++            }
++            struct stat tableStat;
++            if ( fstat( fd, &tableStat ) != 0 || tableStat.st_size < 0 || uint64_t( tableStat.st_size ) < uSize )
++            {
++                Fail( "format table fd is invalid or shorter than its advertised size" );
++                return;
++            }
++            UnmapTable();
++            uTableCount = uSize / sizeof( FormatEntry );
++            if ( uTableCount == 0u )
++                return;
++            void *pNewMap = mmap( nullptr, uSize, PROT_READ, MAP_PRIVATE, fd, 0 );
++            if ( pNewMap == MAP_FAILED )
++            {
++                uTableCount = 0u;
++                Fail( "failed to mmap format table" );
++                return;
++            }
++            pMap = pNewMap;
++            uMapSize = uSize;
++            pTable = static_cast<const FormatEntry *>( pMap );
++        }
++
++        void OnTrancheTargetDevice( zwp_linux_dmabuf_feedback_v1 *, wl_array *pDevice )
++        {
++            if ( bMalformed )
++                return;
++            if ( pDevice->size != sizeof( dev_t ) )
++            {
++                Fail( "tranche target device has an unexpected dev_t size" );
++                return;
++            }
++            memcpy( &trancheTarget, pDevice->data, sizeof( dev_t ) );
++            bTrancheHasTarget = true;
++        }
++
++        void OnTrancheFlags( zwp_linux_dmabuf_feedback_v1 *, uint32_t uFlags )
++        {
++            uTrancheFlags = uFlags;
++            bTrancheHasFlags = true;
++        }
++
++        void OnTrancheFormats( zwp_linux_dmabuf_feedback_v1 *, wl_array *pIndices )
++        {
++            if ( bMalformed )
++                return;
++            if ( pIndices->size % sizeof( uint16_t ) != 0u )
++            {
++                Fail( "tranche formats array is not a multiple of 2 bytes" );
++                return;
++            }
++            const uint16_t *pIndex = static_cast<const uint16_t *>( pIndices->data );
++            size_t uCount = pIndices->size / sizeof( uint16_t );
++            for ( size_t i = 0; i < uCount; i++ )
++                trancheIndices.push_back( pIndex[i] );
++        }
++
++        void OnTrancheDone( zwp_linux_dmabuf_feedback_v1 * )
++        {
++            if ( bMalformed )
++            {
++                ResetTranche();
++                return;
++            }
++            if ( !bTrancheHasTarget )
++            {
++                Fail( "tranche is missing its target device" );
++                ResetTranche();
++                return;
++            }
++            if ( !bTrancheHasFlags )
++            {
++                Fail( "tranche is missing its flags" );
++                ResetTranche();
++                return;
++            }
++            bool bSampling = ( uTrancheFlags & ZWP_LINUX_DMABUF_FEEDBACK_V1_TRANCHE_FLAGS_SAMPLING ) != 0u;
++            if ( bSampling && TargetIsSelectedGpu( trancheTarget ) )
++            {
++                bFoundSamplingTranche = true;
++                for ( uint16_t uIndex : trancheIndices )
++                {
++                    if ( pTable == nullptr || size_t( uIndex ) >= uTableCount )
++                    {
++                        Fail( "tranche format index is out of bounds" );
++                        break;
++                    }
++                    const FormatEntry &entry = pTable[ uIndex ];
++                    std::vector<uint64_t> &modifiers = formatModifiers[ entry.uFormat ];
++                    bool bKnown = false;
++                    for ( uint64_t ulKnown : modifiers )
++                    {
++                        if ( ulKnown == entry.ulModifier )
++                        {
++                            bKnown = true;
++                            break;
++                        }
++                    }
++                    if ( !bKnown )
++                        modifiers.push_back( entry.ulModifier );
++                }
++            }
++            ResetTranche();
++        }
++    };
++
++    static constexpr zwp_linux_dmabuf_feedback_v1_listener s_DmabufDefaultFeedbackListener =
++    {
++        .done                  = WAYLAND_USERDATA_TO_THIS( DmabufDefaultFeedbackState, OnDone ),
++        .format_table          = WAYLAND_USERDATA_TO_THIS( DmabufDefaultFeedbackState, OnFormatTable ),
++        .main_device           = WAYLAND_NULL(),
++        .tranche_done          = WAYLAND_USERDATA_TO_THIS( DmabufDefaultFeedbackState, OnTrancheDone ),
++        .tranche_target_device = WAYLAND_USERDATA_TO_THIS( DmabufDefaultFeedbackState, OnTrancheTargetDevice ),
++        .tranche_formats       = WAYLAND_USERDATA_TO_THIS( DmabufDefaultFeedbackState, OnTrancheFormats ),
++        .tranche_flags         = WAYLAND_USERDATA_TO_THIS( DmabufDefaultFeedbackState, OnTrancheFlags ),
++    };
++
++    bool CWaylandBackend::InitDmabufDefaultFeedback()
++    {
++        int nRenderFd = g_device.drmRenderFd();
++        if ( nRenderFd < 0 )
++        {
++            xdg_log.errorf( "linux-dmabuf v6: no DRM render fd selected, cannot match a feedback tranche to the GPU." );
++            return false;
++        }
++
++        struct stat renderStat{};
++        if ( fstat( nRenderFd, &renderStat ) != 0 )
++        {
++            xdg_log.errorf( "linux-dmabuf v6: failed to stat the selected DRM render node." );
++            return false;
++        }
++
++        DmabufDefaultFeedbackState state;
++        defer( state.UnmapTable() );
++        state.renderDev = renderStat.st_rdev;
++        state.bHasPrimaryDev = g_device.hasDrmPrimaryDevId();
++        if ( state.bHasPrimaryDev )
++            state.primaryDev = g_device.primaryDevId();
++
++        zwp_linux_dmabuf_feedback_v1 *pFeedback = zwp_linux_dmabuf_v1_get_default_feedback( m_pLinuxDmabuf );
++        if ( !pFeedback )
++        {
++            xdg_log.errorf( "linux-dmabuf v6: failed to create the default feedback object." );
++            return false;
++        }
++        defer( zwp_linux_dmabuf_feedback_v1_destroy( pFeedback ) );
++
++        zwp_linux_dmabuf_feedback_v1_add_listener( pFeedback, &s_DmabufDefaultFeedbackListener, &state );
++
++        while ( !state.bDone && !state.bMalformed )
++        {
++            if ( wl_display_dispatch( m_pDisplay ) < 0 )
++            {
++                xdg_log.errorf_errno( "linux-dmabuf v6: dispatch failed while collecting default feedback" );
++                return false;
++            }
++        }
++
++        if ( state.bMalformed )
++        {
++            xdg_log.errorf( "linux-dmabuf v6: malformed default feedback (%s).", state.pszMalformedReason ? state.pszMalformedReason : "unknown" );
++            return false;
++        }
++        if ( !state.bFoundSamplingTranche )
++        {
++            xdg_log.errorf( "linux-dmabuf v6: no sampling tranche for the selected GPU." );
++            return false;
++        }
++        if ( state.formatModifiers.empty() )
++        {
++            xdg_log.errorf( "linux-dmabuf v6: selected GPU sampling tranches advertised no formats." );
++            return false;
++        }
++
++        m_FormatModifiers = std::move( state.formatModifiers );
++        m_bCanUseModifiers = false;
++        for ( const auto &pair : m_FormatModifiers )
++        {
++            for ( uint64_t ulModifier : pair.second )
++            {
++                if ( ulModifier != DRM_FORMAT_MOD_INVALID )
++                {
++                    m_bCanUseModifiers = true;
++                    break;
++                }
++            }
++            if ( m_bCanUseModifiers )
++                break;
++        }
++        m_SamplingDevId = state.renderDev;
++
++        xdg_log.infof( "linux-dmabuf v6: using %zu format(s) from the selected GPU sampling tranche(s).", m_FormatModifiers.size() );
++
++        return true;
++    }
++
+     void CWaylandBackend::Wayland_Modifier( zwp_linux_dmabuf_v1 *pDmabuf, uint32_t uFormat, uint32_t uModifierHi, uint32_t uModifierLo )
+     {
+         uint64_t ulModifier = ( uint64_t( uModifierHi ) << 32 ) | uModifierLo;

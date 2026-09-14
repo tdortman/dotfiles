@@ -297,7 +297,50 @@
 
     systemPackages =
       with pkgs;
-      [
+      map
+        (
+          { name, flags }:
+          writeShellApplication {
+            inherit name;
+            runtimeInputs = [
+              gamescope
+              coreutils
+            ];
+            text = ''
+              if [[ $# -eq 0 ]]; then
+                echo 'Usage: ${name} command [args...]' >&2
+                exit 2
+              fi
+
+              unset PROTON_ENABLE_WAYLAND DISABLE_GAMESCOPE_WSI ENABLE_GAMESCOPE_WSI
+
+              export VK_DRIVER_FILES=/run/opengl-driver/share/vulkan/icd.d/nvidia_icd.json
+              exec gamescope --backend wayland --force-composition --force-windows-fullscreen \
+                -w 3840 -h 2160 -W 3840 -H 2160 -f --prefer-vk-device 10de:2c05 \
+                ${flags} -- env -u WAYLAND_DEBUG \
+                ENABLE_GAMESCOPE_WSI=1 PROTON_ENABLE_HDR=1 "$@"
+            '';
+          }
+        )
+        [
+          {
+            name = "gamescope-game-sdr";
+            flags = "";
+          }
+          {
+            name = "gamescope-game-hdr";
+            flags = "--hdr-enabled";
+          }
+          {
+            name = "gamescope-game-sdr-mango";
+            flags = "--mangoapp";
+          }
+          {
+            name = "gamescope-game-hdr-mango";
+            flags = "--hdr-enabled --mangoapp";
+          }
+        ]
+      ++ [
         (discord.override {
           commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
           withVencord = true;

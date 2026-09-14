@@ -1,0 +1,324 @@
+diff --git a/src/meson.build b/src/meson.build
+index ff7f3f7..af948c4 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -11,8 +11,10 @@ dep_xmu = dependency('xmu')
+ dep_xi = dependency('xi')
+ 
+ drm_dep = dependency('libdrm', version: '>= 2.4.113', required: get_option('drm_backend'))
+-eis_dep = dependency('libeis-1.0', required : get_option('input_emulation'))
++# gbm_bo_create_with_modifiers2 needs Mesa >= 21.3
++gbm_dep = dependency('gbm', version: '>= 21.3', required: false)
+ 
++eis_dep = dependency('libeis-1.0', required : get_option('input_emulation'))
+ wayland_server = dependency('wayland-server', version: '>=1.21')
+ xkbcommon = dependency('xkbcommon')
+ thread_dep = dependency('threads')
+@@ -146,6 +148,7 @@ if sdl2_dep.found()
+ endif
+ 
+ gamescope_cpp_args += '-DHAVE_DRM=@0@'.format(drm_dep.found().to_int())
++gamescope_cpp_args += '-DHAVE_GBM=@0@'.format((drm_dep.found() and gbm_dep.found()).to_int())
+ gamescope_cpp_args += '-DHAVE_SDL2=@0@'.format(sdl2_dep.found().to_int())
+ gamescope_cpp_args += '-DHAVE_AVIF=@0@'.format(avif_dep.found().to_int())
+ gamescope_cpp_args += '-DHAVE_LIBCAP=@0@'.format(cap_dep.found().to_int())
+@@ -193,7 +196,7 @@ gamescope_version = configure_file(
+     include_directories : [reshade_include, sol2_include],
+     dependencies: [
+       dep_wayland, dep_x11, dep_xdamage, dep_xcomposite, dep_xrender, dep_xext, dep_xfixes,
+-      dep_xxf86vm, dep_xres, glm_dep, drm_dep, wayland_server,
++      dep_xxf86vm, dep_xres, glm_dep, drm_dep, gbm_dep, wayland_server,
+       xkbcommon, thread_dep, sdl2_dep, wlroots_dep,
+       vulkan_dep, liftoff_dep, dep_xtst, dep_xmu, cap_dep, epoll_dep, pipewire_dep, librt_dep,
+       stb_dep, displayinfo_dep, openvr_dep, dep_xcursor, avif_dep, dep_xi,
+diff --git a/src/rendervulkan.cpp b/src/rendervulkan.cpp
+index d8810a4..961eb22 100644
+--- a/src/rendervulkan.cpp
++++ b/src/rendervulkan.cpp
+@@ -27,6 +27,9 @@
+ #if HAVE_DRM
+ #include "drm_include.h"
+ #endif
++#if HAVE_GBM
++#include <gbm.h>
++#endif
+ #include "wlr_begin.hpp"
+ #include <wlr/render/drm_format_set.h>
+ #include "wlr_end.hpp"
+@@ -2048,8 +2051,11 @@ bool CVulkanTexture::BInit( uint32_t width, uint32_t height, uint32_t depth, uin
+ 		usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+ 	}
+ 
+-	if ( flags.bFlippable == true )
++	if ( flags.bFlippable == true && pDMA == nullptr )
+ 	{
++		// Flippable images allocated here are exported to the backend. A
++		// flippable image from a backend-allocated dmabuf (GBM scanout) is
++		// imported instead.
+ 		flags.bExportable = true;
+ 	}
+ 
+@@ -2490,13 +2496,38 @@ bool CVulkanTexture::BInit( uint32_t width, uint32_t height, uint32_t depth, uin
+ 
+ 		m_dmabuf = dmabuf;
+ 	}
++	else if ( pDMA != nullptr && flags.bFlippable == true )
++	{
++		// Backend-allocated (GBM) scanout buffer: keep a dup'd copy for fbid
++		// creation. The Vulkan import above holds its own reference, so the
++		// bo itself may be destroyed after BInit returns.
++		m_dmabuf = *pDMA;
++		m_dmabuf.n_planes = 0;
++		for ( int i = 0; i < pDMA->n_planes; i++ )
++		{
++			m_dmabuf.fd[i] = dup( pDMA->fd[i] );
++			if ( m_dmabuf.fd[i] < 0 )
++			{
++				vk_log.errorf_errno( "dup failed" );
++				return false;
++			}
++			m_dmabuf.n_planes = i + 1;
++		}
++	}
+ 
+ 	if ( flags.bFlippable == true )
+ 	{
+ 		m_pBackendFb = GetBackend()->ImportDmabufToBackend( &m_dmabuf );
++		if ( m_pBackendFb == nullptr )
++		{
++			vk_log.errorf( "Failed to import flippable image to backend" );
++			return false;
++		}
+ 	}
+ 
+-	bool bHasAlpha = pDMA ? DRMFormatHasAlpha( pDMA->format ) : true;
++	// Backend-allocated output (GBM scanout) images present exactly like
++	// Vulkan-allocated ones: X-channel formats keep identity-swizzle views.
++	bool bHasAlpha = ( pDMA && !flags.bOutputImage ) ? DRMFormatHasAlpha( pDMA->format ) : true;
+ 
+ 	if (!bHasAlpha )
+ 	{
+@@ -3284,6 +3315,203 @@ bool vulkan_remake_swapchain( void )
+ 	return bRet;
+ }
+ 
++#if HAVE_GBM
++static bool IsNvidiaDrmNode( int nFd )
++{
++	drmVersionPtr pVersion = drmGetVersion( nFd );
++	if ( !pVersion )
++		return false;
++	bool bNvidia = pVersion->name && !strcmp( pVersion->name, "nvidia-drm" );
++	drmFreeVersion( pVersion );
++	return bNvidia;
++}
++
++// Modifiers the backend can present that Vulkan can also import a dmabuf
++// image with, for the usage implied by flags. The GBM buffer is allocated
++// from this list so both sides accept the memory.
++static std::vector<uint64_t> GetGbmScanoutModifiers( uint32_t uDrmFormat, const CVulkanTexture::createFlags &flags )
++{
++	std::vector<uint64_t> modifiers;
++
++	VkImageUsageFlags usage = 0;
++	if ( flags.bSampled )
++		usage |= VK_IMAGE_USAGE_SAMPLED_BIT;
++	if ( flags.bStorage )
++		usage |= VK_IMAGE_USAGE_STORAGE_BIT;
++	if ( flags.bTransferSrc )
++		usage |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
++
++	for ( uint64_t ulModifier : GetBackend()->GetSupportedModifiers( uDrmFormat ) )
++	{
++		if ( ulModifier == DRM_FORMAT_MOD_INVALID )
++			continue;
++
++		VkImageCreateInfo imageInfo = {
++			.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
++			.imageType = VK_IMAGE_TYPE_2D,
++			.format = DRMFormatToVulkan( uDrmFormat, false ),
++			.mipLevels = 1,
++			.arrayLayers = 1,
++			.samples = VK_SAMPLE_COUNT_1_BIT,
++			.tiling = VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT,
++			.usage = usage,
++			.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
++		};
++
++		std::array<VkFormat, 2> formats = {
++			DRMFormatToVulkan( uDrmFormat, false ),
++			DRMFormatToVulkan( uDrmFormat, true ),
++		};
++
++		VkImageFormatListCreateInfo formatList = {
++			.sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_LIST_CREATE_INFO,
++			.viewFormatCount = (uint32_t)formats.size(),
++			.pViewFormats = formats.data(),
++		};
++
++		if ( formats[0] != formats[1] )
++		{
++			formatList.pNext = std::exchange( imageInfo.pNext, &formatList );
++			imageInfo.flags |= VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT;
++		}
++
++		VkExternalImageFormatProperties externalImageProperties = {
++			.sType = VK_STRUCTURE_TYPE_EXTERNAL_IMAGE_FORMAT_PROPERTIES,
++		};
++
++		VkResult res = getModifierProps( &imageInfo, ulModifier, &externalImageProperties );
++		if ( res == VK_SUCCESS &&
++		     ( externalImageProperties.externalMemoryProperties.externalMemoryFeatures & VK_EXTERNAL_MEMORY_FEATURE_IMPORTABLE_BIT ) )
++			modifiers.push_back( ulModifier );
++	}
++
++	return modifiers;
++}
++
++// Nested compositors on the NVIDIA proprietary driver: Vulkan-exported
++// images land in scattered vidmem the display engine cannot scan out, so
++// the output images are GBM-allocated (physically contiguous) and imported.
++static bool UseGbmScanoutOutputImages()
++{
++	if ( GetBackend()->UsesVulkanSwapchain() || GetBackend()->IsSessionBased() )
++		return false;
++	// Backends without presentable modifiers (Headless) keep the Vulkan path.
++	if ( !GetBackend()->UsesModifiers() )
++		return false;
++	if ( !g_device.supportsModifiers() )
++		return false;
++	int nRenderFd = g_device.drmRenderFd();
++	if ( nRenderFd < 0 || !IsNvidiaDrmNode( nRenderFd ) )
++		return false;
++	return true;
++}
++
++// Allocate one output-sized GBM buffer and import it. BInit dups everything
++// it keeps, so the bo is destroyed before return: the Vulkan import and
++// m_dmabuf hold their own references alive.
++static bool MakeGbmScanoutOutputImage( VulkanOutput_t *pOutput, uint32_t uIndex, uint32_t uWidth, uint32_t uHeight, uint32_t uDrmFormat, const CVulkanTexture::createFlags &flags, const std::vector<uint64_t> &modifiers, struct gbm_device *pGbm )
++{
++	struct gbm_bo *pBo = gbm_bo_create_with_modifiers2( pGbm, uWidth, uHeight, uDrmFormat, modifiers.data(), modifiers.size(), GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING );
++	if ( !pBo )
++	{
++		vk_log.errorf_errno( "GBM scanout allocation failed" );
++		return false;
++	}
++
++	wlr_dmabuf_attributes attrs = {
++		.width = int32_t( uWidth ),
++		.height = int32_t( uHeight ),
++		.format = uDrmFormat,
++		.modifier = gbm_bo_get_modifier( pBo ),
++	};
++
++	bool bSuccess = false;
++	const int nPlaneCount = gbm_bo_get_plane_count( pBo );
++	if ( ( nPlaneCount < 1 || nPlaneCount > 4 ) ||
++	     !gamescope::Algorithm::Contains( modifiers, attrs.modifier ) )
++	{
++		vk_log.errorf( "GBM scanout buffer has unsupported planes or a modifier outside the allowed list" );
++	}
++	else
++	{
++		bSuccess = true;
++		for ( int i = 0; bSuccess && i < nPlaneCount; i++ )
++		{
++			int nFd = gbm_bo_get_fd_for_plane( pBo, i );
++			if ( nFd < 0 )
++			{
++				vk_log.errorf_errno( "gbm_bo_get_fd_for_plane failed" );
++				bSuccess = false;
++				break;
++			}
++			attrs.fd[i] = nFd;
++			attrs.offset[i] = gbm_bo_get_offset( pBo, i );
++			attrs.stride[i] = gbm_bo_get_stride_for_plane( pBo, i );
++			attrs.n_planes = i + 1;
++		}
++	}
++
++	if ( bSuccess )
++	{
++		pOutput->outputImages[ uIndex ] = new CVulkanTexture();
++		bSuccess = pOutput->outputImages[ uIndex ]->BInit( uWidth, uHeight, 1u, uDrmFormat, flags, &attrs );
++		if ( bSuccess )
++		{
++			vk_log.infof( "GBM scanout output image %u: modifier 0x%llx stride %u", uIndex, (unsigned long long)attrs.modifier, attrs.stride[0] );
++		}
++		else
++		{
++			pOutput->outputImages[ uIndex ] = nullptr;
++			vk_log.errorf( "Failed to import GBM scanout buffer" );
++		}
++	}
++
++	wlr_dmabuf_attributes_finish( &attrs );
++	gbm_bo_destroy( pBo );
++	return bSuccess;
++}
++
++static bool vulkan_make_output_images_gbm( VulkanOutput_t *pOutput, const CVulkanTexture::createFlags &flags, uint32_t uWidth, uint32_t uHeight, uint32_t uDrmFormat )
++{
++	std::vector<uint64_t> modifiers = GetGbmScanoutModifiers( uDrmFormat, flags );
++	if ( modifiers.empty() )
++	{
++		vk_log.errorf( "No modifier is both presentable and Vulkan-importable for GBM scanout" );
++		return false;
++	}
++
++	int nGbmFd = dup( g_device.drmRenderFd() );
++	if ( nGbmFd < 0 )
++	{
++		vk_log.errorf_errno( "Failed to dup render node for GBM" );
++		return false;
++	}
++
++	struct gbm_device *pGbm = gbm_create_device( nGbmFd );
++	if ( !pGbm )
++	{
++		vk_log.errorf( "Failed to create GBM device on the render node" );
++		close( nGbmFd );
++		return false;
++	}
++
++	bool bSuccess = true;
++	for ( uint32_t i = 0; bSuccess && i < 3; i++ )
++		bSuccess = MakeGbmScanoutOutputImage( pOutput, i, uWidth, uHeight, uDrmFormat, flags, modifiers, pGbm );
++
++	gbm_device_destroy( pGbm );
++	close( nGbmFd );
++
++	if ( !bSuccess )
++	{
++		for ( auto &pImage : pOutput->outputImages )
++			pImage = nullptr;
++		return false;
++	}
++	return true;
++}
++#endif
++
+ static bool vulkan_make_output_images( VulkanOutput_t *pOutput )
+ {
+ 	CVulkanTexture::createFlags outputImageflags;
+@@ -3311,6 +3539,19 @@ static bool vulkan_make_output_images( VulkanOutput_t *pOutput )
+ 	if ( g_uOutputRotation & 1u )
+ 		std::swap( uOutputWidth, uOutputHeight );
+ 
++#if HAVE_GBM
++	if ( UseGbmScanoutOutputImages() )
++	{
++		if ( !vulkan_make_output_images_gbm( pOutput, outputImageflags, uOutputWidth, uOutputHeight, uDRMFormat ) )
++		{
++			vk_log.errorf( "GBM scanout output allocation failed, refusing silent fallback to known-corrupt Vulkan allocation" );
++			return false;
++		}
++		pOutput->temporaryHackyBlankImage = vulkan_create_debug_blank_texture();
++		return true;
++	}
++#endif
++
+ 	pOutput->outputImages[0] = new CVulkanTexture();
+ 	bool bSuccess = pOutput->outputImages[0]->BInit( uOutputWidth, uOutputHeight, 1u, uDRMFormat, outputImageflags );
+ 	if ( bSuccess != true )

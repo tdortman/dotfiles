@@ -1,0 +1,50 @@
+--- a/src/rendervulkan.cpp
++++ b/src/rendervulkan.cpp
+@@ -4027,6 +4027,20 @@
+ 
+ ReshadeEffectPipeline *g_pLastReshadeEffect = nullptr;
+ 
++bool vulkan_acquire_output_image()
++{
++	for ( uint32_t i = 0; i < g_output.outputImages.size(); i++ )
++	{
++		uint32_t uIndex = ( g_output.nOutImage + i ) % g_output.outputImages.size();
++		if ( g_output.outputImages[ uIndex ] && !g_output.outputImages[ uIndex ]->IsInUse() )
++		{
++			g_output.nOutImage = uIndex;
++			return true;
++		}
++	}
++	return false;
++}
++
+ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamescope::Rc<CVulkanTexture> pPipewireTexture, bool partial, gamescope::Rc<CVulkanTexture> pOutputOverride, bool increment, std::unique_ptr<CVulkanCmdBuffer> pInCommandBuffer )
+ {
+ 	EOTF outputTF = frameInfo->outputEncodingEOTF;
+--- a/src/rendervulkan.hpp
++++ b/src/rendervulkan.hpp
+@@ -451,6 +451,7 @@
+ gamescope::OwningRc<CVulkanTexture> vulkan_create_texture_from_wlr_buffer( struct wlr_buffer *buf, gamescope::OwningRc<gamescope::IBackendFb> pBackendFb );
+ 
+ std::optional<uint64_t> vulkan_composite( struct FrameInfo_t *frameInfo, gamescope::Rc<CVulkanTexture> pScreenshotTexture, bool partial, gamescope::Rc<CVulkanTexture> pOutputOverride = nullptr, bool increment = true, std::unique_ptr<CVulkanCmdBuffer> pInCommandBuffer = nullptr );
++bool vulkan_acquire_output_image();
+ void vulkan_wait( uint64_t ulSeqNo, bool bReset );
+ gamescope::Rc<CVulkanTexture> vulkan_get_last_output_image( bool partial, bool defer );
+ gamescope::Rc<CVulkanTexture> vulkan_acquire_screenshot_texture(uint32_t width, uint32_t height, bool exportable, uint32_t drmFormat, EStreamColorspace colorspace = k_EStreamColorspace_Unknown);
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -1123,6 +1123,14 @@
+             }
+             else
+             {
++                // The pooled output image may still be held by the host compositor; take a free one or back off.
++                if ( !vulkan_acquire_output_image() )
++                {
++                    // Retain this frame: schedule a repaint so the final update is retried, not lost.
++                    force_repaint();
++                    return -EAGAIN;
++                }
++
+                 std::optional oCompositeResult = vulkan_composite( (FrameInfo_t *)pFrameInfo, nullptr, false );
+ 
+                 if ( !oCompositeResult )
