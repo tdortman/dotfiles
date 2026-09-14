@@ -4,10 +4,20 @@ packages:
 nodeLinker: hoisted
 autoInstallPeers: false
 minimumReleaseAgeExclude:
-  - dsh-codex@0.2.6 || 0.2.7
+  - dsh-codex@0.2.6 || 0.2.7 || 0.3.0
   - '@michengai/dsh-archive-manager@0.1.24'
-  - dsh-context@0.41.0
-  - dsh-rewind-plugin@0.7.3
+  - dsh-context@0.41.0 || 0.52.0
+  - dsh-rewind-plugin@0.7.3 || 0.12.2
 allowBuilds:
   '@google/genai': true
   protobufjs: true
+
+# skill-injector-plugin depends on @deepseek-ai/dsh-llm and @deepseek-ai/dsh-skill
+# through `^0.1.0-rc.x` ranges, which semver can only satisfy with that same
+# 0.1.0 prerelease line. The hoisted copies then shadow the running installation's
+# modules for every row in this profile, and the old LlmRuntime registers no
+# Remote claim, so every /api/llm/* call answers 404. Linking both names at the
+# installation mirror keeps one module instance, whatever version dsh runs.
+overrides:
+  '@deepseek-ai/dsh-llm': link:../node_modules/@deepseek-ai/dsh-llm
+  '@deepseek-ai/dsh-skill': link:../node_modules/@deepseek-ai/dsh-skill

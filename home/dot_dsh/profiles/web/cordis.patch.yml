@@ -6,3 +6,14 @@
     searchModel: gpt-5.6-luna
     searchMode: live
     searchContextSize: high
+
+# dsh-opencode-session defaults to the pi-ai catalog route keys (`opencode`,
+# `opencode-go`). This profile serves OpenCode Go under its own route key, so
+# restate the whole `config` with that key added.
+- id: opencode-go-session-header
+  config:
+    providers:
+      - opencode-goo
+      - opencode-goo-deepseek
+    mode: session-id
+    debug: false
