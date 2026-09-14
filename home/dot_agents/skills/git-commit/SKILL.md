@@ -147,7 +147,7 @@ message. A compile-time constraint may appear only as a real architectural
 reason, not as a splitting justification.
 
 If the reason is unclear after reading the diff, check the session history
-under `~/.omp/agent/sessions` or `~/.dsh/sessions` or `~/.codex/sessions` before writing. Never invent rationale:
+under `~/.local/share/omp/sessions` or `~/.dsh/sessions` or `~/.codex/sessions` before writing. Never invent rationale:
 if it stays unclear, write the observable reason only.
 
 Bad body:
