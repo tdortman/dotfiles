@@ -19,6 +19,7 @@
       { "path": "/var/lib/flatpak/exports/share/icons/hicolor/index.theme", "access": "read", "comment": "global_package" },
       { "path": "/var/lib/flatpak/exports/share/mime/mime.cache", "access": "read", "comment": "global_package" },
       { "path": "/var/lib/flatpak/exports/share/mime/types", "access": "read", "comment": "global_package" },
+      { "path": "~/.codex/models_cache.json", "access": "read", "comment": "global_package" },
       { "path": "~/.config/kcminputrc", "access": "read", "comment": "global_package" },
       { "path": "~/.config/kdedefaults/kcminputrc", "access": "read", "comment": "global_package" },
       { "path": "~/.config/kdedefaults/kdeglobals", "access": "read", "comment": "global_package" },
