@@ -23,6 +23,10 @@
         ];
       };
 
+      overlays = with inputs; [
+        kache.overlays.default
+      ];
+
       homes.modules = with inputs; [
         plasma-manager.homeModules.plasma-manager
         voxtype.homeManagerModules.default
@@ -45,6 +49,7 @@
           nix-flatpak.nixosModules.nix-flatpak
           nix-index-database.nixosModules.nix-index
           spicetify-nix.nixosModules.default
+          kache.nixosModules.default
         ];
       };
 
@@ -163,6 +168,12 @@
     nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/540416/head";
+
+    kache = {
+      url = "github:kunobi-ninja/kache";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
 
     pedantix = {
       inputs = {

@@ -89,6 +89,7 @@
       ripgrep
       rm-improved
       ruff
+      sccache
       sd
       secretspec
       shellcheck

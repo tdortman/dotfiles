@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   inputs,
   system,
@@ -210,6 +211,11 @@
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
+  services.kache = {
+    enable = true;
+    rustcWrapper = true;
+  };
+
   disableWakeFromHibernate.enable = true;
 
   display-layout = {
@@ -274,6 +280,16 @@
       MOZ_ENABLE_WAYLAND = 1;
       NINJAFLAGS = "-j 22";
       NIXOS_OZONE_WL = "1";
+
+      RUSTC_WRAPPER = lib.getExe pkgs.kache;
+      KACHE_FALLBACK = lib.getExe pkgs.sccache;
+
+      SCCACHE_DIR = "$HOME/.cache/sccache";
+      SCCACHE_CACHE_SIZE = "50G";
+
+      CMAKE_C_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
+      CMAKE_CXX_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
+      CMAKE_CUDA_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
     };
 
     systemPackages =

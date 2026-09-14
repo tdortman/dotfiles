@@ -1,0 +1,28 @@
+diff --git a/src/compiler/nvcc.rs b/src/compiler/nvcc.rs
+index e6f72a7..7e530ed 100644
+--- a/src/compiler/nvcc.rs
++++ b/src/compiler/nvcc.rs
+@@ -759,7 +759,13 @@ where
+                     }
+                     _ => {}
+                 }
+-                let group = device_compile_groups.get_mut(&args[args.len() - 3]);
++                // CTK 13.x emits `--simt-only` between cicc's input and `-o`,
++                // so locate the input by suffix instead of position.
++                let group = args
++                    .iter()
++                    .rev()
++                    .find(|a| a.ends_with(".cpp1.ii"))
++                    .and_then(|input| device_compile_groups.get_mut(input));
+                 (env_vars.clone(), Cacheable::Yes, group)
+             }
+             Some("ptxas") => {
+@@ -957,7 +963,7 @@ where
+     let mut ext_counts = HashMap::<String, i32>::new();
+     let mut old_to_new = HashMap::<String, String>::new();
+     let is_valid_line_re = Regex::new(r"^#\$ (.*)$").unwrap();
+-    let is_envvar_line_re = Regex::new(r"^([_A-Z]+)=(.*)$").unwrap();
++    let is_envvar_line_re = Regex::new(r"^([\w.-]+)=(.*)$").unwrap();
+ 
+     let mut dryrun_env_vars = Vec::<(OsString, OsString)>::new();
+     let mut dryrun_env_vars_re_map = HashMap::<String, regex::Regex>::new();

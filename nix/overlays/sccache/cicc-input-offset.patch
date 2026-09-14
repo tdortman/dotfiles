@@ -1,0 +1,21 @@
+diff --git a/src/compiler/cicc.rs b/src/compiler/cicc.rs
+index 2a39e7c..11d4eb0 100644
+--- a/src/compiler/cicc.rs
++++ b/src/compiler/cicc.rs
+@@ -58,7 +58,15 @@ impl CCompilerImpl for Cicc {
+         cwd: &Path,
+         _env_vars: &[(OsString, OsString)],
+     ) -> CompilerArguments<ParsedArguments> {
+-        parse_arguments(arguments, cwd, Language::Ptx, &ARGS[..], 3)
++        // CTK 13.x emits `--simt-only` between cicc's input and `-o`, so locate
++        // the input by suffix instead of assuming a fixed position.
++        let offset = arguments
++            .iter()
++            .rev()
++            .position(|a| a.to_string_lossy().ends_with(".cpp1.ii"))
++            .map(|rev_idx| rev_idx + 1)
++            .unwrap_or(3);
++        parse_arguments(arguments, cwd, Language::Ptx, &ARGS[..], offset)
+     }
+     #[allow(clippy::too_many_arguments)]
+     async fn preprocess<T>(

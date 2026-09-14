@@ -587,6 +587,30 @@
         "type": "sourcehut"
       }
     },
+    "kache": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": "rust-overlay_2",
+        "treefmt-nix": [
+          "treefmt-nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789342608,
+        "narHash": "sha256-sjiX/rnrwu/eXeI6Wrd0IJa6VJ3ejGENBdDeITkpxys=",
+        "owner": "kunobi-ninja",
+        "repo": "kache",
+        "rev": "516aeaf7289e9debe2fc0130b76c35396248a377",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kunobi-ninja",
+        "repo": "kache",
+        "type": "github"
+      }
+    },
     "llm-agents": {
       "inputs": {
         "bun2nix": "bun2nix",
@@ -994,6 +1018,7 @@
         "disko": "disko",
         "flake-utils-plus": "flake-utils-plus_2",
         "home-manager": "home-manager_3",
+        "kache": "kache",
         "llm-agents": "llm-agents",
         "nix-flatpak": "nix-flatpak",
         "nix-index-database": "nix-index-database",
@@ -1023,6 +1048,27 @@
         "owner": "oxalica",
         "repo": "rust-overlay",
         "rev": "57a23bfaf4f7017267294b161175db1e32eb1c85",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_2": {
+      "inputs": {
+        "nixpkgs": [
+          "kache",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788248235,
+        "narHash": "sha256-siCQqLbY7AbZ9V3oyc65K8bhNr7QgZTXoqLTws3pv0s=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "6a84c41e705533dcc5569ac0731f18406b4cdf86",
         "type": "github"
       },
       "original": {
