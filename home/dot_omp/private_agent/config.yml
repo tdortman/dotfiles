@@ -125,7 +125,7 @@ plan:
 defaultThinkingLevel: high
 codexResets:
   autoRedeem: "no"
-hideThinkingBlock: false
+hideThinkingBlock: true
 branchSummary:
   enabled: false
 ttsr:
