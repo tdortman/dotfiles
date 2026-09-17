@@ -2,13 +2,13 @@ _:
 
 final: prev: {
   sccache = prev.sccache.overrideAttrs (oldAttrs: {
-    patches = (oldAttrs.patches or [ ]) ++ [
-      # nixpkgs wraps nvcc with --compiler-bindir, which --dryrun echoes as the
-      # lowercase `compiler-bindir=` line that sccache's `[_A-Z]+` env regex
-      # rejects ("cannot find binary path"). CTK 13.x also emits `--simt-only`
-      # between cicc's input and `-o`, breaking sccache's fixed input offsets.
-      ./nvcc-dryrun-compat.patch
-      ./cicc-input-offset.patch
-    ];
+    # nixpkgs appends a lowercase `compiler-bindir = …` line to `nvcc.profile`,
+    # which `nvcc --dryrun` echoes as `compiler-bindir=…`. sccache's env regex
+    # only accepts `[_A-Z]+` keys, so that line is parsed as a subcommand and
+    # sccache fails with "cannot find binary path".
+    postPatch = (oldAttrs.postPatch or "") + ''
+      substituteInPlace src/compiler/nvcc.rs \
+        --replace-fail 'r"^([_A-Z]+)=(.*)$"' 'r"^([\w.-]+)=(.*)$"'
+    '';
   });
 }
