@@ -851,8 +851,8 @@
       },
       "original": {
         "owner": "NixOS",
-        "ref": "pull/561955/head",
         "repo": "nixpkgs",
+        "rev": "b730141a8c72527aa3710467d46d06994efbc640",
         "type": "github"
       }
     },
