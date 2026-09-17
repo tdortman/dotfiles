@@ -1,9 +1,9 @@
 ui-onboarding:
   welcomeNoticeVersion: 2026-08-13.1
 agent-default-model:
-  provider: opencode-go
-  model: muse-spark-1.3-contributor
-  reasoningEffort: xhigh
+  provider: opencode-goo-deepseek
+  model: deepseek-v4.1-flash
+  reasoningEffort: high
 agent-presets:
   default: custom-ptc
 skill-injector:
