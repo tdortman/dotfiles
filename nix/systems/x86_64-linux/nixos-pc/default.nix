@@ -459,6 +459,16 @@
               });
             }
           );
+
+      # `libreoffice-qt` is defined through whatever `kdePackages` resolves to,
+      # so the beta scope drags in that snapshot's whole package set (boost,
+      # openssl, qtbase). Those builds miss the binary cache and LibreOffice
+      # compiles from source. Build it from the unmodified package set instead.
+      libreoffice-qt =
+        (import prev.path {
+          inherit system;
+          inherit (prev) config;
+        }).libreoffice-qt;
     })
   ];
 
