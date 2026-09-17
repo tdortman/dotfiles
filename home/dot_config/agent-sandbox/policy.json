@@ -108,6 +108,7 @@
         { "methods": ["GET"], "url": "https://github.com/search", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://github.com/search.md", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://html.duckduckgo.com/html", "port": 443, "comment": "global" },
+        { "methods": ["GET"], "url": "https://hyper.charm.land/v1/models", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://ieeexplore.ieee.org/document", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://ieeexplore.ieee.org/document/*", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://index.crates.io/", "port": 443, "comment": "global" },
