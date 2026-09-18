@@ -90,6 +90,7 @@ providers:
     - codex
   openai-codex:
     codeMode: "on"
+  judgmentProvider: auto
 setupVersion: 2
 bashInterceptor:
   enabled: false
@@ -125,7 +126,7 @@ plan:
 defaultThinkingLevel: high
 codexResets:
   autoRedeem: "no"
-hideThinkingBlock: true
+hideThinkingBlock: false
 branchSummary:
   enabled: false
 ttsr:
