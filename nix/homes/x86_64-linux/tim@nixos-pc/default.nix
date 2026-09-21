@@ -202,7 +202,7 @@
       powerdevil.AC = {
         autoSuspend.action = "nothing";
         dimDisplay.enable = false;
-        powerButtonAction = "hibernate";
+        powerButtonAction = "lockScreen";
         turnOffDisplay.idleTimeout = "never";
         whenSleepingEnter = "standbyThenHibernate";
       };
