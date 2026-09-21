@@ -104,6 +104,33 @@ use_dns_bridge() {
     [[ "$dns_ip" == 127.* ]]
 }
 
+ensure_dns_redirect() {
+    if use_dns_bridge; then
+        return 0
+    fi
+
+    # Redirect explicit resolvers too, including applications using a loopback stub.
+    ip netns exec "$NAMESPACE" sysctl -q -w net.ipv4.conf.all.route_localnet=1
+    ip netns exec "$NAMESPACE" nft -f - <<EOF
+add table inet interface-run-dns
+flush table inet interface-run-dns
+table inet interface-run-dns {
+    chain output {
+        type nat hook output priority dstnat; policy accept;
+        meta nfproto ipv4 meta l4proto { tcp, udp } th dport 53 dnat ip to $(dns_target_ip):$(dns_target_port)
+    }
+    chain filter {
+        type filter hook output priority filter; policy accept;
+        meta nfproto ipv6 meta l4proto { tcp, udp } th dport 53 reject
+    }
+    chain postrouting {
+        type nat hook postrouting priority srcnat; policy accept;
+        oifname != "lo" ip saddr 127.0.0.0/8 masquerade
+    }
+}
+EOF
+}
+
 ensure_interface_ready() {
     local if_id i
     local timeout=10
@@ -275,14 +302,14 @@ setup() {
         source "$state_file" || true
         log "Namespace '$NAMESPACE' already set up (veth: ${saved_veth:-$veth_host}, interface: $INTERFACE)"
         ensure_dns_bridge
+        ensure_dns_redirect
         ensure_interface_ready
         return 0
     fi
 
     if [[ -f "$state_file" ]] || ip netns list | grep -qE "^${NAMESPACE}(\s|$)"; then
         if [[ -n "$(ip netns pids "$NAMESPACE" 2>/dev/null)" ]]; then
-            log "Namespace '$NAMESPACE' has active PIDs, skipping teardown"
-            return 0
+            error "Namespace '$NAMESPACE' has active PIDs and stale configuration; stop its commands before retrying"
         fi
         log "Stale or incomplete setup, reinitializing"
         teardown
@@ -317,6 +344,7 @@ setup() {
     fi
 
     ip netns exec "$NAMESPACE" ip route replace default via "$VETH_HOST_IP" dev "$veth_ns"
+    ensure_dns_redirect
 
     ns_nameserver="$VETH_HOST_IP"
     if ! use_dns_bridge; then

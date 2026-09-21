@@ -7,7 +7,7 @@
 
 let
   cfg = config.jgu-vpn;
-  dnsTarget = if cfg.dnsServers != [ ] then "${builtins.head cfg.dnsServers}:53" else "127.0.0.53:53";
+  dnsTarget = "${builtins.head cfg.dnsServers}:53";
   haricaCa = ./HARICA-TLS-Root-2021-RSA.pem;
 
   jguVpnRun = pkgs.writeShellApplication {
@@ -71,19 +71,18 @@ in
     };
 
     dnsServers = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
+      type = lib.types.nonEmptyListOf lib.types.str;
 
-      example = [
+      default = [
         "134.93.144.2"
         "134.93.144.3"
       ];
 
-      default = [ ];
-
       description = ''
-        JGU DNS servers. The first one is used as the DNS target for
-        commands run through the VPN namespace. Leave empty to use the
-        host's stub resolver (127.0.0.53) instead.
+        Campus DNS servers. All IPv4 TCP/UDP DNS queries on port 53 from
+        the VPN namespace are redirected to the first server through the VPN.
+        IPv6 DNS is rejected. There is no fallback to the host resolver.
+        Applications using encrypted DNS must have that disabled separately.
       '';
     };
 

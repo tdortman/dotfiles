@@ -102,10 +102,13 @@ main() {
         orig_user="$USER"
     fi
 
-    ip netns exec "$NAMESPACE" \
-        runuser -u "$orig_user" \
-        --preserve-environment \
-        -- "$@"
+    # ip netns exec provides a private mount namespace; hide the host NSS proxy.
+    ip netns exec "$NAMESPACE" "$BASH" -euc "
+        if [[ -d /run/nscd ]]; then
+            mount --bind /var/empty /run/nscd
+        fi
+        exec runuser -u \"\$1\" --preserve-environment -- \"\${@:2}\"
+    " -- "$orig_user" "$@"
 }
 
 main "$@"
