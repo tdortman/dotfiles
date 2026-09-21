@@ -9,12 +9,10 @@
 
 {
   imports = [
+    "${inputs.nixpkgs-plasma-beta}/nixos/modules/services/desktop-managers/plasma6.nix"
     ./disko.nix
     ./hardware-configuration.nix
-    "${inputs.nixpkgs-plasma-beta}/nixos/modules/services/desktop-managers/plasma6.nix"
   ];
-
-  disabledModules = [ "services/desktop-managers/plasma6.nix" ];
 
   age.secrets = {
     airvpn-presharedkey.file = inputs.self + /nix/secrets/airvpn-presharedkey.age;
@@ -57,14 +55,6 @@
       in
       [
         {
-          package = agents.dsh;
-
-          readwriteDirs = [
-            "~/.dsh"
-            "~/.local/share/ponytail/skills"
-          ];
-        }
-        {
           package = agents.codex;
           readwriteDirs = [ "~/.codex" ];
         }
@@ -75,6 +65,14 @@
             "~/.cursor"
             "~/.config/cursor"
             "~/.cache/cursor-compile-cache"
+          ];
+        }
+        {
+          package = agents.dsh;
+
+          readwriteDirs = [
+            "~/.dsh"
+            "~/.local/share/ponytail/skills"
           ];
         }
         {
@@ -206,12 +204,8 @@
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
-  services.kache = {
-    enable = true;
-    rustcWrapper = true;
-  };
-
   disableWakeFromHibernate.enable = true;
+  disabledModules = [ "services/desktop-managers/plasma6.nix" ];
 
   display-layout = {
     enable = true;
@@ -226,9 +220,9 @@
           {
             input = 15;
             output = "DP-1";
-            scale = 1.3;
             gpu = "0000:07:00.0";
             primary = true;
+            scale = 1.3;
           }
           {
             output = "DP-2";
@@ -244,7 +238,6 @@
           {
             input = 17;
             output = "HDMI-A-5";
-            scale = 1.0;
 
             ddcControl = {
               output = "DP-1";
@@ -253,6 +246,7 @@
 
             gpu = "0000:0d:00.0";
             primary = true;
+            scale = 1.0;
           }
           {
             output = "DP-2";
@@ -269,37 +263,36 @@
     sessionVariables = {
       CARGO_BUILD_JOBS = 22;
       CARGO_MAKEFLAGS = "-j 22";
+      CMAKE_CUDA_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
+      CMAKE_CXX_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
+      CMAKE_C_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
       CODEX_CLI_PATH = "/run/current-system/sw/bin/codex";
       GHIDRA_ROOT = "${pkgs.ghidra}";
+      KACHE_FALLBACK = lib.getExe pkgs.sccache;
       # Stable PCI selection keeps the desktop on Arc regardless of DRM enumeration.
       KWIN_DRM_DEVICES = "/dev/dri/intel-arc:/dev/dri/nvidia-gaming";
       MAKEFLAGS = "-j 22";
       MOZ_ENABLE_WAYLAND = 1;
       NINJAFLAGS = "-j 22";
       NIXOS_OZONE_WL = "1";
-
       RUSTC_WRAPPER = lib.getExe pkgs.kache;
-      KACHE_FALLBACK = lib.getExe pkgs.sccache;
-
-      SCCACHE_DIR = "$HOME/.cache/sccache";
       SCCACHE_CACHE_SIZE = "50G";
-
-      CMAKE_C_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
-      CMAKE_CXX_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
-      CMAKE_CUDA_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
+      SCCACHE_DIR = "$HOME/.cache/sccache";
     };
 
     systemPackages =
       with pkgs;
       map
         (
-          { name, flags }:
+          { flags, name }:
           writeShellApplication {
             inherit name;
+
             runtimeInputs = [
-              gamescope
               coreutils
+              gamescope
             ];
+
             text = ''
               if [[ $# -eq 0 ]]; then
                 echo 'Usage: ${name} command [args...]' >&2
@@ -318,20 +311,20 @@
         )
         [
           {
-            name = "gamescope-game-sdr";
             flags = "";
+            name = "gamescope-game-sdr";
           }
           {
-            name = "gamescope-game-hdr";
-            flags = "--hdr-enabled";
-          }
-          {
-            name = "gamescope-game-sdr-mango";
-            flags = "--mangoapp";
-          }
-          {
-            name = "gamescope-game-hdr-mango";
             flags = "--hdr-enabled --mangoapp";
+            name = "gamescope-game-hdr-mango";
+          }
+          {
+            flags = "--hdr-enabled";
+            name = "gamescope-game-hdr";
+          }
+          {
+            flags = "--mangoapp";
+            name = "gamescope-game-sdr-mango";
           }
         ]
       ++ [
@@ -442,36 +435,6 @@
   kde.enable = true;
   mime.librewolf.enable = true;
 
-  nixpkgs.overlays = lib.mkBefore [
-    (final: prev: {
-      kdePackages =
-        (import inputs.nixpkgs-plasma-beta {
-          inherit (prev) config;
-          inherit system;
-        }).kdePackages.overrideScope
-          (
-            kfinal: kprev: {
-              kwin = kprev.kwin.overrideAttrs (oldAttrs: {
-                patches = (oldAttrs.patches or [ ]) ++ [ ./kwin-drm-color-pipeline.patch ];
-              });
-              ktnef = kprev.ktnef.overrideAttrs (oldAttrs: {
-                buildInputs = (oldAttrs.buildInputs or [ ]) ++ [ kfinal.kcalutils ];
-              });
-            }
-          );
-
-      # `libreoffice-qt` is defined through whatever `kdePackages` resolves to,
-      # so the beta scope drags in that snapshot's whole package set (boost,
-      # openssl, qtbase). Those builds miss the binary cache and LibreOffice
-      # compiles from source. Build it from the unmodified package set instead.
-      libreoffice-qt =
-        (import prev.path {
-          inherit system;
-          inherit (prev) config;
-        }).libreoffice-qt;
-    })
-  ];
-
   networking = {
     hostName = "nixos-pc";
     networkmanager.enable = true;
@@ -528,6 +491,37 @@
   };
 
   nix.settings.cores = 22;
+
+  nixpkgs.overlays = lib.mkBefore [
+    (final: prev: {
+      kdePackages =
+        (import inputs.nixpkgs-plasma-beta {
+          inherit (prev) config;
+          inherit system;
+        }).kdePackages.overrideScope
+          (
+            kfinal: kprev: {
+              ktnef = kprev.ktnef.overrideAttrs (oldAttrs: {
+                buildInputs = (oldAttrs.buildInputs or [ ]) ++ [ kfinal.kcalutils ];
+              });
+
+              kwin = kprev.kwin.overrideAttrs (oldAttrs: {
+                patches = (oldAttrs.patches or [ ]) ++ [ ./kwin-drm-color-pipeline.patch ];
+              });
+            }
+          );
+
+      # `libreoffice-qt` is defined through whatever `kdePackages` resolves to,
+      # so the beta scope drags in that snapshot's whole package set (boost,
+      # openssl, qtbase). Those builds miss the binary cache and LibreOffice
+      # compiles from source. Build it from the unmodified package set instead.
+      libreoffice-qt =
+        (import prev.path {
+          inherit system;
+          inherit (prev) config;
+        }).libreoffice-qt;
+    })
+  ];
 
   nvidia = {
     cuda = {
@@ -616,6 +610,11 @@
     '';
 
     udisks2.enable = true;
+  };
+
+  services.kache = {
+    enable = true;
+    rustcWrapper = true;
   };
 
   spicetify.enable = true;

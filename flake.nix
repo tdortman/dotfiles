@@ -23,13 +23,13 @@
         ];
       };
 
-      overlays = with inputs; [
-        kache.overlays.default
-      ];
-
       homes.modules = with inputs; [
         plasma-manager.homeModules.plasma-manager
         voxtype.homeManagerModules.default
+      ];
+
+      overlays = with inputs; [
+        kache.overlays.default
       ];
 
       supportedSystems = [
@@ -46,10 +46,10 @@
           agent-sandbox.nixosModules.agent-sandbox
           disko.nixosModules.disko
           home-manager.nixosModules.home-manager
+          kache.nixosModules.default
           nix-flatpak.nixosModules.nix-flatpak
           nix-index-database.nixosModules.nix-index
           spicetify-nix.nixosModules.default
-          kache.nixosModules.default
         ];
       };
 
@@ -151,6 +151,15 @@
       url = "github:nix-community/home-manager";
     };
 
+    kache = {
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "treefmt-nix";
+      };
+
+      url = "github:kunobi-ninja/kache";
+    };
+
     llm-agents.url = "github:numtide/llm-agents.nix";
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
@@ -169,12 +178,6 @@
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-plasma-beta.url = "github:NixOS/nixpkgs/b730141a8c72527aa3710467d46d06994efbc640";
     nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/540416/head";
-
-    kache = {
-      url = "github:kunobi-ninja/kache";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.treefmt-nix.follows = "treefmt-nix";
-    };
 
     pedantix = {
       inputs = {
