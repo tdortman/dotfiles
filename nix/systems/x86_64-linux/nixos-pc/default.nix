@@ -333,7 +333,7 @@
           withVencord = true;
         })
         btrfs-progs
-        cuda.llama-cpp
+        # cuda.llama-cpp
         cuda.lmstudio
         custom.danbooru-rs
         custom.fluxer
