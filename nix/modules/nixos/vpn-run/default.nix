@@ -66,6 +66,13 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # Bridge DNS must pass the host firewall, not just an earlier nftables chain.
+    networking.firewall.interfaces.${if config.networking.nftables.enable then "irnh-*" else "irnh-+"} =
+      {
+        allowedTCPPorts = [ 53 ];
+        allowedUDPPorts = [ 53 ];
+      };
+
     environment = {
       shellAliases = {
         vpn-run = lib.mkIf cfg.shellAlias "sudo -E vpn-run";

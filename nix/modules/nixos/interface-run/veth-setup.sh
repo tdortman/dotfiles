@@ -293,7 +293,7 @@ teardown() {
 }
 
 setup() {
-    local state_file mtu ns_nameserver nft_table drop_rule nat_rule dns_forward_rules dns_input_rules
+    local state_file mtu ns_nameserver nft_table drop_rule nat_rule dns_forward_rules
     state_file=$(state_file)
     compute_ids
 
@@ -382,7 +382,6 @@ EOF
     drop_rule=""
     nat_rule="ip saddr ${VETH_NS_IP} oifname \"${INTERFACE}\" masquerade"
     dns_forward_rules=""
-    dns_input_rules=""
 
     if [[ "$DROP_NON_IFACE" == "true" ]]; then
         drop_rule="iifname \"${veth_host}\" oifname != \"${INTERFACE}\" reject"
@@ -396,8 +395,6 @@ EOF
     if use_dns_bridge; then
         dns_forward_rules="        iifname \"${veth_host}\" udp dport 53 reject
         iifname \"${veth_host}\" tcp dport 53 reject"
-        dns_input_rules="        iifname \"${veth_host}\" udp dport 53 accept
-        iifname \"${veth_host}\" tcp dport 53 accept"
     fi
 
     nft delete table ip "$nft_table" 2>/dev/null || true
@@ -413,10 +410,6 @@ table ip ${nft_table} {
         iifname "${INTERFACE}" oifname "${veth_host}" ct state established,related accept
 ${dns_forward_rules}
         ${drop_rule}
-    }
-    chain input {
-        type filter hook input priority filter - 200; policy accept;
-${dns_input_rules}
     }
 }
 EOF
