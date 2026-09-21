@@ -349,22 +349,35 @@
     ]
   );
 
-  xdg.dataFile = {
-    "kwin/scripts/auto-minimize-covered/contents/code/main.js".source = ./auto-minimize-covered.js;
-
-    "kwin/scripts/auto-minimize-covered/metadata.json".text = builtins.toJSON {
-      KPackageStructure = "KWin/Script";
-
-      KPlugin = {
-        Description = "Minimize selected apps when a maximized window covers them";
-        Id = "auto-minimize-covered";
-        License = "MIT";
-        Name = "Auto-minimize covered apps";
-        Version = "1.0";
+  xdg = {
+    # Brio 100 does 1920x1080@30 MJPEG but Teams' getUserMedia asks 720p.
+    # Force 1080p capture
+    configFile."teams-for-linux/config.json".text = builtins.toJSON {
+      media.camera.resolution = {
+        enabled = true;
+        height = 1080;
+        mode = "override";
+        width = 1920;
       };
+    };
 
-      X-Plasma-API = "javascript";
-      X-Plasma-MainScript = "code/main.js";
+    dataFile = {
+      "kwin/scripts/auto-minimize-covered/contents/code/main.js".source = ./auto-minimize-covered.js;
+
+      "kwin/scripts/auto-minimize-covered/metadata.json".text = builtins.toJSON {
+        KPackageStructure = "KWin/Script";
+
+        KPlugin = {
+          Description = "Minimize selected apps when a maximized window covers them";
+          Id = "auto-minimize-covered";
+          License = "MIT";
+          Name = "Auto-minimize covered apps";
+          Version = "1.0";
+        };
+
+        X-Plasma-API = "javascript";
+        X-Plasma-MainScript = "code/main.js";
+      };
     };
   };
 }

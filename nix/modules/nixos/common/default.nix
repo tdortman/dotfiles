@@ -78,6 +78,8 @@
       keyboard.qmk.enable = true;
     };
 
+    home-manager.backupCommand = "${pkgs.trash-cli}/bin/trash";
+
     i18n = {
       defaultLocale = "en_GB.UTF-8";
 
