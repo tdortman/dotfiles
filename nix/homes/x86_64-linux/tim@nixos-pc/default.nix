@@ -83,7 +83,10 @@
           };
         };
 
-        plasmanotifyrc.Notifications.PopupTimeout = 15000;
+        plasmanotifyrc.Notifications = {
+          PopupPosition = "BottomRight";
+          PopupTimeout = 15000;
+        };
       };
 
       fonts =
