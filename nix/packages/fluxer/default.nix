@@ -6,17 +6,17 @@
   makeWrapper,
   artifacts ? {
     aarch64-linux = {
-      url = "https://api.fluxer.app/dl/desktop/stable/linux/arm64/fluxer-stable-${version}-arm64.AppImage";
-      hash = "sha256-wxLNekbw3E0YPcC27COWtp8VphKmBB9bF2dp7lnjPf8=";
+      url = "https://pkgs.fluxer.com/desktop/stable/linux/arm64/Fluxer-${version}-linux-arm64.AppImage";
+      hash = "sha256-O55SnsE8D2Gq44ek2oeMNNbDto2auo+06CFLb2QBfpo=";
     };
 
     x86_64-linux = {
-      url = "https://api.fluxer.app/dl/desktop/stable/linux/x64/fluxer-stable-${version}-x86_64.AppImage";
-      hash = "sha256-GdoBK+Z/d2quEIY8INM4IQy5tzzIBBM+3CgJXQn0qAw=";
+      url = "https://pkgs.fluxer.com/desktop/stable/linux/x64/Fluxer-${version}-linux-x86_64.AppImage";
+      hash = "sha256-CQj17azmVTlLVTp/DngO0yQbYJt9szPsh2Mo9cy8mJU=";
     };
   },
   middleClickScroll ? true,
-  version ? "0.0.8",
+  version ? "2026.920.144558",
 }:
 
 let
@@ -46,8 +46,10 @@ appimageTools.wrapType2 {
       $out/share/applications/fluxer.desktop
 
     substituteInPlace $out/share/applications/fluxer.desktop \
-      --replace-fail "Exec=AppRun --no-sandbox %U" \
-                     "Exec=$out/bin/${pname} %U"
+      --replace-fail "Exec=AppRun %U" \
+                     "Exec=$out/bin/${pname} %U" \
+      --replace-fail 'Exec="/opt/Fluxer/fluxer"' \
+                     "Exec=$out/bin/${pname}"
 
     cp -r ${appimageContents}/usr/share/icons $out/share/
 

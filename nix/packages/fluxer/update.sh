@@ -11,8 +11,8 @@ if [[ ! -f "$path" ]]; then
   exit 1
 fi
 
-x64_manifest="$(curl -fsSL "https://api.fluxer.app/dl/desktop/stable/linux/x64/manifest.json")"
-arm64_manifest="$(curl -fsSL "https://api.fluxer.app/dl/desktop/stable/linux/arm64/manifest.json")"
+x64_manifest="$(curl -fsSL "https://pkgs.fluxer.com/desktop/stable/linux/x64/manifest.json")"
+arm64_manifest="$(curl -fsSL "https://pkgs.fluxer.com/desktop/stable/linux/arm64/manifest.json")"
 
 new_version_x64="$(echo "$x64_manifest" | jq -r '.version')"
 new_version_arm64="$(echo "$arm64_manifest" | jq -r '.version')"
@@ -41,8 +41,8 @@ fi
 
 echo "Updating fluxer: $old_version -> $new_version"
 
-appimage_x64="$(echo "$x64_manifest" | jq -r '.files.appimage')"
-appimage_arm64="$(echo "$arm64_manifest" | jq -r '.files.appimage')"
+appimage_x64="$(echo "$x64_manifest" | jq -r '.files.appimage.filename')"
+appimage_arm64="$(echo "$arm64_manifest" | jq -r '.files.appimage.filename')"
 
 if [[ -z "$appimage_x64" || "$appimage_x64" == "null" ]]; then
   echo "error: no appimage file in x64 manifest" >&2
@@ -54,22 +54,20 @@ if [[ -z "$appimage_arm64" || "$appimage_arm64" == "null" ]]; then
   exit 1
 fi
 
-url_x64="https://api.fluxer.app/dl/desktop/stable/linux/x64/${appimage_x64}"
-url_arm64="https://api.fluxer.app/dl/desktop/stable/linux/arm64/${appimage_arm64}"
-
 get_hash() {
-  local url="$1"
-  local hash
-  hash="$(nix store prefetch-file "$url" 2>&1 | sed -nE "s/.*\(hash '([^']+)'\).*/\1/p")"
-  if [[ -z "$hash" ]]; then
-    echo "error: failed to prefetch $url" >&2
+  local manifest="$1"
+  local arch="$2"
+  local hex
+  hex="$(echo "$manifest" | jq -r '.files.appimage.sha256')"
+  if [[ ! "$hex" =~ ^[0-9a-f]{64}$ ]]; then
+    echo "error: invalid appimage sha256 for $arch: '$hex'" >&2
     exit 1
   fi
-  printf '%s' "$hash"
+  nix-hash --to-sri --type sha256 "$hex"
 }
 
-x64_hash="$(get_hash "$url_x64")"
-arm64_hash="$(get_hash "$url_arm64")"
+x64_hash="$(get_hash "$x64_manifest" x64)"
+arm64_hash="$(get_hash "$arm64_manifest" arm64)"
 
 # Update version
 sed -i -E "s|^(  version \? \")[^\"]+(\",)$|\1${new_version}\2|" "$path"
