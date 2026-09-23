@@ -275,6 +275,9 @@
       MOZ_ENABLE_WAYLAND = 1;
       NINJAFLAGS = "-j 22";
       NIXOS_OZONE_WL = "1";
+      # Read by Nix's cc-wrapper, so every gcc/clang link (cmake, make, ninja, cargo) in devShells uses mold.
+      # gcc rejects paths in -fuse-ld; -B makes it pick the wrapped ld.mold, keeping Nix rpath handling.
+      NIX_CFLAGS_LINK = "-B${pkgs.mold}/bin -fuse-ld=mold";
       RUSTC_WRAPPER = lib.getExe pkgs.kache;
       SCCACHE_CACHE_SIZE = "50G";
       SCCACHE_DIR = "$HOME/.cache/sccache";

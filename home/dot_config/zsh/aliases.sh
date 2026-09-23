@@ -722,41 +722,17 @@ unsafe-omp-commit() {
 
 create_man_wrapper
 
-create_mold_wrapper() {
-    local tool=$1
-    local tool_path
-    tool_path=$(command -v "$tool")
-    case "$tool" in
-    make)
-        eval "
-            __mold_wrapped_$tool() {
-                mold -run '$tool_path' \$MAKEFLAGS \"\$@\"
-            }
-            "
-        ;;
-    ninja)
-        eval "
-            __mold_wrapped_$tool() {
-                mold -run '$tool_path' \$NINJAFLAGS \"\$@\"
-            }
-            "
-        ;;
-    *)
-        eval "
-            __mold_wrapped_$tool() {
-                mold -run '$tool_path' \"\$@\"
-            }
-            "
-        ;;
-    esac
+# mold -run does no PATH search, so resolve the binary per call (devShell tools win).
+# Needs mold-unwrapped as `mold`: the Nix-wrapped ld.mold rejects -run.
+_mold_run() {
+    local bin
+    bin=$(whence -p "$1") || { print -u2 "zsh: command not found: $1"; return 127; }
+    shift
+    mold -run "$bin" "$@"
 }
-
-# Create wrappers for build tools
-# build_tools=(make cmake ninja)
-# for tool in "${build_tools[@]}"; do
-#     create_mold_wrapper "$tool"
-#     alias "$tool"="__mold_wrapped_$tool"
-# done
+make() { _mold_run make "$@"; }
+cmake() { _mold_run cmake "$@"; }
+ninja() { _mold_run ninja ${=NINJAFLAGS} "$@"; }
 
 alias -g -- -h='-h 2>&1 | bat --language=help --style=plain --paging=never --theme="OneDark"'
 alias -g -- --help='--help 2>&1 | bat --language=help --style=plain --paging=never --theme="OneDark"'
