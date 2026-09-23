@@ -1,5 +1,7 @@
-When producing user-facing English prose, always apply the `unslop` and `i-have-adhd` skills.
-Read `skill://unslop` and `skill://i-have-adhd` before writing or revising the prose.
+When producing public-facing English prose intended to be read by people other than the user (such as README files, documentation, papers, articles, release notes, or other publishable/shared text), always apply the `unslop` skill. Read `skill://unslop` before writing or revising such prose.
+
+Do not apply `unslop` to conversational responses, explanations, status updates, notes, or other messages addressed only to the user, unless the user explicitly asks for it.
+
 When you're about to generate git commits, always apply the `git-commit` skill by reading `skill://git-commit` before doing so.
 
 Tool calls that are independent of each other should be run in parallel via a single tool call when in code mode.

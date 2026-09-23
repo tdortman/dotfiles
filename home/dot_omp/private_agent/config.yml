@@ -1,5 +1,5 @@
 modelRoles:
-  default: openai-codex/gpt-6-astra:medium
+  default: openai-codex/gpt-6-sol:high
   commit: opencode-go/muse-spark-1.3-contributor:xhigh
   vision: google-antigravity/gemini-3.8-flash:medium
   plan: openai-codex/gpt-6-astra:high
@@ -9,6 +9,8 @@ modelRoles:
   advisor: openai-codex/gpt-6-astra:medium
   tiny: opencode-go/muse-spark-1.3-contributor:low
   designer: openai-codex/gpt-6-astra:medium
+  web: openai-codex/gpt-5.6-luna
+  judge: typesafe/jev-latest
 startup:
   checkUpdate: false
   quiet: false
@@ -16,7 +18,6 @@ startup:
 symbolPreset: nerd
 stt:
   enabled: false
-  modelName: base.en
 theme:
   dark: dark-one
 statusLine:
@@ -82,18 +83,11 @@ contextPromotion:
 renderMermaid:
   enabled: true
 providers:
-  memoryModel: online
   maxInFlightRequests:
     neuralwatt: 3
-  tinyModel: online
   tinyModelDevice: default
-  webSearchGeminiModel: gemini-3-flash
-  webSearchOrder:
-    - codex
-    - gemini
   openai-codex:
     codeMode: "on"
-  judgmentProvider: typesafe
 setupVersion: 2
 bashInterceptor:
   enabled: false
@@ -172,3 +166,39 @@ extendedContext: false
 isolation:
   backend: auto
 treeFilterMode: default
+retry:
+  fallbackChains:
+    web:
+      - google-antigravity/gemini-3-flash
+      - openai-codex/gpt-5.6
+      - openai-codex/gpt-5.5
+      - web/parallel
+      - web/perplexity
+      - anthropic/claude-haiku-4-5
+      - google/gemini-3-flash
+      - xai/grok-4.5
+      - xai-oauth/grok-4.5
+      - web/zai
+      - web/exa
+      - web/tinyfish
+      - web/jina
+      - web/kagi
+      - web/tavily
+      - web/firecrawl
+      - web/brave
+      - web/kimi
+      - web/synthetic
+      - web/ollama
+      - web/searxng
+      - web/startpage
+      - web/duckduckgo
+      - web/ecosia
+      - web/google
+      - web/mojeek
+      - web/public
+    judge:
+      - "@tiny"
+      - "@smol"
+      - "@default"
+find:
+  enabled: "on"
