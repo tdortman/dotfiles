@@ -157,7 +157,7 @@
         treefmt-nix.follows = "treefmt-nix";
       };
 
-      url = "github:kunobi-ninja/kache";
+      url = "github:kunobi-ninja/kache/stable";
     };
 
     llm-agents.url = "github:numtide/llm-agents.nix";
