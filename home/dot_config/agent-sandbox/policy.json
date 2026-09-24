@@ -31,6 +31,7 @@
         { "methods": ["GET"], "url": "https://api.anthropic.com/api/oauth/usage", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://api.anthropic.com/v1/messages", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.anthropic.com/v1/models", "port": 443, "comment": "global" },
+        { "methods": ["POST"], "url": "https://api.anthropic.com/v1/oauth/token", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.commandcode.ai/provider/v1/models", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://api.deepseek.com/chat/completions", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.deepseek.com/models", "port": 443, "comment": "global" },
@@ -180,6 +181,7 @@
   },
   "filesystem": {
     "allow": [
+      { "path": "/dev/shm/__KMP_REGISTERED_LIB_*_1000", "access": "read_write", "comment": "openmp" },
       { "path": "/dev/shm/pulse-shm-*", "access": "read", "comment": "global" },
       { "path": "/dev/shm/sem.*", "access": "read_write", "comment": "global" },
       { "path": "/etc/group", "access": "read_write", "comment": "global" },
@@ -257,6 +259,7 @@
       { "path": "~/.cache/clangd", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/copilot", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/fontconfig", "access": "read", "comment": "global" },
+      { "path": "~/.cache/kache", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/matplotlib", "access": "read", "comment": "global" },
       { "path": "~/.cache/nix", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/oh-my-posh", "access": "read_write", "comment": "global" },
@@ -356,6 +359,7 @@
       { "kind": "unix_socket", "path": "/run/user/*/agent-sandbox-dbus.*/system.sock", "access": "connect", "comment": "global" },
       { "kind": "unix_socket", "path": "/run/user/*/pulse/native", "access": "connect", "comment": "global" },
       { "kind": "unix_socket", "path": "/run/user/1000/1Password-BrowserSupport.sock", "access": "connect", "comment": "global" },
+      { "kind": "unix_socket", "path": "/tmp/**/sccache*/sock", "access": "connect", "comment": "global" },
       { "kind": "unix_socket", "path": "/tmp/nvidia-mps/control", "access": "connect", "comment": "global" },
       { "kind": "unix_socket", "path": "/tmp/prime-agent-*/**", "access": "connect", "comment": "global" },
       { "kind": "unix_socket", "path": "./.codegraph", "access": "connect", "comment": "global" },
@@ -463,6 +467,19 @@
           "member": "GetAll",
           "message_kind": "method_call",
           "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.portal.Settings",
+          "member": "ReadOne",
+          "message_kind": "method_call",
+          "signature": "(ss)",
           "fd_metadata": []
         },
         "comment": "global"
