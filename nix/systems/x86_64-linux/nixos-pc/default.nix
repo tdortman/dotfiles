@@ -45,7 +45,6 @@
 
       loopback.tcpPorts = [
         3080 # DSH
-        47657 # hunk
       ];
     };
 
