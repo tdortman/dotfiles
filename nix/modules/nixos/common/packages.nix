@@ -34,6 +34,7 @@
       fd
       ffmpeg-full
       file
+      flake-edit
       fooyin
       fzf
       gdb
