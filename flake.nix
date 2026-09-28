@@ -132,7 +132,15 @@
       url = "github:ryantm/agenix";
     };
 
-    agent-sandbox.url = "github:tdortman/agent-sandbox";
+    agent-sandbox = {
+      inputs = {
+        pedantix.follows = "pedantix";
+        snowfall-lib.follows = "snowfall-lib";
+        treefmt-nix.follows = "treefmt-nix";
+      };
+
+      url = "github:tdortman/agent-sandbox";
+    };
 
     codex-desktop-linux = {
       inputs.nixpkgs.follows = "nixpkgs";
@@ -157,10 +165,14 @@
         treefmt-nix.follows = "treefmt-nix";
       };
 
-      url = "github:kunobi-ninja/kache/stable";
+      url = "github:kunobi-ninja/kache/a7aafc6caaa821dc19b856b30725e9532d9b0e28";
     };
 
-    llm-agents.url = "github:numtide/llm-agents.nix";
+    llm-agents = {
+      inputs.treefmt-nix.follows = "treefmt-nix";
+      url = "github:numtide/llm-agents.nix";
+    };
+
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
     nix-index-database = {
@@ -178,6 +190,11 @@
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-plasma-beta.url = "github:NixOS/nixpkgs/b730141a8c72527aa3710467d46d06994efbc640";
     nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/540416/head";
+
+    omp = {
+      inputs.bun2nix.inputs.treefmt-nix.follows = "treefmt-nix";
+      url = "github:bjin/oh-my-pi.nix";
+    };
 
     pedantix = {
       inputs = {
@@ -200,7 +217,9 @@
     snowfall-lib = {
       inputs = {
         flake-utils-plus.follows = "flake-utils-plus";
+        home-manager.follows = "home-manager";
         nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "treefmt-nix";
       };
 
       url = "github:anntnzrb/snowfall-lib";
