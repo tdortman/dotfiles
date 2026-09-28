@@ -76,6 +76,7 @@ task:
   maxConcurrency: 0
   agentAdvisor:
     task: "off"
+  enableEffort: false
 secrets:
   enabled: true
 contextPromotion:
@@ -107,7 +108,7 @@ completion:
 features:
   unexpectedStopDetection: smart
 snapcompact:
-  toolResults: true
+  toolResults: false
   systemPrompt: none
   shape: auto
 tools:
@@ -147,14 +148,14 @@ tui:
   hyperlinks: auto
 bash:
   autoBackground:
-    enabled: false
+    enabled: true
   direnv: auto
 shellMinimizer:
   sourceOutlineLevel: default
 generate_image:
   enabled: true
 read:
-  renderMarkdown: true
+  renderMarkdown: false
 externalThinking: false
 security:
   enabled: true
@@ -204,3 +205,7 @@ retry:
       - "@default"
 find:
   enabled: "on"
+error:
+  notify: "on"
+claudeResets:
+  autoRedeem: "no"
