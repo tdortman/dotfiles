@@ -60,14 +60,6 @@
           ];
         }
         {
-          package = agents.omp;
-
-          readwriteDirs = [
-            "~/.omp"
-            "~/.local/state/omp"
-          ];
-        }
-        {
           package = agents.opencode2;
 
           readonlyFiles = [
@@ -85,6 +77,14 @@
             # cursor-acp
             "~/.opencode-cursor"
             "~/.local/share/cursor-agent"
+          ];
+        }
+        {
+          package = inputs.omp.packages.${system}.default;
+
+          readwriteDirs = [
+            "~/.omp"
+            "~/.local/state/omp"
           ];
         }
       ];

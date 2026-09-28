@@ -119,6 +119,7 @@
           "https://cache.numtide.com"
           "https://agent-sandbox.cachix.org"
           "https://codex-desktop-linux.cachix.org"
+          "https://oh-my-pi.cachix.org"
         ];
 
         extra-trusted-public-keys = [
@@ -128,6 +129,7 @@
           "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
           "agent-sandbox.cachix.org-1:x7WgdtZjoPgbKdyk5oxP2QvN7B3SfuHmGvXKJ8xtTu0="
           "codex-desktop-linux.cachix.org-1:nX/xy6AdK9hQE24A8ALGjkCKj2ObFmcnemiL5Cid4nk="
+          "oh-my-pi.cachix.org-1:FRLFzcZnCIB2GfSpDkgHsl8uGa1zDrx1F+bBlVIy7Wo="
         ];
 
         trusted-users = [
