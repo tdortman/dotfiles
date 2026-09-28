@@ -15,7 +15,7 @@ in
       nvidia-fs.enable = lib.mkEnableOption "nvidia-fs kernel module for GPUDirect Storage";
 
       packages = lib.mkOption {
-        type = lib.types.attrsOf lib.types.package;
+        type = lib.types.lazyAttrsOf lib.types.package;
         default = pkgs.cudaPackages;
         description = "The CUDA packages to use. Defaults to the latest CUDA packages provided by Nixpkgs";
       };

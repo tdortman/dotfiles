@@ -1,8 +1,6 @@
 {
   lib,
-  stdenv,
   fetchFromGitHub,
-  darwin,
   openssl,
   pkg-config,
   rustPlatform,
@@ -25,10 +23,6 @@ rustPlatform.buildRustPackage {
 
   buildInputs = [
     openssl
-  ]
-  ++ lib.optionals stdenv.isDarwin [
-    darwin.apple_sdk.frameworks.Security
-    darwin.apple_sdk.frameworks.SystemConfiguration
   ];
 
   cargoHash = "sha256-KzWNLrEZ8V3JHbhdrJHcJuussuH0ItBWhuEWMtjUyWw=";
