@@ -99,6 +99,15 @@ in
                 #   url = "https://raw.githubusercontent.com/CachyOS/CachyOS-PKGBUILDS/master/nvidia/nvidia-utils/kernel-6.19.patch";
                 #   hash = "sha256-YuJjSUXE6jYSuZySYGnWSNG5sfVei7vvxDcHx3K+IN4=";
                 # })
+
+                # nvidia-modeset frees the device twice when a failed resume
+                # revokes it, oopsing inside the PM notifier. Upstream PR
+                # NVIDIA/open-gpu-kernel-modules#1395
+                (pkgs.fetchpatch {
+                  hash = "sha256-aWzj+3AR7xjvWp5IL5iSNIts0SKp9kT35zgXUINBuhc=";
+                  name = "nvidia-modeset-ignore-nested-revoke.patch";
+                  url = "https://github.com/NVIDIA/open-gpu-kernel-modules/commit/5db24a72350ab2679376132ac8e31a06a0950343.patch";
+                })
               ];
             });
           };
