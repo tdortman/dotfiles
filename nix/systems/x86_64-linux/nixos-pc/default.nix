@@ -334,7 +334,9 @@
           commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
           withVencord = true;
         })
+        antigravity-ide-fhs
         btrfs-progs
+        code-cursor-fhs
         # cuda.llama-cpp
         cuda.lmstudio
         custom.danbooru-rs
@@ -355,9 +357,6 @@
         librewolf
         lsfg-vk
         lsfg-vk-ui
-        master.antigravity-ide-fhs
-        master.code-cursor-fhs
-        master.vscode-fhs
         mpv
         nheko
         ntfs3g
@@ -366,6 +365,7 @@
         samba
         teams-for-linux
         vlc
+        vscode-fhs
         winboat
         xdg-desktop-portal
         xdg-utils
