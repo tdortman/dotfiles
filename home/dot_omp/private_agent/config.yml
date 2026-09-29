@@ -209,3 +209,7 @@ error:
   notify: "on"
 claudeResets:
   autoRedeem: "no"
+spelling:
+  autocomplete: smollm
+web_search:
+  enabled: true

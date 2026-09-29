@@ -6,7 +6,11 @@
     },
     "http": {
       "allow": [
-        { "methods": ["GET"], "url": "https://catalog.stencil.so/models.json.zstd", "port": 443, "comment": "global_package" }
+        { "methods": ["GET"], "url": "https://catalog.stencil.so/models.json.zstd", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/resolve/93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/resolve/93efa2f097d58c2a74874c7e644dbc9b0cee75a2/config.json", "port": 443, "comment": "word prediction" },
+        { "methods": ["GET"], "url": "https://huggingface.co/QuantFactory/SmolLM2-135M-GGUF/resolve/d948db3614be18259a175aafd7689a70f1cb4e2f", "port": 443, "comment": "word prediction" },
+        { "methods": ["GET"], "url": "https://huggingface.co/api/resolve-cache/models/HuggingFaceTB/SmolLM2-135M/93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "port": 443, "comment": "word prediction" }
       ],
       "deny": []
     }
@@ -28,7 +32,9 @@
   },
   "resources": {
     "allow": [
-      { "kind": "unix_socket", "path": "~/.local/state/omp", "access": "connect", "comment": "global_package" }
+      { "kind": "unix_socket", "path": "~/.local/state/omp", "access": "connect", "comment": "global_package" },
+      { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/broker.sock", "access": "connect", "comment": "global_package" },
+      { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/text-predict-*.sock", "access": "connect", "comment": "global_package" }
     ],
     "deny": []
   },
