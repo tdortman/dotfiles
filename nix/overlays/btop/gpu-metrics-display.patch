@@ -48,7 +48,7 @@
 +			}
 +			if (gpu.supported_functions.mem_total or gpu.supported_functions.mem_used) {
 +				const bool mclk_on_vram = gpu.supported_functions.mem_clock and not gpu.supported_functions.mem_utilization;
-+				vram_meter = Draw::Meter{max(1, b_width - 21 - (mclk_on_vram ? 9 : 0)), "used"};
++				vram_meter = Draw::Meter{max(1, b_width - 22 - (mclk_on_vram ? 9 : 0)), "used"};
 +			}
 +			if (gpu.supported_functions.mem_utilization) {
 +				const bool mclk_on_mem = gpu.supported_functions.mem_clock;
@@ -173,7 +173,7 @@
 +			if (gpu.supported_functions.mem_clock and not gpu.supported_functions.mem_utilization)
 +				vram_mclk = " " + rjust(to_string(gpu.mem_clock_speed) + " MHz", 8);
 +			out += Mv::to(b_y + rows_used, b_x + 1) + Theme::c("main_fg") + Fx::b + "VRAM " + vram_meter((int)vram_pct)
-+				+ Theme::g("used").at(clamp(vram_pct, 0ll, 100ll)) + rjust(used_s, 4) + '/' + ljust(total_s, 4) + ' '
++				+ Theme::g("used").at(clamp(vram_pct, 0ll, 100ll)) + rjust(used_s, 5) + '/' + ljust(total_s, 4) + ' '
 +				+ (has_total and has_used ? rjust(to_string(vram_pct), 3) + Theme::c("main_fg") + '%' : Theme::c("main_fg") + " N/A"s) + vram_mclk;
 +			rows_used++;
  		}
