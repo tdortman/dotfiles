@@ -503,6 +503,11 @@
     driver = {
       enable = true;
       package = config.boot.kernelPackages.nvidiaPackages.latest;
+
+      resetBeforeResume = {
+        enable = true;
+        pciAddress = "0000:0d:00.0";
+      };
     };
   };
 

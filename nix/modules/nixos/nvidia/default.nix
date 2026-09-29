@@ -29,6 +29,21 @@ in
         default = config.boot.kernelPackages.nvidiaPackages.stable;
         description = "The NVIDIA driver package to use";
       };
+
+      resetBeforeResume = {
+        enable = lib.mkEnableOption ''
+          a PCI function-level reset of the GPU in the initrd before the hibernation image is restored.
+          Firmware lights the display engine of a GPU with a monitor attached during resume, and the
+          driver then times out allocating display window channels, which leaves the GPU's display
+          stack dead until the next reboot
+        '';
+
+        pciAddress = lib.mkOption {
+          type = lib.types.strMatching "[0-9a-f]{4}:[0-9a-f]{2}:[0-9a-f]{2}\\.[0-7]";
+          example = "0000:0d:00.0";
+          description = "PCI address of the GPU to reset";
+        };
+      };
     };
   };
 
@@ -117,6 +132,27 @@ in
         };
 
         services.xserver.videoDrivers = [ "nvidia" ];
+      })
+
+      (lib.mkIf (cfg.driver.enable && cfg.driver.resetBeforeResume.enable) {
+        assertions = [
+          {
+            assertion = config.boot.initrd.systemd.enable;
+            message = "nvidia.driver.resetBeforeResume needs boot.initrd.systemd.enable, which runs the reset before systemd-hibernate-resume.";
+          }
+        ];
+
+        boot.initrd.systemd.services.nvidia-gpu-reset = {
+          description = "Reset the NVIDIA GPU before restoring the hibernation image";
+          before = [ "systemd-hibernate-resume.service" ];
+          wantedBy = [ "systemd-hibernate-resume.service" ];
+          serviceConfig.Type = "oneshot";
+          unitConfig.DefaultDependencies = false;
+
+          script = ''
+            echo 1 > /sys/bus/pci/devices/${cfg.driver.resetBeforeResume.pciAddress}/reset
+          '';
+        };
       })
     ];
 }
