@@ -188,7 +188,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
-    nixpkgs-plasma-beta.url = "github:NixOS/nixpkgs/b730141a8c72527aa3710467d46d06994efbc640";
+    nixpkgs-plasma-beta.url = "github:NixOS/nixpkgs/fc65235027da0afda4dfeccca4c66855f8e6296b";
     nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/540416/head";
 
     omp = {

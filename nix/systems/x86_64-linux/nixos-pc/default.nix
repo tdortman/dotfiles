@@ -9,7 +9,7 @@
 
 {
   imports = [
-    "${inputs.nixpkgs-plasma-beta}/nixos/modules/services/desktop-managers/plasma6.nix"
+    ../../../modules/nixos/kde/beta.nix
     ./disko.nix
     ./hardware-configuration.nix
   ];
@@ -204,7 +204,6 @@
   };
 
   disableWakeFromHibernate.enable = true;
-  disabledModules = [ "services/desktop-managers/plasma6.nix" ];
 
   display-layout = {
     enable = true;
@@ -493,37 +492,6 @@
   };
 
   nix.settings.cores = 22;
-
-  nixpkgs.overlays = lib.mkBefore [
-    (final: prev: {
-      kdePackages =
-        (import inputs.nixpkgs-plasma-beta {
-          inherit (prev) config;
-          inherit system;
-        }).kdePackages.overrideScope
-          (
-            kfinal: kprev: {
-              ktnef = kprev.ktnef.overrideAttrs (oldAttrs: {
-                buildInputs = (oldAttrs.buildInputs or [ ]) ++ [ kfinal.kcalutils ];
-              });
-
-              kwin = kprev.kwin.overrideAttrs (oldAttrs: {
-                patches = (oldAttrs.patches or [ ]) ++ [ ./kwin-drm-color-pipeline.patch ];
-              });
-            }
-          );
-
-      # `libreoffice-qt` is defined through whatever `kdePackages` resolves to,
-      # so the beta scope drags in that snapshot's whole package set (boost,
-      # openssl, qtbase). Those builds miss the binary cache and LibreOffice
-      # compiles from source. Build it from the unmodified package set instead.
-      libreoffice-qt =
-        (import prev.path {
-          inherit system;
-          inherit (prev) config;
-        }).libreoffice-qt;
-    })
-  ];
 
   nvidia = {
     cuda = {

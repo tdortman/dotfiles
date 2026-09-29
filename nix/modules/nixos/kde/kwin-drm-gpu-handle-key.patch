@@ -1,0 +1,25 @@
+--- a/src/backends/drm/drm_backend.cpp	2026-09-28 23:41:10.347432516 +0200
++++ b/src/backends/drm/drm_backend.cpp	2026-09-28 23:41:10.637077794 +0200
+@@ -234,7 +234,12 @@
+ 
+ DrmGpu *DrmBackend::addGpu(const QString &fileName)
+ {
+-    auto authHandle = m_gpuAuthHandles.value(fileName);
++    // The handle cache is keyed by the canonical node path, so that a KWIN_DRM_DEVICES
++    // symlink and the card node udev reports for the same device share one handle.
++    // Otherwise re-adding a GPU after its device was paused opens the node a second
++    // time, which logind rejects as already taken.
++    const QString handleKey = QFileInfo(fileName).canonicalFilePath();
++    auto authHandle = m_gpuAuthHandles.value(handleKey);
+     if (!authHandle) {
+         authHandle = std::make_shared<DrmAuthHandle>(m_session, fileName);
+     }
+@@ -252,7 +257,7 @@
+         return nullptr;
+     }
+ 
+-    m_gpuAuthHandles.insert(fileName, authHandle);
++    m_gpuAuthHandles.insert(handleKey, authHandle);
+ 
+     m_gpus.push_back(std::make_unique<DrmGpu>(this, authHandle->fd(), std::move(drmDevice)));
+     auto gpu = m_gpus.back().get();
