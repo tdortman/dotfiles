@@ -18,6 +18,9 @@
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/alpha/notes/v2/write_file", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/ps/apps/batch", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/accounts/check", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/remote/control/server", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/wham/remote/control/server/enroll", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/wham/remote/control/server/refresh", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/settings/user", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://github.com/DietrichGebert/ponytail.git", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://github.com/DietrichGebert/ponytail.git/git-upload-pack", "port": 443, "comment": "global_package" },
@@ -32,6 +35,7 @@
   },
   "filesystem": {
     "allow": [
+      { "path": "/run/user/1000/codex-desktop/app-server-bridge/app-server.sock", "access": "write", "comment": "global_package" },
       { "path": "./.codex", "access": "execute", "comment": "global_package" },
       { "path": "./tmp/*/codex-*/*", "access": "write", "comment": "global_package" },
       { "path": "./tmp/*/codex-*/.lock", "access": "read_write", "comment": "global_package" },
