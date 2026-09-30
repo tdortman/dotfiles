@@ -4,15 +4,6 @@ agent-default-model:
   provider: opencode-goo-deepseek
   model: deepseek-v4.1-flash
   reasoningEffort: high
-agent-presets:
-  default: custom-ptc
-skill-injector:
-  mode: each-prompt
-  selected:
-    - ponytail
-    - unslop
-    - forward-implementation-first
-    - i-have-adhd
 llm-pi-ai:
   providers:
     opencode-zen-muse:
