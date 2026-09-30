@@ -67,7 +67,18 @@
           ];
         }
         {
-          package = agents.dsh;
+          # The prebuilt node-addon-require-builtin cannot locate its getter in
+          # nixpkgs' Node binaries; the wrapper already passes --expose-internals,
+          # so plain require reaches the same internal modules.
+          package = agents.dsh.overrideAttrs (old: {
+            postInstall = (old.postInstall or "") + ''
+              substituteInPlace \
+                $out/lib/node_modules/@deepseek-ai/dsh/node_modules/@deepseek-ai/dsh-app-boot/lib/index.js \
+                --replace-fail \
+                'createRequire(import.meta.url)("node-addon-require-builtin")' \
+                '{ requireBuiltin: createRequire(import.meta.url) }'
+            '';
+          });
 
           readwriteDirs = [
             "~/.dsh"
