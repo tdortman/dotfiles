@@ -2,27 +2,23 @@
   "name": "dsh-profile-web",
   "private": true,
   "dependencies": {
-    "@michengai/dsh-archive-manager": "^0.1.39",
-    "dsh-anchored-standard": "github:Jungod1121/dsh-anchored-standard",
-    "dsh-client-auto-continue": "^0.11.6",
-    "dsh-codex": "^0.3.0",
-    "dsh-context": "^0.52.0",
-    "dsh-notification": "github:omdsh-dev/dsh-notification",
+    "@michengai/dsh-archive-manager": "^1.0.8",
+    "dsh-client-auto-continue": "^0.12.0",
+    "dsh-codex": "^0.3.2",
+    "dsh-context": "^0.60.0",
+    "dsh-notification": "^0.1.2",
     "dsh-opencode-session": "^0.1.1",
-    "dsh-rewind-plugin": "^0.12.2",
-    "skill-injector-plugin": "github:Zenjibad/skill-injector-plugin"
+    "dsh-rewind-plugin": "^0.15.0"
   },
   "dsh": {
     "profile": {
       "bundles": [
         "@deepseek-ai/dsh-base",
         "@deepseek-ai/dsh-web-app",
-        "skill-injector-plugin",
         "dsh-notification",
         "dsh-opencode-session",
         "dsh-context",
         "dsh-rewind-plugin",
-        "dsh-anchored-standard",
         "dsh-codex",
         "@michengai/dsh-archive-manager",
         "dsh-client-auto-continue"
