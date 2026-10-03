@@ -439,6 +439,10 @@
               "GeistVariable.ttf" = "${inter}/share/fonts/truetype/InterVariable.ttf";
             };
         })
+        (custom.vx.override {
+          cudaPackages = config.custom.nvidia.cuda.packages;
+          cudaSupport = true;
+        })
         (discord.override {
           commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
           withVencord = true;
