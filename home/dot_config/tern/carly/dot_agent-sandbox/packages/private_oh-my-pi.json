@@ -1,0 +1,26 @@
+{
+  "network": {
+    "direct": {
+      "allow": [],
+      "deny": []
+    },
+    "http": {
+      "allow": [],
+      "deny": []
+    }
+  },
+  "sudo": {
+    "allow": [],
+    "deny": []
+  },
+  "filesystem": {
+    "allow": [
+      { "path": "~/.cache/tern/carly", "access": "write", "comment": "project_package" }
+    ],
+    "deny": []
+  },
+  "resources": {
+    "allow": [],
+    "deny": []
+  }
+}
