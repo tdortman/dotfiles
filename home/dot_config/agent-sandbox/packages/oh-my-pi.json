@@ -9,8 +9,10 @@
         { "methods": ["GET"], "url": "https://catalog.stencil.so/models.json.zstd", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/resolve/93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/resolve/93efa2f097d58c2a74874c7e644dbc9b0cee75a2/config.json", "port": 443, "comment": "word prediction" },
+        { "methods": ["GET"], "url": "https://huggingface.co/Qdrant/bge-base-en-v1.5-onnx-Q", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://huggingface.co/QuantFactory/SmolLM2-135M-GGUF/resolve/d948db3614be18259a175aafd7689a70f1cb4e2f", "port": 443, "comment": "word prediction" },
         { "methods": ["GET"], "url": "https://huggingface.co/api/resolve-cache/models/HuggingFaceTB/SmolLM2-135M/93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "port": 443, "comment": "word prediction" },
+        { "methods": ["GET"], "url": "https://huggingface.co/api/resolve-cache/models/Qdrant/bge-base-en-v1.5-onnx-Q", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://my.omp.sh/r", "port": 443, "comment": "global_package" }
       ],
       "deny": []
