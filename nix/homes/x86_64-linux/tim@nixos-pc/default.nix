@@ -173,6 +173,7 @@
                 "applications:org.kde.kdeconnect.app.desktop"
                 "applications:thunderbird.desktop"
                 "applications:com.mitchellh.ghostty.desktop"
+                "applications:so.stencil.tern.desktop"
                 "applications:org.kde.dolphin.desktop"
                 "applications:librewolf.desktop"
                 "applications:discord.desktop"
@@ -230,7 +231,8 @@
       session.sessionRestore.restoreOpenApplicationsOnLogin = "startWithEmptySession";
 
       shortcuts = {
-        "services/com.mitchellh.ghostty.desktop".new-window = "Meta+Return";
+        "services/com.mitchellh.ghostty.desktop".new-window = [ ];
+        "services/so.stencil.tern.desktop"._launch = "Meta+Return";
         "services/net.local.hdr-toggle.desktop"._launch = lib.mkIf osConfig.custom.hdr.enable "Meta+Alt+B";
         "services/systemsettings.desktop"._launch = "Meta+I";
       };

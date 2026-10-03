@@ -57,6 +57,17 @@
         };
 
         kwinrulesrc = {
+          "2c49b7ea-aa4c-480f-b254-0caf6115a221" = {
+            Description = "Tern maximize";
+            maximizehoriz = true;
+            maximizehorizrule = 3; # Apply initially
+            maximizevert = true;
+            maximizevertrule = 3; # Apply initially
+            types = 1;
+            wmclass = "so.stencil.tern";
+            wmclasscomplete = false;
+            wmclassmatch = 1;
+          };
 
           "9f92402d-ab4d-45b7-9660-516c5f837c7b" = {
             Description = "GitButler maximize";
@@ -71,8 +82,8 @@
           };
 
           General = {
-            count = 1;
-            rules = "9f92402d-ab4d-45b7-9660-516c5f837c7b";
+            count = 2;
+            rules = "9f92402d-ab4d-45b7-9660-516c5f837c7b,2c49b7ea-aa4c-480f-b254-0caf6115a221";
           };
         };
 
@@ -152,6 +163,7 @@
                 "applications:org.kde.kdeconnect.app.desktop"
                 "applications:thunderbird.desktop"
                 "applications:com.mitchellh.ghostty.desktop"
+                "applications:so.stencil.tern.desktop"
                 "applications:org.kde.dolphin.desktop"
                 "applications:librewolf.desktop"
                 "applications:discord.desktop"
@@ -245,7 +257,8 @@
 
       shortcuts = {
         "services/com.mitchellh.ghostty.desktop".new-window = [ ];
-        "services/net.local.ghostty-maximized.desktop"._launch = "Meta+Return";
+        "services/net.local.ghostty-maximized.desktop"._launch = [ ];
+        "services/so.stencil.tern.desktop"._launch = "Meta+Return";
         "services/net.local.hdr-toggle.desktop"._launch = lib.mkIf osConfig.custom.hdr.enable "Meta+Alt+B";
         "services/systemsettings.desktop"._launch = "Meta+I";
       };
@@ -273,14 +286,5 @@
   services.wl-clip-persist = {
     clipboardType = "regular";
     enable = true;
-  };
-
-  xdg.desktopEntries."net.local.ghostty-maximized" = {
-    # A separate instance keeps the maximize override out of normal launches.
-    exec = "${lib.getExe pkgs.ghostty} --gtk-single-instance=false --maximize=true";
-    icon = "com.mitchellh.ghostty";
-    name = "Ghostty Maximized";
-    noDisplay = true;
-    terminal = false;
   };
 }
