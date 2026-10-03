@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   inputs,
   system,
@@ -81,6 +82,12 @@
         }
         {
           package = inputs.omp.packages.${system}.default;
+          launchHook = ''
+            unset XDG_DATA_HOME
+            export LD_LIBRARY_PATH="${
+              lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ]
+            }''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          '';
 
           readwriteDirs = [
             "~/.omp"
