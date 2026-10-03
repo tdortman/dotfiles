@@ -1,4 +1,4 @@
-When producing public-facing English prose intended to be read by people other than the user (such as README files, documentation, papers, articles, release notes, or other publishable/shared text), always apply the `unslop` skill. Read `skill://unslop` before writing or revising such prose.
+When producing public-facing English prose intended to be read by people other than the user (such as README files, documentation, papers, articles, release notes, or other publishable/shared text), always apply the `unslop` and `technical-writing` skills. Read `skill://unslop` and `skill://technical-writing` before writing or revising such prose.
 
 Do not apply `unslop` to conversational responses, explanations, status updates, notes, or other messages addressed only to the user, unless the user explicitly asks for it.
 
