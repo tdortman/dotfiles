@@ -6,11 +6,11 @@
 
 appimageTools.wrapType2 rec {
   pname = "shiru";
-  version = "6.8.0";
+  version = "6.9.0";
 
   src = fetchurl {
     url = "https://github.com/RockinChaos/Shiru/releases/download/v${version}/linux-Shiru-v${version}.AppImage";
-    sha256 = "sha256-IJurrSi6Ma52qZUdZchb9NJVmg0a9W8Lpg4Gmqk+4jA=";
+    sha256 = "sha256-o0A9s/IySo62N2IS13+QMDJlmcygiRfD76o8u/l+I4k=";
   };
 
   extraInstallCommands =
@@ -19,15 +19,13 @@ appimageTools.wrapType2 rec {
     in
     ''
       # Install desktop file
-      install -Dm644 ${extracted}/${pname}.desktop $out/share/applications/${pname}.desktop
+      install -Dm644 -t $out/share/applications ${extracted}/*.desktop
 
       # Point desktop file to wrapped binary
-      substituteInPlace $out/share/applications/${pname}.desktop \
+      substituteInPlace $out/share/applications/com.github.rockinchaos.shiru.desktop \
         --replace-fail 'Exec=AppRun %U' 'Exec=${pname} --no-sandbox %U'
 
-      # Install icon
-      install -Dm644 ${extracted}/usr/share/icons/hicolor/512x512/apps/${pname}.png \
-        $out/share/icons/hicolor/512x512/apps/${pname}.png
+      cp -r ${extracted}/usr/share/icons $out/share/
     '';
 
   meta = with lib; {
