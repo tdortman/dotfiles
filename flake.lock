@@ -640,17 +640,17 @@
     },
     "nixpkgs-plasma-beta": {
       "locked": {
-        "lastModified": 1790261369,
-        "narHash": "sha256-lBFv83nXh5PnxpOSy1saLDP2PNs59mnVxD0FddbnB94=",
+        "lastModified": 1790689548,
+        "narHash": "sha256-DXFaFwDRuo5Gzqr4MyE2FeZok6c+P0lxNJhlCcb5Rjs=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "fc65235027da0afda4dfeccca4c66855f8e6296b",
+        "rev": "2b8ed4eff5dccf5ebbd03912841fb11c7c3a9d01",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
+        "ref": "pull/561955/head",
         "repo": "nixpkgs",
-        "rev": "fc65235027da0afda4dfeccca4c66855f8e6296b",
         "type": "github"
       }
     },
