@@ -178,7 +178,9 @@
         "diagnostics": false,
     },
     "agent": {
-        "sidebar_side": "right",
+        "threads_sidebar": {
+            "position": "right"
+        },
         "dock": "right",
         "inline_assistant_model": {
             "provider": "copilot_chat",
@@ -439,7 +441,7 @@
         "ini": ["wrap", "Doxyfile"],
         "YAML": [".clang-tidy"],
         "Meson": ["meson.build", "meson.options", "meson_options.txt"],
-        "JSON": ["spack.lock"],
+        "JSON": ["spack.lock", "**/*.json.tmpl"],
         "Ghostty": ["**/ghostty/config*"],
         "env": [".env.*", ".env"],
         "GitHub Actions": ["**/.github/**/*.yml"],
