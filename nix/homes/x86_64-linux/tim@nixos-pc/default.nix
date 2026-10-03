@@ -74,6 +74,17 @@
             desktopfilerule = 4;
           };
 
+          # Tern ignores its own saved size, so pin the launch geometry.
+          "2c49b7ea-aa4c-480f-b254-0caf6115a221" = {
+            size = "1364,1234";
+            Description = "Tern size";
+            sizerule = 3; # Apply initially; 2 (Force) blocks resize/maximize
+            types = 1;
+            wmclass = "so.stencil.tern";
+            wmclasscomplete = false;
+            wmclassmatch = 1;
+          };
+
           "9f92402d-ab4d-45b7-9660-516c5f837c7b" = {
             Description = "GitButler maximize";
             maximizehoriz = true;
@@ -87,8 +98,8 @@
           };
 
           General = {
-            count = 1;
-            rules = "9f92402d-ab4d-45b7-9660-516c5f837c7b";
+            count = 2;
+            rules = "9f92402d-ab4d-45b7-9660-516c5f837c7b,2c49b7ea-aa4c-480f-b254-0caf6115a221";
           };
         };
 

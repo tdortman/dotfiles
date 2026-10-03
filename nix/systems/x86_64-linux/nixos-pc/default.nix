@@ -425,6 +425,20 @@
           }
         ]
       ++ [
+        (custom.tern.override {
+          fontReplacements =
+            let
+              # Comic Code ships via chezmoi, so link to it at runtime.
+              comicCode = "${
+                config.users.users.${config.custom.common.username}.home
+              }/.local/share/fonts/ComicCode/ComicCodeLigaturesNerdFontMono";
+            in
+            {
+              "BerkeleyMonoNerdFont-Medium.ttf" = "${comicCode}-Medium.otf";
+              "BerkeleyMonoNerdFont-Regular.ttf" = "${comicCode}-Regular.otf";
+              "GeistVariable.ttf" = "${inter}/share/fonts/truetype/InterVariable.ttf";
+            };
+        })
         (discord.override {
           commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
           withVencord = true;
