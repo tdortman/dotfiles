@@ -334,29 +334,27 @@
     enable = true;
   };
 
-  systemd.user.services.voxtype.Service.Environment = lib.mkAfter (
-    let
-      cudaLibPath = lib.makeLibraryPath (
-        with pkgs.cudaPackages_12_9;
-        [
-          cuda_cudart
-          cuda_nvrtc
-          cudnn
-          libcublas
-        ]
-      );
-    in
-    [
-      "LD_LIBRARY_PATH=${cudaLibPath}"
-      "LD_PRELOAD=${pkgs.cudaPackages_12_9.cuda_nvrtc.lib}/lib/libnvrtc.so"
+  systemd.user.services.voxtype.Service.Environment = lib.mkAfter [
+    # For the `onnx-cuda` package: its ONNX Runtime loads CUDA at runtime
+    # "LD_LIBRARY_PATH=${
+    #   lib.makeLibraryPath (
+    #     with pkgs.cudaPackages;
+    #     [
+    #       cuda_cudart
+    #       cuda_nvrtc
+    #       cudnn
+    #       libcublas
+    #     ]
+    #   )
+    # }"
+    # "LD_PRELOAD=${pkgs.cudaPackages.cuda_nvrtc.lib}/lib/libnvrtc.so"
 
-      "DOTOOL_XKB_LAYOUT=de"
-      "DOTOOL_XKB_VARIANT="
-      "XKB_DEFAULT_LAYOUT=de"
-      "XKB_DEFAULT_VARIANT="
-      "XKB_DEFAULT_OPTIONS="
-    ]
-  );
+    "DOTOOL_XKB_LAYOUT=de"
+    "DOTOOL_XKB_VARIANT="
+    "XKB_DEFAULT_LAYOUT=de"
+    "XKB_DEFAULT_VARIANT="
+    "XKB_DEFAULT_OPTIONS="
+  ];
 
   xdg = {
     # Brio 100 does 1920x1080@30 MJPEG but Teams' getUserMedia asks 720p.
