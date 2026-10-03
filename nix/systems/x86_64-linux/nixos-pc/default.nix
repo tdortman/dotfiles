@@ -290,6 +290,7 @@
 
     jgu-vpn = {
       enable = true;
+      autoStart = false;
 
       dnsServers = [
         "134.93.144.2"
