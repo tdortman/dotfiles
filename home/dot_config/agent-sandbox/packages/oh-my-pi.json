@@ -10,7 +10,8 @@
         { "methods": ["GET"], "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/resolve/93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/resolve/93efa2f097d58c2a74874c7e644dbc9b0cee75a2/config.json", "port": 443, "comment": "word prediction" },
         { "methods": ["GET"], "url": "https://huggingface.co/QuantFactory/SmolLM2-135M-GGUF/resolve/d948db3614be18259a175aafd7689a70f1cb4e2f", "port": 443, "comment": "word prediction" },
-        { "methods": ["GET"], "url": "https://huggingface.co/api/resolve-cache/models/HuggingFaceTB/SmolLM2-135M/93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "port": 443, "comment": "word prediction" }
+        { "methods": ["GET"], "url": "https://huggingface.co/api/resolve-cache/models/HuggingFaceTB/SmolLM2-135M/93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "port": 443, "comment": "word prediction" },
+        { "methods": ["GET"], "url": "https://my.omp.sh/r", "port": 443, "comment": "global_package" }
       ],
       "deny": []
     }
@@ -32,6 +33,9 @@
   },
   "resources": {
     "allow": [
+      { "kind": "unix_socket", "path": "/run/user/*/at-spi/bus_0", "access": "connect", "comment": "computer use" },
+      { "kind": "unix_socket", "path": "/run/user/1000/at-spi2-*/socket", "access": "connect", "comment": "computer use" },
+      { "kind": "unix_socket", "path": "/run/user/1000/wayland-0", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.local/state/omp", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/broker.sock", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/text-predict-*.sock", "access": "connect", "comment": "global_package" }
@@ -40,6 +44,175 @@
   },
   "dbus": {
     "allow": [
+      {
+        "target": {
+          "bus": "session",
+          "destination": ":1.73917",
+          "object_path": "/org/freedesktop/portal/desktop/request/**",
+          "interface": "org.freedesktop.portal.Request",
+          "member": "Response",
+          "message_kind": "signal",
+          "signature": "(ua{sv})",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.DBus",
+          "object_path": "/org/freedesktop/DBus",
+          "interface": "org.freedesktop.DBus",
+          "member": "NameHasOwner",
+          "message_kind": "method_call",
+          "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.portal.RemoteDesktop",
+          "member": "ConnectToEIS",
+          "message_kind": "method_call",
+          "signature": "(oa{sv})",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.portal.RemoteDesktop",
+          "member": "CreateSession",
+          "message_kind": "method_call",
+          "signature": "a{sv}",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.portal.RemoteDesktop",
+          "member": "SelectDevices",
+          "message_kind": "method_call",
+          "signature": "(oa{sv})",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.portal.RemoteDesktop",
+          "member": "Start",
+          "message_kind": "method_call",
+          "signature": "(osa{sv})",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.portal.ScreenCast",
+          "member": "CreateSession",
+          "message_kind": "method_call",
+          "signature": "a{sv}",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.portal.ScreenCast",
+          "member": "OpenPipeWireRemote",
+          "message_kind": "method_call",
+          "signature": "(oa{sv})",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.portal.ScreenCast",
+          "member": "SelectSources",
+          "message_kind": "method_call",
+          "signature": "(oa{sv})",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.portal.ScreenCast",
+          "member": "Start",
+          "message_kind": "method_call",
+          "signature": "(osa{sv})",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop/request/**",
+          "interface": "org.freedesktop.DBus.Properties",
+          "member": "GetAll",
+          "message_kind": "method_call",
+          "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop/session/**",
+          "interface": "org.freedesktop.DBus.Properties",
+          "member": "GetAll",
+          "message_kind": "method_call",
+          "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop/session/**",
+          "interface": "org.freedesktop.portal.Session",
+          "member": "Close",
+          "message_kind": "method_call",
+          "signature": "",
+          "fd_metadata": []
+        },
+        "comment": "computer use"
+      },
       {
         "target": {
           "bus": "session",

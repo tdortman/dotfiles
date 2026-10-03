@@ -28,6 +28,8 @@
         { "methods": ["GET"], "url": "http://specifications.freedesktop.org/", "port": 80, "comment": "global" },
         { "methods": ["GET"], "url": "http://www.biorxiv.org/content/*/*.full", "port": 80, "comment": "global" },
         { "methods": ["GET"], "url": "https://*.readthedocs.io/**", "port": 443, "comment": "global" },
+        { "methods": ["POST"], "url": "https://api.anthropic.com/api/event_logging/v2/batch", "port": 443, "comment": "global" },
+        { "methods": ["GET", "HEAD"], "url": "https://api.anthropic.com/api/hello", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.anthropic.com/api/oauth/usage", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://api.anthropic.com/v1/messages", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.anthropic.com/v1/models", "port": 443, "comment": "global" },
@@ -145,6 +147,7 @@
         { "methods": ["POST"], "url": "https://openrouter.ai/api/v1/responses", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://openrouter.ai/api/v1/videos/models", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://peps.python.org/", "port": 443, "comment": "global" },
+        { "methods": ["GET"], "url": "https://platform.claude.com/v1/oauth/hello", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://pypi.org/simple", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://r.jina.ai/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://raw.githubusercontent.com/", "port": 443, "comment": "global" },
@@ -466,6 +469,19 @@
           "member": "GetNameOwner",
           "message_kind": "method_call",
           "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.DBus.Properties",
+          "member": "Get",
+          "message_kind": "method_call",
+          "signature": "(ss)",
           "fd_metadata": []
         },
         "comment": "global"
