@@ -10,6 +10,7 @@
   makeDesktopItem,
   makeWrapper,
   openssl,
+  python3,
   requireFile,
   vulkan-loader,
   wayland,
@@ -54,7 +55,31 @@ stdenv.mkDerivation (finalAttrs: {
     install -Dm755 tern $out/lib/tern/tern
     mkdir -p $out/share/tern
     cp -r assets $out/share/tern/
-    
+
+    ${python3.interpreter} - <<'PY'
+    import os
+    import struct
+    import zlib
+    from pathlib import Path
+
+    data = Path("tern").read_bytes()
+    for size in (16, 32, 48, 64, 128, 256, 512, 1024):
+        header = b"\x89PNG\r\n\x1a\n\x00\x00\x00\x0dIHDR" + struct.pack(">II", size, size)
+        assert data.count(header) == 1, f"Expected one {size}x{size} Tern icon"
+        start = data.index(header)
+        end = start + 8
+        while True:
+            length, kind = struct.unpack_from(">I4s", data, end)
+            crc = zlib.crc32(data[end + 4:end + 8 + length])
+            assert crc == struct.unpack_from(">I", data, end + 8 + length)[0], "Invalid PNG chunk"
+            end += length + 12
+            if kind == b"IEND":
+                break
+        icon = Path(os.environ["out"]) / f"share/icons/hicolor/{size}x{size}/apps/so.stencil.tern.png"
+        icon.parent.mkdir(parents=True, exist_ok=True)
+        icon.write_bytes(data[start:end])
+    PY
+
     ${lib.concatMapAttrsStringSep "\n" (name: font: ''
       [[ -e $out/share/tern/assets/fonts/${lib.escapeShellArg name} ]] \
         || { echo "tern bundles no font named ${name}" >&2; exit 1; }
@@ -79,7 +104,7 @@ stdenv.mkDerivation (finalAttrs: {
       desktopName = "Tern";
       exec = "tern";
       genericName = "Terminal";
-      icon = "utilities-terminal";
+      icon = "so.stencil.tern";
       name = "so.stencil.tern";
       startupWMClass = "so.stencil.tern";
     })
