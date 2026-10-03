@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.kde;
+  cfg = config.custom.kde;
 in
 {
-  options.kde.enable = lib.mkEnableOption "KDE Plasma desktop environment";
+  options.custom.kde.enable = lib.mkEnableOption "KDE Plasma desktop environment";
 
   config = lib.mkIf cfg.enable {
     environment = {

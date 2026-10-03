@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.openrgb;
+  cfg = config.custom.openrgb;
 
   no-rgb = pkgs.writeShellApplication {
     name = "no-rgb";
@@ -27,7 +27,7 @@ let
   };
 in
 {
-  options.openrgb.enable = lib.mkEnableOption "OpenRGB with automatic RGB disable on boot";
+  options.custom.openrgb.enable = lib.mkEnableOption "OpenRGB with automatic RGB disable on boot";
 
   config = lib.mkIf cfg.enable {
     boot.kernelModules = [ "i2c-dev" ];

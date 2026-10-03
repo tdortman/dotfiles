@@ -109,8 +109,58 @@
     sudoPolicy = "approve";
   };
 
-  backups.snapshots.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  custom = {
+    backups.snapshots.enable = true;
+    fingerprint.enable = true;
+
+    flatpak = {
+      enable = true;
+      extraOverrides."com.gitbutler.gitbutler".Environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
+
+      packages = [
+        "com.gitbutler.gitbutler"
+        "com.surfshark.Surfshark"
+      ];
+    };
+
+    intel.enable = true;
+
+    jgu-vpn = {
+      enable = true;
+
+      dnsServers = [
+        "134.93.144.2"
+        "134.93.144.3"
+      ];
+
+      secretsFile = config.age.secrets."jgu-vpn-swanctl".path;
+      username = "tdortman@uni-mainz.de";
+    };
+
+    kde.enable = true;
+    mime.librewolf.enable = true;
+
+    nextdns = {
+      enable = true;
+      configFile = config.age.secrets."nextdns-resolved.conf".path;
+      hostName = "NixOS--Laptop";
+    };
+
+    onepassword = {
+      enable = true;
+      user = config.custom.common.username;
+    };
+
+    spicetify.enable = true;
+
+    vpn-run = {
+      enable = true;
+      allowedUsers = [ config.custom.common.username ];
+      defaultInterface = "wg0";
+    };
+  };
 
   environment = {
     systemPackages = with pkgs; [
@@ -154,40 +204,11 @@
     };
   };
 
-  fingerprint.enable = true;
-
-  flatpak = {
-    enable = true;
-    extraOverrides."com.gitbutler.gitbutler".Environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
-
-    packages = [
-      "com.gitbutler.gitbutler"
-      "com.surfshark.Surfshark"
-    ];
-  };
-
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
     settings.General.Experimental = true;
   };
-
-  intel.enable = true;
-
-  jgu-vpn = {
-    enable = true;
-
-    dnsServers = [
-      "134.93.144.2"
-      "134.93.144.3"
-    ];
-
-    secretsFile = config.age.secrets."jgu-vpn-swanctl".path;
-    username = "tdortman@uni-mainz.de";
-  };
-
-  kde.enable = true;
-  mime.librewolf.enable = true;
 
   networking = {
     hostName = "nixos-laptop";
@@ -211,7 +232,7 @@
           }
         ];
 
-        privateKeyFile = "/home/${config.common.username}/.config/wireguard/privatekey";
+        privateKeyFile = "/home/${config.custom.common.username}/.config/wireguard/privatekey";
       };
 
       wg1 = {
@@ -236,12 +257,6 @@
         privateKeyFile = toString config.age.secrets."airvpn-privatekey".path;
       };
     };
-  };
-
-  nextdns = {
-    enable = true;
-    configFile = config.age.secrets."nextdns-resolved.conf".path;
-    hostName = "NixOS--Laptop";
   };
 
   nixpkgs.overlays = [
@@ -303,11 +318,6 @@
       });
     })
   ];
-
-  onepassword = {
-    enable = true;
-    user = config.common.username;
-  };
 
   programs = {
     dconf.enable = true;
@@ -377,7 +387,6 @@
     udisks2.enable = true;
   };
 
-  spicetify.enable = true;
   system.stateVersion = "26.11";
 
   virtualisation = {
@@ -393,12 +402,6 @@
   virtualisation.libvirtd = {
     enable = true;
     qemu.vhostUserPackages = with pkgs; [ virtiofsd ];
-  };
-
-  vpn-run = {
-    enable = true;
-    allowedUsers = [ config.common.username ];
-    defaultInterface = "wg0";
   };
 
   xdg.portal.xdgOpenUsePortal = true;

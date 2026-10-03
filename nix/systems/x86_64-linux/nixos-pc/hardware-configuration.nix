@@ -117,7 +117,7 @@
     groups.media = { };
 
     users = {
-      ${config.common.username}.extraGroups = [ "media" ];
+      ${config.custom.common.username}.extraGroups = [ "media" ];
       qbittorrent.extraGroups = [ "media" ];
       sonarr.extraGroups = [ "media" ];
     };

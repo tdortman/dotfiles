@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.arr-stack;
+  cfg = config.custom.arr-stack;
 in
 {
-  options.arr-stack = {
+  options.custom.arr-stack = {
     enable = lib.mkEnableOption "the media automation stack (Sonarr, Prowlarr, FlareSolverr)";
 
     extraBackupPaths = lib.mkOption {

@@ -7,11 +7,11 @@
 }:
 
 let
-  cfg = config.spicetify;
+  cfg = config.custom.spicetify;
   spicePkgs = inputs.spicetify-nix.legacyPackages.${pkgs.stdenv.hostPlatform.system};
 in
 {
-  options.spicetify.enable = lib.mkEnableOption "Spicetify Spotify customization";
+  options.custom.spicetify.enable = lib.mkEnableOption "Spicetify Spotify customization";
 
   config = lib.mkIf cfg.enable {
     programs.spicetify = {

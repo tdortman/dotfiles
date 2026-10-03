@@ -5,9 +5,9 @@
 }:
 
 let
-  cfg = config.vpn-run;
+  cfg = config.custom.vpn-run;
 
-  runners = config.interface-run.lib.mkVethRunner {
+  runners = config.custom.interface-run.lib.mkVethRunner {
     inherit (cfg) defaultInterface disableIPv6;
     dropNonInterfaceForward = cfg.dropNonVpnForward;
     name = "vpn-run";
@@ -17,7 +17,7 @@ let
   vpnRunSetup = runners.setupPackage;
 in
 {
-  options.vpn-run = {
+  options.custom.vpn-run = {
     enable = lib.mkEnableOption "vpn-run service for routing commands through a specific interface via a veth-isolated namespace";
 
     package = lib.mkOption {
@@ -66,6 +66,8 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    custom.vpn-run.package = vpnRun;
+
     environment = {
       shellAliases = {
         vpn-run = lib.mkIf cfg.shellAlias "sudo -E vpn-run";
@@ -113,7 +115,5 @@ in
     users.groups.vpn-run = lib.mkIf (cfg.allowedUsers != [ ]) {
       members = cfg.allowedUsers;
     };
-
-    vpn-run.package = vpnRun;
   };
 }

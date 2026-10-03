@@ -34,7 +34,7 @@ in (flake.inputs.nixpkgs.lib.nixosSystem {
   system = "x86_64-linux";
   modules = [
     $MODULE
-    { display-layout = {
+    { custom.display-layout = {
 $2
     }; }
   ];

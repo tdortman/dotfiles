@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.disableWakeFromHibernate;
+  cfg = config.custom.disableWakeFromHibernate;
   script = pkgs.writeShellScript "disable_wakeup.sh" ''
     case "$1" in
       pre)
@@ -30,7 +30,7 @@ let
 
 in
 {
-  options.disableWakeFromHibernate.enable = lib.mkEnableOption "service to disable wakeup from hibernate for usb devices";
+  options.custom.disableWakeFromHibernate.enable = lib.mkEnableOption "service to disable wakeup from hibernate for usb devices";
 
   config = lib.mkIf cfg.enable {
     environment.etc."systemd/system-sleep/disable_wakeup.sh".source = script;

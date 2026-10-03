@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  btopPkg = if config.nvidia.driver.enable then pkgs.btop-cuda else pkgs.btop;
+  btopPkg = if config.custom.nvidia.driver.enable then pkgs.btop-cuda else pkgs.btop;
 in
 {
   security = {
@@ -11,7 +11,7 @@ in
       extraRules = [
         {
           commands = [ "ALL" ];
-          users = [ config.common.username ];
+          users = [ config.custom.common.username ];
         }
         {
           commands = [
@@ -21,7 +21,7 @@ in
             }
           ];
 
-          users = [ config.common.username ];
+          users = [ config.custom.common.username ];
         }
       ];
     };

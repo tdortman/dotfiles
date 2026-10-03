@@ -10,7 +10,7 @@
   environment.systemPackages =
     with pkgs;
     [
-      (if config.nvidia.driver.enable then pkgs.btop-cuda else pkgs.btop)
+      (if config.custom.nvidia.driver.enable then pkgs.btop-cuda else pkgs.btop)
       age
       atool
       atuin

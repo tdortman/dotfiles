@@ -4,7 +4,7 @@
   ...
 }:
 let
-  uid = toString config.users.users.${config.common.username}.uid;
+  uid = toString config.users.users.${config.custom.common.username}.uid;
 in
 {
   systemd.services.link-wslg-runtime = lib.mkIf config.wsl.enable {

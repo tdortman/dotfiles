@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.audio;
+  cfg = config.custom.audio;
 
   mkAppRoutingRules =
     categories:
@@ -62,7 +62,7 @@ let
   };
 in
 {
-  options.audio = {
+  options.custom.audio = {
     enable = lib.mkEnableOption "the custom PipeWire audio configuration";
 
     input = lib.mkOption {

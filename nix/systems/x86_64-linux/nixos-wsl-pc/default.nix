@@ -9,6 +9,8 @@
     ./services.nix
   ];
 
+  custom.nvidia.cuda.enable = true;
+
   environment = {
     systemPackages = with pkgs; [
       wsl2-ssh-agent
@@ -41,10 +43,9 @@
   };
 
   networking.hostName = "nixos-wsl-pc";
-  nvidia.cuda.enable = true;
   system.stateVersion = "24.11";
 
-  users.users.${config.common.username} = {
+  users.users.${config.custom.common.username} = {
     extraGroups = [
       "networkmanager"
       "podman"
@@ -60,7 +61,7 @@
 
   wsl = {
     enable = true;
-    defaultUser = config.common.username;
+    defaultUser = config.custom.common.username;
     wslConf.interop.appendWindowsPath = false;
   };
 }

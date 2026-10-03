@@ -110,13 +110,13 @@ let
     };
 in
 {
-  options.interface-run.lib = lib.mkOption {
+  options.custom.interface-run.lib = lib.mkOption {
     type = lib.types.attrs;
     internal = true;
     readOnly = true;
   };
 
-  config.interface-run.lib = {
+  config.custom.interface-run.lib = {
     inherit mkDirectRunner mkVethRunner;
   };
 }

@@ -13,63 +13,90 @@
   ];
 
   age.secrets."nextdns-resolved.conf".file = inputs.self + /nix/secrets/nextdns-resolved.conf.age;
-
-  audio = {
-    enable = true;
-    input = "alsa_input.pci-0000_02_02.0.analog-stereo";
-    inputChannels = "stereo";
-    output = "alsa_output.pci-0000_02_02.0.analog-stereo";
-
-    appCategories = {
-      Browser.appNames = [ "LibreWolf" ];
-
-      Discord = {
-        appNames = [
-          "Discord.*"
-          "Slack.*"
-        ];
-
-        binaries = [
-          ".Discord-wrapped"
-          "fluxer"
-        ];
-      };
-
-      Music = {
-        appNames = [
-          "foobar2000 Application"
-          "spotify"
-        ];
-
-        limitThreshold = -12.0;
-      };
-
-      System = { };
-    };
-
-    fallbackCategory = "System";
-
-    eq = {
-      enable = true;
-      file = "/home/${config.common.username}/.local/share/auto_eq/hd6xx_he-1_parametric.txt";
-    };
-
-    micProcess = {
-      enable = true;
-
-      compressor = {
-        attackTime = 10.6;
-        makeupGain = 5.9;
-        ratio = 4.0;
-        releaseTime = 500;
-        threshold = -18.3;
-      };
-
-      vadThreshold = 50.0;
-    };
-  };
-
   boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  custom = {
+    audio = {
+      enable = true;
+      input = "alsa_input.pci-0000_02_02.0.analog-stereo";
+      inputChannels = "stereo";
+      output = "alsa_output.pci-0000_02_02.0.analog-stereo";
+
+      appCategories = {
+        Browser.appNames = [ "LibreWolf" ];
+
+        Discord = {
+          appNames = [
+            "Discord.*"
+            "Slack.*"
+          ];
+
+          binaries = [
+            ".Discord-wrapped"
+            "fluxer"
+          ];
+        };
+
+        Music = {
+          appNames = [
+            "foobar2000 Application"
+            "spotify"
+          ];
+
+          limitThreshold = -12.0;
+        };
+
+        System = { };
+      };
+
+      fallbackCategory = "System";
+
+      eq = {
+        enable = true;
+        file = "/home/${config.custom.common.username}/.local/share/auto_eq/hd6xx_he-1_parametric.txt";
+      };
+
+      micProcess = {
+        enable = true;
+
+        compressor = {
+          attackTime = 10.6;
+          makeupGain = 5.9;
+          ratio = 4.0;
+          releaseTime = 500;
+          threshold = -18.3;
+        };
+
+        vadThreshold = 50.0;
+      };
+    };
+
+    flatpak = {
+      enable = true;
+      extraOverrides."com.gitbutler.gitbutler".Environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
+
+      packages = [
+        "com.gitbutler.gitbutler"
+        "com.surfshark.Surfshark"
+      ];
+    };
+
+    kde.enable = true;
+    mime.librewolf.enable = true;
+
+    nextdns = {
+      enable = true;
+      configFile = config.age.secrets."nextdns-resolved.conf".path;
+      hostName = "NixOS--VM";
+    };
+
+    onepassword = {
+      enable = true;
+      user = config.custom.common.username;
+    };
+
+    spicetify.enable = true;
+  };
 
   environment = {
     systemPackages =
@@ -101,33 +128,9 @@
     variables.NIXOS_OZONE_WL = "1";
   };
 
-  flatpak = {
-    enable = true;
-    extraOverrides."com.gitbutler.gitbutler".Environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
-
-    packages = [
-      "com.gitbutler.gitbutler"
-      "com.surfshark.Surfshark"
-    ];
-  };
-
-  kde.enable = true;
-  mime.librewolf.enable = true;
-
   networking = {
     hostName = "nixos-vm";
     networkmanager.enable = true;
-  };
-
-  nextdns = {
-    enable = true;
-    configFile = config.age.secrets."nextdns-resolved.conf".path;
-    hostName = "NixOS--VM";
-  };
-
-  onepassword = {
-    enable = true;
-    user = config.common.username;
   };
 
   programs.mtr.enable = true;
@@ -158,7 +161,7 @@
       openFirewall = true;
 
       settings = {
-        AllowUsers = [ config.common.username ];
+        AllowUsers = [ config.custom.common.username ];
         KbdInteractiveAuthentication = false;
         PasswordAuthentication = false;
         PermitRootLogin = "no";
@@ -166,10 +169,9 @@
     };
   };
 
-  spicetify.enable = true;
   system.stateVersion = "25.05";
 
-  users.users.${config.common.username}.openssh.authorizedKeys.keys = [
+  users.users.${config.custom.common.username}.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBvpbTCshwwLe3cfz/Wh88FWgyg2f91hicM70msF/3D2"
   ];
 

@@ -4,8 +4,8 @@
 }:
 
 {
+  custom.onepassword.enable = true;
   home.stateVersion = "25.11";
-  onepassword.enable = true;
 
   programs = {
     konsole = {

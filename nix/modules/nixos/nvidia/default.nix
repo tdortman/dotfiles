@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.nvidia;
+  cfg = config.custom.nvidia;
 in
 {
-  options.nvidia = {
+  options.custom.nvidia = {
     cuda = {
       enable = lib.mkEnableOption "CUDA support";
       nvidia-fs.enable = lib.mkEnableOption "nvidia-fs kernel module for GPUDirect Storage";
@@ -138,7 +138,7 @@ in
         assertions = [
           {
             assertion = config.boot.initrd.systemd.enable;
-            message = "nvidia.driver.resetBeforeResume needs boot.initrd.systemd.enable, which runs the reset before systemd-hibernate-resume.";
+            message = "custom.nvidia.driver.resetBeforeResume needs boot.initrd.systemd.enable, which runs the reset before systemd-hibernate-resume.";
           }
         ];
 

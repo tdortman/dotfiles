@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.backups;
+  cfg = config.custom.backups;
 
   # Large, regenerable home content that generally does not belong in backups.
   #
@@ -87,7 +87,7 @@ let
   snapName = lib.last (lib.splitString "/" cfg.snapshots.subvolume);
 in
 {
-  options.backups = {
+  options.custom.backups = {
     flatpakApps = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       example = [ "com.core447.StreamController" ];
@@ -152,7 +152,7 @@ in
 
     user = lib.mkOption {
       type = lib.types.str;
-      default = config.common.username;
+      default = config.custom.common.username;
       description = "The username to back up files for";
     };
   };

@@ -7,7 +7,7 @@
 
 let
   canonicalLayout = layout: builtins.toJSON (removeAttrs layout [ "name" ]);
-  cfg = config."display-layout";
+  cfg = config.custom."display-layout";
   configFile = pkgs.writeText "display-layout-config.json" (
     builtins.toJSON {
       ddcEnable = cfg.ddc.enable;
@@ -166,11 +166,11 @@ let
   validation = [
     {
       assertion = !builtins.any (layout: builtins.elem layout.name reservedNames) cfg.layouts;
-      message = "display-layout.layouts names must not be cycle, help, -h, or --help.";
+      message = "custom.display-layout.layouts names must not be cycle, help, -h, or --help.";
     }
     {
       assertion = builtins.length layoutNames == builtins.length (lib.unique layoutNames);
-      message = "display-layout.layouts names must be unique.";
+      message = "custom.display-layout.layouts names must be unique.";
     }
     {
       assertion = builtins.all (
@@ -181,7 +181,7 @@ let
         builtins.length connectors == builtins.length (lib.unique connectors)
       ) cfg.layouts;
 
-      message = "display-layout.layouts outputs must be unique within each layout since kscreen-doctor addresses outputs by name.";
+      message = "custom.display-layout.layouts outputs must be unique within each layout since kscreen-doctor addresses outputs by name.";
     }
     {
       assertion = builtins.all (
@@ -193,14 +193,14 @@ let
         && builtins.length layout.disabledOutputs == builtins.length (lib.unique layout.disabledOutputs)
       ) cfg.layouts;
 
-      message = "display-layout.layouts outputs must not collide with their own disabledOutputs, which must be unique.";
+      message = "custom.display-layout.layouts outputs must not collide with their own disabledOutputs, which must be unique.";
     }
     {
       assertion = builtins.all (
         connector: builtins.length (lib.unique (map (pair: pair.gpu) gpuByConnector.${connector})) == 1
       ) (builtins.attrNames gpuByConnector);
 
-      message = "display-layout.layouts must use a consistent gpu for the same connector across layouts.";
+      message = "custom.display-layout.layouts must use a consistent gpu for the same connector across layouts.";
     }
     {
       assertion =
@@ -209,24 +209,24 @@ let
         in
         builtins.length forms == builtins.length (lib.unique forms);
 
-      message = "display-layout.layouts must not contain duplicate identical layouts.";
+      message = "custom.display-layout.layouts must not contain duplicate identical layouts.";
     }
     {
       assertion = builtins.all (
         layout: builtins.length (builtins.filter (o: o.primary) layout.outputs) == 1
       ) cfg.layouts;
 
-      message = "display-layout.layouts must have exactly one primary output per layout.";
+      message = "custom.display-layout.layouts must have exactly one primary output per layout.";
     }
     {
       assertion = builtins.elem cfg.loginLayout layoutNames;
-      message = "display-layout.loginLayout must match one of layouts names.";
+      message = "custom.display-layout.loginLayout must match one of layouts names.";
     }
   ];
   validationFailures = builtins.filter (a: !a.assertion) validation;
 in
 {
-  options.display-layout = {
+  options.custom.display-layout = {
     enable = lib.mkEnableOption "full display layouts with kscreen-doctor and optional DDC input switching";
     ddc.enable = lib.mkEnableOption "monitor input switching via ddcutil before applying the kscreen layout";
 

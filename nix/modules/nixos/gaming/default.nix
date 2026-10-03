@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.gaming;
+  cfg = config.custom.gaming;
 in
 {
-  options.gaming.enable = lib.mkEnableOption "gaming packages and Steam";
+  options.custom.gaming.enable = lib.mkEnableOption "gaming packages and Steam";
 
   config = lib.mkIf cfg.enable {
     environment = {

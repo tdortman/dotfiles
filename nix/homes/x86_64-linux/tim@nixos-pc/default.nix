@@ -8,6 +8,8 @@
 }:
 
 {
+  custom.onepassword.enable = true;
+
   home = {
     file.".cargo/config.toml".text = ''
       [target.'cfg(target_os = "linux")']
@@ -17,8 +19,6 @@
 
     stateVersion = "25.11";
   };
-
-  onepassword.enable = true;
 
   programs = {
     konsole = {
@@ -220,7 +220,7 @@
 
       shortcuts = {
         "services/com.mitchellh.ghostty.desktop".new-window = "Meta+Return";
-        "services/net.local.hdr-toggle.desktop"._launch = lib.mkIf osConfig.hdr.enable "Meta+Alt+B";
+        "services/net.local.hdr-toggle.desktop"._launch = lib.mkIf osConfig.custom.hdr.enable "Meta+Alt+B";
         "services/systemsettings.desktop"._launch = "Meta+I";
       };
 
@@ -237,7 +237,7 @@
           runAlways = true;
 
           text = "${osConfig.system.build.displayLayout}/bin/display-layout ${
-            osConfig."display-layout".loginLayout
+            osConfig.custom."display-layout".loginLayout
           }";
         };
 

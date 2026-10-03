@@ -12,7 +12,7 @@
     ./security.nix
   ];
 
-  options.common.username = lib.mkOption {
+  options.custom.common.username = lib.mkOption {
     type = lib.types.str;
     description = "Primary user for this host";
   };
@@ -20,7 +20,7 @@
   config = {
     age = {
       identityPaths = [
-        "/home/${config.common.username}/.config/age/key"
+        "/home/${config.custom.common.username}/.config/age/key"
         "/root/.config/age/key"
         "/etc/age/key"
       ];
@@ -28,8 +28,8 @@
       secrets.login-password.file = "${inputs.self}/nix/secrets/login-password.age";
     };
 
-    common.username = lib.mkDefault "tim";
     console.useXkbConfig = true;
+    custom.common.username = lib.mkDefault "tim";
 
     environment = {
       etc."librewolf/policies/policies.json".text = builtins.toJSON {
@@ -207,7 +207,7 @@
       mutableUsers = false;
 
       users = {
-        ${config.common.username} = {
+        ${config.custom.common.username} = {
           extraGroups = [
             "audio"
             "gamemode"

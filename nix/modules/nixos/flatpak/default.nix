@@ -5,10 +5,10 @@
 }:
 
 let
-  cfg = config.flatpak;
+  cfg = config.custom.flatpak;
 in
 {
-  options.flatpak = {
+  options.custom.flatpak = {
     enable = lib.mkEnableOption "Flatpak with themed overrides for Plasma/GTK";
 
     extraOverrides = lib.mkOption {

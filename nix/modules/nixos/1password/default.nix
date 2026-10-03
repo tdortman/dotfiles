@@ -5,10 +5,10 @@
 }:
 
 let
-  cfg = config.onepassword;
+  cfg = config.custom.onepassword;
 in
 {
-  options.onepassword = {
+  options.custom.onepassword = {
     enable = lib.mkEnableOption "1Password and SSH agent integration";
 
     user = lib.mkOption {

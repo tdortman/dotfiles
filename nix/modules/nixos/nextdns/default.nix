@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.nextdns;
+  cfg = config.custom.nextdns;
 in
 {
-  options.nextdns = {
+  options.custom.nextdns = {
     enable = lib.mkEnableOption "NextDNS via systemd-resolved";
 
     configFile = lib.mkOption {

@@ -6,10 +6,11 @@
 }:
 
 let
-  cfg = config.mime;
+  cfg = config.custom.mime;
 in
 {
-  options.mime.librewolf.enable = lib.mkEnableOption "LibreWolf as default browser via XDG MIME associations";
+  options.custom.mime.librewolf.enable =
+    lib.mkEnableOption "LibreWolf as default browser via XDG MIME associations";
 
   config = lib.mkIf cfg.librewolf.enable {
     environment.variables = {

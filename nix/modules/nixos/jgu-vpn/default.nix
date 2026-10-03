@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.jgu-vpn;
+  cfg = config.custom.jgu-vpn;
   dnsTarget = "${builtins.head cfg.dnsServers}:53";
   haricaCa = ./HARICA-TLS-Root-2021-RSA.pem;
 
@@ -61,7 +61,7 @@ let
   xfrmIdPattern = "(${toString cfg.ifId}|0x${lib.toHexString cfg.ifId})";
 in
 {
-  options.jgu-vpn = {
+  options.custom.jgu-vpn = {
     enable = lib.mkEnableOption "JGU campus VPN (strongSwan IKEv2 via XFRM interface, bridged to a veth-isolated netns by vpn-run)";
 
     autoStart = lib.mkOption {
@@ -140,14 +140,14 @@ in
     assertions = [
       {
         assertion = cfg.username != "";
-        message = "jgu-vpn.username must be set (e.g. \"\${user}@uni-mainz.de\")";
+        message = "custom.jgu-vpn.username must be set (e.g. \"\${user}@uni-mainz.de\")";
       }
       {
         assertion = cfg.secretsFile != null;
-        message = "jgu-vpn.secretsFile must point to a swanctl secrets file (use agenix)";
+        message = "custom.jgu-vpn.secretsFile must point to a swanctl secrets file (use agenix)";
       }
       {
-        assertion = config.vpn-run.enable;
+        assertion = config.custom.vpn-run.enable;
         message = "jgu-vpn requires vpn-run to be enabled (it reuses its veth/netns infrastructure)";
       }
     ];
@@ -165,7 +165,7 @@ in
       systemPackages = [ jguVpnRun ];
     };
 
-    security.sudo.extraRules = lib.optionals (config.vpn-run.allowedUsers != [ ]) [
+    security.sudo.extraRules = lib.optionals (config.custom.vpn-run.allowedUsers != [ ]) [
       {
         commands = [
           {
@@ -186,7 +186,7 @@ in
           }
         ];
 
-        users = config.vpn-run.allowedUsers;
+        users = config.custom.vpn-run.allowedUsers;
       }
     ];
 

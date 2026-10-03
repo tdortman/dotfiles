@@ -5,10 +5,10 @@
 }:
 
 let
-  cfg = config.onepassword;
+  cfg = config.custom.onepassword;
 in
 {
-  options.onepassword.enable = lib.mkEnableOption "1Password Quick Access hotkey for Plasma";
+  options.custom.onepassword.enable = lib.mkEnableOption "1Password Quick Access hotkey for Plasma";
 
   config = lib.mkIf cfg.enable {
     programs.plasma = {

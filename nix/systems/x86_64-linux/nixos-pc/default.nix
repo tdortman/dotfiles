@@ -139,133 +139,221 @@
     sudoPolicy = "approve";
   };
 
-  arr-stack.enable = true;
-
-  audio = {
-    enable = true;
-    input = "alsa_input.usb-Antlion_Audio_Antlion_USB_adapter_20180707-00.mono-fallback";
-    inputChannels = "mono";
-    output = "alsa_output.usb-Schiit_Audio_Schiit_Modi_Uber-00.analog-stereo";
-    mutedInputs = [ "alsa_input.usb-046d_Brio_100_2602ZBR396W8-02.mono-fallback" ];
-
-    appCategories = {
-      Browser.appNames = [ "LibreWolf" ];
-
-      Discord = {
-        appNames = [
-          "Discord.*"
-          "Slack.*"
-        ];
-
-        binaries = [
-          ".Discord-wrapped"
-          "fluxer"
-        ];
-      };
-
-      Music.appNames = [
-        "foobar2000 Application"
-        "spotify"
-      ];
-
-      System = { };
-    };
-
-    fallbackCategory = "System";
-
-    eq = {
-      enable = true;
-      file = "/home/${config.common.username}/.local/share/auto_eq/hd6xx_he-1_parametric.txt";
-    };
-
-    micProcess = {
-      enable = true;
-
-      compressor = {
-        attackTime = 10.6;
-        makeupGain = 5.9;
-        ratio = 4.0;
-        releaseTime = 500;
-        threshold = -18.3;
-      };
-
-      vadThreshold = 50.0;
-    };
-  };
-
-  backups = {
-    flatpakApps = [ "com.core447.StreamController" ];
-    librewolfProfile = "f9ugjznf.default";
-
-    local = {
-      device = "/dev/disk/by-uuid/dfbdb886-3344-4e83-8403-f5ea43187f61";
-      enable = true;
-      fsType = "btrfs";
-      timer = "*-*-* 18:00:00";
-    };
-
-    passwordFile = config.age.secrets.restic-password.path;
-    remote.enable = true;
-    snapshots.enable = true;
-  };
-
   boot = {
     initrd.kernelModules = [ "i915" ];
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
-  disableWakeFromHibernate.enable = true;
+  custom = {
+    arr-stack.enable = true;
 
-  display-layout = {
-    enable = true;
-    ddc.enable = true;
+    audio = {
+      enable = true;
+      input = "alsa_input.usb-Antlion_Audio_Antlion_USB_adapter_20180707-00.mono-fallback";
+      inputChannels = "mono";
+      output = "alsa_output.usb-Schiit_Audio_Schiit_Modi_Uber-00.analog-stereo";
+      mutedInputs = [ "alsa_input.usb-046d_Brio_100_2602ZBR396W8-02.mono-fallback" ];
 
-    layouts = [
-      {
-        disabledOutputs = [ "DP-4" ];
-        name = "intel";
+      appCategories = {
+        Browser.appNames = [ "LibreWolf" ];
 
-        outputs = [
-          {
-            input = 15;
-            output = "DP-1";
-            gpu = "0000:07:00.0";
-            primary = true;
-            scale = 1.3;
-          }
-          {
-            output = "DP-2";
-            gpu = "0000:07:00.0";
-          }
+        Discord = {
+          appNames = [
+            "Discord.*"
+            "Slack.*"
+          ];
+
+          binaries = [
+            ".Discord-wrapped"
+            "fluxer"
+          ];
+        };
+
+        Music.appNames = [
+          "foobar2000 Application"
+          "spotify"
         ];
-      }
-      {
-        disabledOutputs = [ "DP-4" ];
-        name = "nvidia";
 
-        outputs = [
-          {
-            input = 17;
-            output = "HDMI-A-5";
+        System = { };
+      };
 
-            ddcControl = {
+      fallbackCategory = "System";
+
+      eq = {
+        enable = true;
+        file = "/home/${config.custom.common.username}/.local/share/auto_eq/hd6xx_he-1_parametric.txt";
+      };
+
+      micProcess = {
+        enable = true;
+
+        compressor = {
+          attackTime = 10.6;
+          makeupGain = 5.9;
+          ratio = 4.0;
+          releaseTime = 500;
+          threshold = -18.3;
+        };
+
+        vadThreshold = 50.0;
+      };
+    };
+
+    backups = {
+      flatpakApps = [ "com.core447.StreamController" ];
+      librewolfProfile = "f9ugjznf.default";
+
+      local = {
+        device = "/dev/disk/by-uuid/dfbdb886-3344-4e83-8403-f5ea43187f61";
+        enable = true;
+        fsType = "btrfs";
+        timer = "*-*-* 18:00:00";
+      };
+
+      passwordFile = config.age.secrets.restic-password.path;
+      remote.enable = true;
+      snapshots.enable = true;
+    };
+
+    disableWakeFromHibernate.enable = true;
+
+    display-layout = {
+      enable = true;
+      ddc.enable = true;
+
+      layouts = [
+        {
+          disabledOutputs = [ "DP-4" ];
+          name = "intel";
+
+          outputs = [
+            {
+              input = 15;
               output = "DP-1";
               gpu = "0000:07:00.0";
-            };
+              primary = true;
+              scale = 1.3;
+            }
+            {
+              output = "DP-2";
+              gpu = "0000:07:00.0";
+            }
+          ];
+        }
+        {
+          disabledOutputs = [ "DP-4" ];
+          name = "nvidia";
 
-            gpu = "0000:0d:00.0";
-            primary = true;
-            scale = 1.0;
-          }
-          {
-            output = "DP-2";
-            gpu = "0000:07:00.0";
-          }
-        ];
-      }
-    ];
+          outputs = [
+            {
+              input = 17;
+              output = "HDMI-A-5";
 
-    loginLayout = "intel";
+              ddcControl = {
+                output = "DP-1";
+                gpu = "0000:07:00.0";
+              };
+
+              gpu = "0000:0d:00.0";
+              primary = true;
+              scale = 1.0;
+            }
+            {
+              output = "DP-2";
+              gpu = "0000:07:00.0";
+            }
+          ];
+        }
+      ];
+
+      loginLayout = "intel";
+    };
+
+    flatpak = {
+      enable = true;
+      extraOverrides."com.gitbutler.gitbutler".Environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
+
+      packages = [
+        "com.gitbutler.gitbutler"
+        "com.surfshark.Surfshark"
+      ];
+    };
+
+    gaming.enable = true;
+
+    hdr = {
+      enable = true;
+      extraScripts = true;
+    };
+
+    intel.enable = true;
+
+    jgu-vpn = {
+      enable = true;
+
+      dnsServers = [
+        "134.93.144.2"
+        "134.93.144.3"
+      ];
+
+      secretsFile = config.age.secrets."jgu-vpn-swanctl".path;
+      username = "tdortman@uni-mainz.de";
+    };
+
+    kde.enable = true;
+    mime.librewolf.enable = true;
+
+    nextdns = {
+      enable = true;
+      configFile = config.age.secrets."nextdns-resolved.conf".path;
+      hostName = "NixOS--PC";
+    };
+
+    nvidia = {
+      cuda = {
+        enable = true;
+        nvidia-fs.enable = true;
+        packages = pkgs.cudaPackages_13_3;
+      };
+
+      driver = {
+        enable = true;
+        package = config.boot.kernelPackages.nvidiaPackages.latest;
+
+        resetBeforeResume = {
+          enable = true;
+          pciAddress = "0000:0d:00.0";
+        };
+      };
+    };
+
+    onepassword = {
+      enable = true;
+      user = config.custom.common.username;
+    };
+
+    openrgb.enable = true;
+
+    qbittorrent = {
+      enable = true;
+      port = 32882;
+
+      webui = {
+        hashedPassword = "@ByteArray(ld9tpxX1BfxpzgEImGXLJA==:yxC2mw6+EfF14jJNV9ppuS0sqNas7ENWXAccUu+gCVNP0h7NokJA1dgnkoWejmDfp5mq6OEFXEHPGkLJNUZNiw==)";
+        port = 8080;
+        username = "admin";
+      };
+
+      wireguard.interface = "wg0";
+    };
+
+    spicetify.enable = true;
+
+    vpn-run = {
+      enable = true;
+      allowedUsers = [ config.custom.common.username ];
+      defaultInterface = "wg0";
+    };
   };
 
   environment = {
@@ -386,18 +474,6 @@
       ]);
   };
 
-  flatpak = {
-    enable = true;
-    extraOverrides."com.gitbutler.gitbutler".Environment.WEBKIT_DISABLE_DMABUF_RENDERER = "1";
-
-    packages = [
-      "com.gitbutler.gitbutler"
-      "com.surfshark.Surfshark"
-    ];
-  };
-
-  gaming.enable = true;
-
   hardware = {
     bluetooth = {
       enable = true;
@@ -425,28 +501,6 @@
     nvidia-container-toolkit.enable = true;
   };
 
-  hdr = {
-    enable = true;
-    extraScripts = true;
-  };
-
-  intel.enable = true;
-
-  jgu-vpn = {
-    enable = true;
-
-    dnsServers = [
-      "134.93.144.2"
-      "134.93.144.3"
-    ];
-
-    secretsFile = config.age.secrets."jgu-vpn-swanctl".path;
-    username = "tdortman@uni-mainz.de";
-  };
-
-  kde.enable = true;
-  mime.librewolf.enable = true;
-
   networking = {
     hostName = "nixos-pc";
     networkmanager.enable = true;
@@ -469,7 +523,7 @@
           }
         ];
 
-        privateKeyFile = "/home/${config.common.username}/.config/wireguard/privatekey";
+        privateKeyFile = "/home/${config.custom.common.username}/.config/wireguard/privatekey";
       };
 
       wg1 = {
@@ -496,38 +550,7 @@
     };
   };
 
-  nextdns = {
-    enable = true;
-    configFile = config.age.secrets."nextdns-resolved.conf".path;
-    hostName = "NixOS--PC";
-  };
-
   nix.settings.cores = 22;
-
-  nvidia = {
-    cuda = {
-      enable = true;
-      nvidia-fs.enable = true;
-      packages = pkgs.cudaPackages_13_3;
-    };
-
-    driver = {
-      enable = true;
-      package = config.boot.kernelPackages.nvidiaPackages.latest;
-
-      resetBeforeResume = {
-        enable = true;
-        pciAddress = "0000:0d:00.0";
-      };
-    };
-  };
-
-  onepassword = {
-    enable = true;
-    user = config.common.username;
-  };
-
-  openrgb.enable = true;
 
   programs = {
     dconf.enable = true;
@@ -535,19 +558,6 @@
     streamcontroller.enable = true;
     thunderbird.enable = true;
     virt-manager.enable = true;
-  };
-
-  qbittorrent = {
-    enable = true;
-    port = 32882;
-
-    webui = {
-      hashedPassword = "@ByteArray(ld9tpxX1BfxpzgEImGXLJA==:yxC2mw6+EfF14jJNV9ppuS0sqNas7ENWXAccUu+gCVNP0h7NokJA1dgnkoWejmDfp5mq6OEFXEHPGkLJNUZNiw==)";
-      port = 8080;
-      username = "admin";
-    };
-
-    wireguard.interface = "wg0";
   };
 
   services = {
@@ -603,7 +613,6 @@
     rustcWrapper = true;
   };
 
-  spicetify.enable = true;
   system.stateVersion = "25.05";
 
   virtualisation = {
@@ -619,12 +628,6 @@
   virtualisation.libvirtd = {
     enable = true;
     qemu.vhostUserPackages = with pkgs; [ virtiofsd ];
-  };
-
-  vpn-run = {
-    enable = true;
-    allowedUsers = [ config.common.username ];
-    defaultInterface = "wg0";
   };
 
   xdg.portal.xdgOpenUsePortal = true;

@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.intel;
+  cfg = config.custom.intel;
 in
 {
-  options.intel.enable = lib.mkEnableOption "Intel graphics and video acceleration";
+  options.custom.intel.enable = lib.mkEnableOption "Intel graphics and video acceleration";
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [

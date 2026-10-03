@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.hdr;
+  cfg = config.custom.hdr;
 
   hdr-disable-script = pkgs.writeShellApplication {
     name = "hdr-disable";
@@ -53,7 +53,7 @@ let
 in
 
 {
-  options.hdr = {
+  options.custom.hdr = {
     enable = lib.mkEnableOption "KDE Plasma HDR toggling support";
 
     package = lib.mkOption {

@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.qbittorrent;
+  cfg = config.custom.qbittorrent;
 in
 {
-  options.qbittorrent = {
+  options.custom.qbittorrent = {
     enable = lib.mkEnableOption "qbittorrent";
     package = lib.mkPackageOption pkgs "qbittorrent-nox" { };
 

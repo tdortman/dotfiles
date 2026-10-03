@@ -6,10 +6,10 @@
 }:
 
 let
-  cfg = config.fingerprint;
+  cfg = config.custom.fingerprint;
 in
 {
-  options.fingerprint = {
+  options.custom.fingerprint = {
     enable = lib.mkEnableOption "fingerprint scanning";
     fprintPkg = lib.mkPackageOption pkgs "fprintd" { };
     libfprintPkg = lib.mkPackageOption pkgs "libfprint" { };
