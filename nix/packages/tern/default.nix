@@ -23,11 +23,11 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "tern";
-  version = "0.3.1";
+  version = "0.4.0";
 
   src = requireFile {
     url = "https://build.stencil.so/tern";
-    hash = "sha256-BUNMF0XANeDBnsHTRYOJg0XzER/EUvUrlu1bhe1l7uA=";
+    hash = "sha256-yKJJGA7cOXx4Noa6ITnyKKns5tZwgAHapOirKS5J7is=";
     name = "Tern-${finalAttrs.version}-linux-x86_64.tar.gz";
   };
 
