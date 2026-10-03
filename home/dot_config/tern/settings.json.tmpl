@@ -27,6 +27,7 @@
   "agent_command": "omp",
   "tabs": "Horizontal",
   "tabs_autohide": false,
+  "system_title_bar": false,
   "pane_headers": "Never",
   "status_bar": true,
   "material": "Solid",
@@ -35,15 +36,18 @@
   "density": "Compact",
   "native_surfaces": true,
   "command_lenses": true,
+  "plugins": true,
+  "plugins_disabled": [],
   "native_completion": true,
   "native_editing": true,
   "program_colors": true,
   "surface_headings": null,
   "surface_diffs": "Inline",
-  "surface_fold": true,
+  "surface_fold": false,
   "composer_text": "Plain",
-  "surface_chat": "Spine",
+  "surface_chat": "Reader",
   "shell": "",
+  "scrollback_lines": 200000,
   "native_prompt": true,
   "prompt_style": "imported",
   "new_tabs": "Focused",
@@ -53,7 +57,7 @@
   "reconnect_hosts": true,
   "auto_update": false,
   "ask_to_move": true,
-  "prefs_width": 440,
+  "prefs_width": 541,
   "antialias": true,
   "msaa": "off",
   "sync_to_display": false,
@@ -113,9 +117,9 @@
     },
     "sidebar_folded": [],
     "ref_column_width": 180.0,
-    "graph_column_width": null,
-    "message_column_width": 420.0,
-    "inspector_width": 360.0,
+    "graph_column_width": 171.0,
+    "message_column_width": 414.0,
+    "inspector_width": 488.0,
     "diff_split": false,
     "diff_file_view": false,
     "diff_hunk_view": false,
@@ -123,6 +127,14 @@
     "diff_whitespace": "Exact",
     "path_tree": false,
     "ai_model": ""
+  },
+  "cloud": {
+    "size": "default",
+    "github": true,
+    "include": [
+      "**/.env",
+      "**/.env.*"
+    ]
   },
   "sqlite": {
     "location": "remember",
@@ -247,6 +259,11 @@
     "scroll_outputs_lines": 100,
     "figure_format": "retina",
     "interactive_html": true
+  },
+  "carly": {
+    "model": "@smol",
+    "heartbeat": 30,
+    "voice": ""
   },
   "keybinds": {},
   "keymap": "tern",
