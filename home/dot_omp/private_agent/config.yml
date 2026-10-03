@@ -1,5 +1,5 @@
 modelRoles:
-  default: anthropic/claude-opus-5-5:medium
+  default: anthropic/claude-opus-5-5:high
   commit: opencode-go/muse-spark-1.3-contributor:xhigh
   vision: google-antigravity/gemini-3.8-flash:medium
   plan: openai-codex/gpt-6-astra:high
@@ -126,7 +126,7 @@ github:
   enabled: true
 plan:
   defaultOnStartup: false
-defaultThinkingLevel: auto
+defaultThinkingLevel: high
 codexResets:
   autoRedeem: "no"
 hideThinkingBlock: false
