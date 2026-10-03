@@ -77,7 +77,11 @@
           # Tern ignores its own saved size, so pin the launch geometry.
           "2c49b7ea-aa4c-480f-b254-0caf6115a221" = {
             size = "1364,1234";
-            Description = "Tern size";
+            Description = "Tern size and maximize";
+            maximizehoriz = true;
+            maximizehorizrule = 3; # Apply initially
+            maximizevert = true;
+            maximizevertrule = 3; # Apply initially
             sizerule = 3; # Apply initially; 2 (Force) blocks resize/maximize
             types = 1;
             wmclass = "so.stencil.tern";
