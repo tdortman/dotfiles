@@ -54,19 +54,6 @@
       in
       [
         {
-          package = agents.codex;
-          readwriteDirs = [ "~/.codex" ];
-        }
-        {
-          package = agents.cursor-agent;
-
-          readwriteDirs = [
-            "~/.cursor"
-            "~/.config/cursor"
-            "~/.cache/cursor-compile-cache"
-          ];
-        }
-        {
           # The prebuilt node-addon-require-builtin cannot locate its getter in
           # nixpkgs' Node binaries; the wrapper already passes --expose-internals,
           # so plain require reaches the same internal modules.
@@ -83,6 +70,19 @@
           readwriteDirs = [
             "~/.dsh"
             "~/.local/share/ponytail/skills"
+          ];
+        }
+        {
+          package = agents.codex;
+          readwriteDirs = [ "~/.codex" ];
+        }
+        {
+          package = agents.cursor-agent;
+
+          readwriteDirs = [
+            "~/.cursor"
+            "~/.config/cursor"
+            "~/.cache/cursor-compile-cache"
           ];
         }
         {
