@@ -10,19 +10,10 @@ let
 
   no-rgb = pkgs.writeShellApplication {
     name = "no-rgb";
-
-    runtimeInputs = with pkgs; [
-      coreutils
-      gnugrep
-      openrgb
-    ];
+    runtimeInputs = [ pkgs.openrgb ];
 
     text = ''
-      NUM_DEVICES=$(openrgb --noautoconnect --list-devices | grep -cE '^[0-9]+: ')
-
-      for i in $(seq 0 $((NUM_DEVICES - 1))); do
-        openrgb --noautoconnect --device "$i" --mode static --color 000000
-      done
+      openrgb --noautoconnect --mode static --color 000000
     '';
   };
 in
