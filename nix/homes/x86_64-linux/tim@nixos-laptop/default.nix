@@ -265,7 +265,7 @@
         lookAndFeel = "org.kde.breezedark.desktop";
         theme = "breeze-dark";
         tooltipDelay = 5;
-        wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/MilkyWay/contents/images/5120x2880.png";
+        # wallpaper = "${pkgs.kdePackages.plasma-workspace-wallpapers}/share/wallpapers/MilkyWay/contents/images/5120x2880.png";
       };
     };
   };
