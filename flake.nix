@@ -99,19 +99,34 @@
             let
               script = pkgs.writeShellScriptBin "update-packages" ''
                 set -euo pipefail
-                repo_root=$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")
+
+                repo_root=''${NH_FLAKE:-}
+                if [[ ! -d "$repo_root/nix/packages" ]]; then
+                  repo_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+                fi
+                if [[ ! -d "$repo_root/nix/packages" ]]; then
+                  echo "error: cannot find the dotfiles repo (set NH_FLAKE)" >&2
+                  exit 1
+                fi
+
+                found=false
                 exit_code=0
 
                 for updater in "$repo_root"/nix/packages/*/update.sh; do
-                  if [[ -f "$updater" ]]; then
-                    name=$(basename "$(dirname "$updater")")
-                    echo "==> Updating $name..."
-                    if ! (cd "$repo_root" && "$updater"); then
-                      echo "    FAILED: $name"
-                      exit_code=1
-                    fi
+                  [[ -f "$updater" ]] || continue
+                  found=true
+                  name=$(basename "$(dirname "$updater")")
+                  echo "==> Updating $name..."
+                  if ! (cd "$repo_root" && "$updater"); then
+                    echo "    FAILED: $name"
+                    exit_code=1
                   fi
                 done
+
+                if ! $found; then
+                  echo "error: no update scripts found under $repo_root/nix/packages" >&2
+                  exit 1
+                fi
 
                 exit $exit_code
               '';

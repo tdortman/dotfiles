@@ -56,7 +56,8 @@
         nix-shell = ''command nix-shell --command "''${SHELL:-bash}"'';
         nixos-boot = "nh os boot";
         nixos-switch = "nh os switch";
-        update = "flake-update && nixos-switch";
+        packages-update = "nix run $NH_FLAKE#update";
+        update = "flake-update && packages-update && nixos-switch";
       };
     };
 
