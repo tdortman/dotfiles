@@ -210,6 +210,6 @@ error:
 claudeResets:
   autoRedeem: "no"
 spelling:
-  autocomplete: smollm
+  autocomplete: {{ if eq .chezmoi.hostname "nixos-laptop" }}auto{{ else }}smollm{{ end }}
 web_search:
   enabled: true
