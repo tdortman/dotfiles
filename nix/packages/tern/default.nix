@@ -10,6 +10,7 @@
   linux-pam,
   makeWrapper,
   openssl,
+  pipewire,
   python3,
   requireFile,
   vulkan-loader,
@@ -23,11 +24,11 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "tern";
-  version = "0.4.2";
+  version = "0.4.3";
 
   src = requireFile {
     url = "https://build.stencil.so/tern";
-    hash = "sha256-Xtco8mX2DilT/sbslU8WH2zLR4b+t9ibS5XFzW5BKSQ=";
+    hash = "sha256-yHAx25gu/tiMo1qDOkrHnE0e7eg8IdEm60eQD4d6YVU=";
     name = "Tern-${finalAttrs.version}-linux-x86_64.tar.gz";
   };
 
@@ -103,6 +104,7 @@ stdenv.mkDerivation (finalAttrs: {
     vulkan-loader
     webkitgtk_4_1
     wayland
+    pipewire
   ];
 
   meta = {
