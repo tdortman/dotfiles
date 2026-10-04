@@ -8,7 +8,10 @@
 }:
 
 {
-  custom.onepassword.enable = true;
+  custom = {
+    onepassword.enable = true;
+    tern.enable = true;
+  };
 
   home = {
     file.".cargo/config.toml".text = ''
@@ -236,7 +239,6 @@
 
       shortcuts = {
         "services/com.mitchellh.ghostty.desktop".new-window = [ ];
-        "services/so.stencil.tern.desktop"._launch = "Meta+Return";
         "services/net.local.hdr-toggle.desktop"._launch = lib.mkIf osConfig.custom.hdr.enable "Meta+Alt+B";
         "services/systemsettings.desktop"._launch = "Meta+I";
       };
