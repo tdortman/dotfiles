@@ -2,12 +2,12 @@
   lib,
   stdenv,
   autoPatchelfHook,
-  copyDesktopItems,
+  desktop-file-utils,
   glib-networking,
+  gsettings-desktop-schemas,
   libGL,
   libxkbcommon,
   linux-pam,
-  makeDesktopItem,
   makeWrapper,
   openssl,
   python3,
@@ -15,104 +15,86 @@
   vulkan-loader,
   wayland,
   webkitgtk_4_1,
-  wrapGAppsHook3,
-  # Bundled font file name (e.g. "GeistVariable.ttf") -> replacement font
-  # file. Tern loads these files directly, so the replacement keeps the
-  # bundled name. Absolute strings outside the store become runtime symlinks.
+  zenity,
+  # Embedded font PostScript name (e.g. "Geist-Regular") -> replacement font
+  # file, patched into the binary at build time.
   fontReplacements ? { },
 }:
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "tern";
-  version = "0.4.0";
+  version = "0.4.2";
 
   src = requireFile {
     url = "https://build.stencil.so/tern";
-    hash = "sha256-yKJJGA7cOXx4Noa6ITnyKKns5tZwgAHapOirKS5J7is=";
+    hash = "sha256-Xtco8mX2DilT/sbslU8WH2zLR4b+t9ibS5XFzW5BKSQ=";
     name = "Tern-${finalAttrs.version}-linux-x86_64.tar.gz";
   };
 
   nativeBuildInputs = [
     autoPatchelfHook
-    copyDesktopItems
+    desktop-file-utils
     makeWrapper
-    wrapGAppsHook3
   ];
 
   buildInputs = [
-    glib-networking
     openssl
     stdenv.cc.cc.lib
-    webkitgtk_4_1
   ];
 
   installPhase = ''
     runHook preInstall
 
-    # Tern installs ~/.local/bin/tern and a desktop file pointing at its own
-    # store path whenever `assets` sits next to the binary. Keeping the assets
-    # elsewhere disables that, so launches go through the system profile.
+    # Disables the per-launch ~/.local/bin/tern link and desktop file, which
+    # point at this store path, and swaps in fontReplacements.
+    ${python3.interpreter} ${./patch-binary.py} tern ${
+      lib.escapeShellArgs (lib.mapAttrsToList (name: font: "${name}=${font}") fontReplacements)
+    }
+
     install -Dm755 tern $out/lib/tern/tern
-    mkdir -p $out/share/tern
-    cp -r assets $out/share/tern/
 
-    ${python3.interpreter} - <<'PY'
-    import os
-    import struct
-    import zlib
-    from pathlib import Path
+    # The fonts are copied into the binary; referencing them keeps requireFile
+    # fonts in the store so later rebuilds don't need them re-added.
+    mkdir -p $out/nix-support
+    echo ${lib.escapeShellArg (lib.concatStringsSep "\n" (lib.attrValues fontReplacements))} \
+      > $out/nix-support/replacement-fonts
 
-    data = Path("tern").read_bytes()
-    for size in (16, 32, 48, 64, 128, 256, 512, 1024):
-        header = b"\x89PNG\r\n\x1a\n\x00\x00\x00\x0dIHDR" + struct.pack(">II", size, size)
-        assert data.count(header) == 1, f"Expected one {size}x{size} Tern icon"
-        start = data.index(header)
-        end = start + 8
-        while True:
-            length, kind = struct.unpack_from(">I4s", data, end)
-            crc = zlib.crc32(data[end + 4:end + 8 + length])
-            assert crc == struct.unpack_from(">I", data, end + 8 + length)[0], "Invalid PNG chunk"
-            end += length + 12
-            if kind == b"IEND":
-                break
-        icon = Path(os.environ["out"]) / f"share/icons/hicolor/{size}x{size}/apps/so.stencil.tern.png"
-        icon.parent.mkdir(parents=True, exist_ok=True)
-        icon.write_bytes(data[start:end])
-    PY
-
-    ${lib.concatMapAttrsStringSep "\n" (name: font: ''
-      [[ -e $out/share/tern/assets/fonts/${lib.escapeShellArg name} ]] \
-        || { echo "tern bundles no font named ${name}" >&2; exit 1; }
-      ln -sf ${lib.escapeShellArg "${font}"} $out/share/tern/assets/fonts/${lib.escapeShellArg name}
-    '') fontReplacements}
-
+    # Without the schemas GTK reports -1 DPI on Wayland, breaking WebKit page
+    # geometry and font sizing; glib-networking is WebKit's TLS backend. File
+    # dialogs shell out to zenity.
     makeWrapper $out/lib/tern/tern $out/bin/tern \
-      "''${gappsWrapperArgs[@]}" \
-      --set STENCIL_ASSETS $out/share/tern/assets
+      --prefix PATH : ${lib.makeBinPath [ zenity ]} \
+      --prefix GIO_EXTRA_MODULES : ${glib-networking}/lib/gio/modules \
+      --prefix XDG_DATA_DIRS : ${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}
 
     runHook postInstall
   '';
 
-  desktopItems = [
-    (makeDesktopItem {
-      categories = [
-        "System"
-        "TerminalEmulator"
-      ];
+  # `tern register` writes the icons and desktop file; it executes the ELF, so
+  # patch it before the fixup phase would. The desktop file runs the ELF
+  # directly, bypassing the wrapper, and has no categories.
+  postInstall = ''
+    autoPatchelf $out/lib/tern/tern
 
-      comment = finalAttrs.meta.description;
-      desktopName = "Tern";
-      exec = "tern";
-      genericName = "Terminal";
-      icon = "so.stencil.tern";
-      name = "so.stencil.tern";
-      startupWMClass = "so.stencil.tern";
-    })
-  ];
+    HOME=$TMPDIR/home $out/lib/tern/tern register
+    mkdir -p $out/share
+    cp -r $TMPDIR/home/.local/share/{applications,icons} $out/share/
+    rm -f $out/share/icons/hicolor/icon-theme.cache
 
-  # The wrapper below carries gappsWrapperArgs (TLS GIO module, GSettings
-  # schemas) that WebKitGTK needs for browser blocks.
-  dontWrapGApps = true;
+    substituteInPlace $out/share/applications/so.stencil.tern.desktop \
+      --replace-fail 'Exec="'$out'/lib/tern/tern"' "Exec=$out/bin/tern"
+
+    desktop-file-edit \
+      --set-generic-name="Terminal Emulator" \
+      --set-comment=${lib.escapeShellArg finalAttrs.meta.description} \
+      --add-category=System \
+      --add-category=TerminalEmulator \
+      $out/share/applications/so.stencil.tern.desktop
+  '';
+
+  # strip rewrites the ELF from its section headers, dropping the font
+  # segment, which has none.
+  dontStrip = true;
 
   runtimeDependencies = [
     libGL

@@ -174,15 +174,21 @@
       (custom.tern.override {
         fontReplacements =
           let
-            # Comic Code ships via chezmoi, so link to it at runtime.
-            comicCode = "${
-              config.users.users.${config.custom.common.username}.home
-            }/.local/share/fonts/ComicCode/ComicCodeLigaturesNerdFontMono";
+            # Comic Code ships encrypted via chezmoi, so add the decrypted
+            # files to the store by hand.
+            comicCode =
+              weight: hash:
+              requireFile rec {
+                name = "ComicCodeLigaturesNerdFontMono-${weight}.otf";
+                inherit hash;
+                message = "Run: nix-store --add-fixed sha256 ~/.local/share/fonts/ComicCode/${name}";
+              };
           in
           {
-            "BerkeleyMonoNerdFont-Medium.ttf" = "${comicCode}-Medium.otf";
-            "BerkeleyMonoNerdFont-Regular.ttf" = "${comicCode}-Regular.otf";
-            "GeistVariable.ttf" = "${inter}/share/fonts/truetype/InterVariable.ttf";
+            "BerkeleyMonoNF-Medium" = comicCode "Medium" "sha256-lFSs5w1MFk5RsTOn8bSYYrZqyJ9e8v8JuLzirkMZvg4=";
+            "BerkeleyMonoNF-Regular" =
+              comicCode "Regular" "sha256-fQODaygKrl8Vzxd3rj5mQwlZdzEg9gJ33maICxPgi/U=";
+            "Geist-Regular" = "${inter}/share/fonts/truetype/InterVariable.ttf";
           };
       })
       (discord.override {
