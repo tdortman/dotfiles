@@ -71,9 +71,8 @@ stdenv.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  # `tern register` writes the icons and desktop file; it executes the ELF, so
-  # patch it before the fixup phase would. The desktop file runs the ELF
-  # directly, bypassing the wrapper, and has no categories.
+  # `tern register` executes the ELF, so patch it before the fixup phase.
+  # Both desktop entries need the wrapper for WebKit and file dialogs.
   postInstall = ''
     autoPatchelf $out/lib/tern/tern
 
@@ -82,8 +81,13 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r $TMPDIR/home/.local/share/{applications,icons} $out/share/
     rm -f $out/share/icons/hicolor/icon-theme.cache
 
-    substituteInPlace $out/share/applications/so.stencil.tern.desktop \
+    substituteInPlace $out/share/applications/so.stencil.tern{,.open}.desktop \
       --replace-fail 'Exec="'$out'/lib/tern/tern"' "Exec=$out/bin/tern"
+
+    # Only the main launcher may claim windows; the hidden MIME handler
+    # otherwise competes with it for Plasma taskbar grouping.
+    desktop-file-edit --remove-key=StartupWMClass \
+      $out/share/applications/so.stencil.tern.open.desktop
 
     desktop-file-edit \
       --set-generic-name="Terminal Emulator" \
