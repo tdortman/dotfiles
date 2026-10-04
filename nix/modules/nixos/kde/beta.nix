@@ -23,6 +23,14 @@
         }).kdePackages.overrideScope
           (
             kfinal: kprev: {
+              kde-gtk-config = kprev.kde-gtk-config.overrideAttrs (oldAttrs: {
+                # GTK can unload these modules while their file/theme callbacks
+                # remain connected, crashing Discord when colors.css changes.
+                # Keep their code resident; test-gtk-module-unload.py exercises
+                # CSS reload after GTK clears its module list.
+                patches = (oldAttrs.patches or [ ]) ++ [ ./gtk-modules-resident.patch ];
+              });
+
               ktnef = kprev.ktnef.overrideAttrs (oldAttrs: {
                 buildInputs = (oldAttrs.buildInputs or [ ]) ++ [ kfinal.kcalutils ];
               });

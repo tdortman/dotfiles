@@ -1,0 +1,62 @@
+--- a/color-reload-module/reloader.c
++++ b/color-reload-module/reloader.c
+@@ -8,6 +8,14 @@
+ #include <glib.h>
+ #include <gio/gio.h>
+ #include <gdk/gdk.h>
++#include <gmodule.h>
++
++G_MODULE_EXPORT const gchar *g_module_check_init(GModule *module)
++{
++    /* File-monitor callback outlives any unload; GTK offers no module-unload hook. */
++    g_module_make_resident(module);
++    return NULL;
++}
+ 
+ gchar *path;
+ GFile *file;
+--- a/window-decorations-reload-module/reloader.c
++++ b/window-decorations-reload-module/reloader.c
+@@ -8,6 +8,14 @@
+ #include <gio/gio.h>
+ #include <glib.h>
+ #include <gtk/gtk.h>
++#include <gmodule.h>
++
++G_MODULE_EXPORT const gchar *g_module_check_init(GModule *module)
++{
++    /* File-monitor and GtkSettings callbacks outlive any unload; GTK offers no module-unload hook. */
++    g_module_make_resident(module);
++    return NULL;
++}
+ 
+ #define UNUSED(x) (void)(x)
+ 
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -37,6 +37,7 @@
+ pkg_check_modules(GLib2 REQUIRED IMPORTED_TARGET glib-2.0)
+ pkg_check_modules(GObject REQUIRED IMPORTED_TARGET gobject-2.0)
+ pkg_check_modules(GIO REQUIRED IMPORTED_TARGET gio-2.0)
++pkg_check_modules(GModule REQUIRED IMPORTED_TARGET gmodule-2.0)
+ 
+ 
+ set_package_properties(XSettingsd PROPERTIES
+--- a/color-reload-module/CMakeLists.txt
++++ b/color-reload-module/CMakeLists.txt
+@@ -5,5 +5,6 @@
+ target_link_libraries(colorreload-gtk3-module
+     PRIVATE
++      PkgConfig::GModule
+       PkgConfig::GLib2 
+       PkgConfig::GTK+3 
+ )
+--- a/window-decorations-reload-module/CMakeLists.txt
++++ b/window-decorations-reload-module/CMakeLists.txt
+@@ -5,5 +5,6 @@
+ target_link_libraries(window-decorations-gtk3-module
+   PRIVATE
++    PkgConfig::GModule
+     PkgConfig::GLib2
+     PkgConfig::GTK+3
+ )
