@@ -2,20 +2,27 @@
   lib,
   stdenv,
   autoPatchelfHook,
+  bubblewrap,
   desktop-file-utils,
+  glib,
   glib-networking,
   gsettings-desktop-schemas,
   libGL,
+  libnotify,
+  libsecret,
   libxkbcommon,
   linux-pam,
   makeWrapper,
+  openssh,
   openssl,
+  perf,
   pipewire,
   python3,
   requireFile,
   vulkan-loader,
   wayland,
   webkitgtk_4_1,
+  xdg-utils,
   zenity,
   # Embedded font PostScript name (e.g. "Geist-Regular") -> replacement font
   # file, patched into the binary at build time.
@@ -61,10 +68,21 @@ stdenv.mkDerivation (finalAttrs: {
       > $out/nix-support/replacement-fonts
 
     # Without the schemas GTK reports -1 DPI on Wayland, breaking WebKit page
-    # geometry and font sizing; glib-networking is WebKit's TLS backend. File
-    # dialogs shell out to zenity.
+    # geometry and font sizing; glib-networking is WebKit's TLS backend.
+    # PATH supplies sandboxing, credentials, desktop integration and profiling.
     makeWrapper $out/lib/tern/tern $out/bin/tern \
-      --prefix PATH : ${lib.makeBinPath [ zenity ]} \
+      --prefix PATH : ${
+        lib.makeBinPath [
+          bubblewrap
+          glib
+          libnotify
+          libsecret
+          openssh
+          perf
+          xdg-utils
+          zenity
+        ]
+      } \
       --prefix GIO_EXTRA_MODULES : ${glib-networking}/lib/gio/modules \
       --prefix XDG_DATA_DIRS : ${gsettings-desktop-schemas}/share/gsettings-schemas/${gsettings-desktop-schemas.name}
 
@@ -105,10 +123,10 @@ stdenv.mkDerivation (finalAttrs: {
     libGL
     libxkbcommon
     linux-pam
-    vulkan-loader
-    webkitgtk_4_1
-    wayland
     pipewire
+    vulkan-loader
+    wayland
+    webkitgtk_4_1
   ];
 
   meta = {
