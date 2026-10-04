@@ -38,7 +38,7 @@ let
     paths =
       with cudaPackages;
       [
-        (lib.getOutput "include" cuda_cccl)
+        (lib.getOutput "include" cccl)
         (lib.getOutput "include" cuda_cudart)
         (lib.getLib cuda_cudart)
         (lib.getOutput "stubs" cuda_cudart)
