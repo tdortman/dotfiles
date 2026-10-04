@@ -40,7 +40,7 @@
         kcminputrc."Libinput/1133/16531/Logitech PRO X" = {
           PointerAcceleration = 0.500;
           PointerAccelerationProfile = 1;
-          ScrollFactor = 1;
+          ScrollFactor = 3;
         };
 
         kded5rc.Module-browserintegrationreminder.autoload = false;
