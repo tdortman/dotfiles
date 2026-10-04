@@ -28,11 +28,14 @@ in
   options.custom.tern.enable = lib.mkEnableOption "Meta+Return hotkey that focuses Tern, launching it if no window exists";
 
   config = lib.mkIf cfg.enable {
-    programs.plasma.hotkeys.commands.tern-focus = {
-      command = lib.getExe tern-focus;
+    programs.plasma.shortcuts."services/tern-focus.desktop"._launch = "Meta+Return";
+
+    xdg.desktopEntries.tern-focus = {
       comment = "Focus Tern, or launch it if it isn't running";
-      key = "Meta+Return";
+      exec = lib.getExe tern-focus;
       name = "Focus or launch Tern";
+      noDisplay = true;
+      startupNotify = false;
     };
   };
 }
