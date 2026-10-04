@@ -5,9 +5,21 @@
   "copy_on_select": false,
   "smooth_scroll": true,
   "overscroll": false,
+  "cursor": {
+    "shape": "bar",
+    "programs": false,
+    "blink": true,
+    "smooth_blink": true,
+    "glide": 80,
+    "trail": "off",
+    "pulse": "off",
+    "terminals": true,
+    "composer": true,
+    "editors": true
+  },
   "reduce_motion": "system",
-  "link_click": "Click",
-  "link_target": "Tern",
+  "link_click": "Command",
+  "link_target": "Browser",
   "clipboard_write": "allow",
   "hyperlinks": "allow",
   "notifications": true,
@@ -28,7 +40,7 @@
   "tabs": "Horizontal",
   "tabs_autohide": false,
   "system_title_bar": false,
-  "pane_headers": "Never",
+  "pane_headers": "Always",
   "status_bar": true,
   "material": "Solid",
   "opacity": 60,
@@ -59,6 +71,7 @@
   "ask_to_move": true,
   "prefs_width": 541,
   "antialias": true,
+  "snap_text": true,
   "msaa": "off",
   "sync_to_display": false,
   "frame_latency": 2,
@@ -74,8 +87,8 @@
     "attachments": ""
   },
   "file_tree": {
-    "open": false,
-    "width": 256,
+    "open": true,
+    "width": 397,
     "hidden": true,
     "ignored": true,
     "search_ignored": false,
@@ -263,7 +276,8 @@
   "carly": {
     "model": "@smol",
     "heartbeat": 30,
-    "voice": ""
+    "voice": "",
+    "voice_on_open": false
   },
   "keybinds": {},
   "keymap": "tern",
