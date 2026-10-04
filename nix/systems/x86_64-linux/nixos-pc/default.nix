@@ -439,16 +439,15 @@
               comicCode =
                 weight: hash:
                 requireFile rec {
-                  name = "ComicCodeLigaturesNerdFontMono-${weight}.otf";
                   inherit hash;
                   message = "Run: nix-store --add-fixed sha256 ~/.local/share/fonts/ComicCode/${name}";
+                  name = "ComicCodeLigaturesNerdFontMono-${weight}.otf";
                 };
             in
             {
-              "BerkeleyMonoNF-Medium" = comicCode "Medium" "sha256-lFSs5w1MFk5RsTOn8bSYYrZqyJ9e8v8JuLzirkMZvg4=";
-              "BerkeleyMonoNF-Regular" =
-                comicCode "Regular" "sha256-fQODaygKrl8Vzxd3rj5mQwlZdzEg9gJ33maICxPgi/U=";
-              "Geist-Regular" = "${inter}/share/fonts/truetype/InterVariable.ttf";
+              BerkeleyMonoNF-Medium = comicCode "Medium" "sha256-lFSs5w1MFk5RsTOn8bSYYrZqyJ9e8v8JuLzirkMZvg4=";
+              BerkeleyMonoNF-Regular = comicCode "Regular" "sha256-fQODaygKrl8Vzxd3rj5mQwlZdzEg9gJ33maICxPgi/U=";
+              Geist-Regular = "${inter}/share/fonts/truetype/InterVariable.ttf";
             };
         })
         (custom.vx.override {
