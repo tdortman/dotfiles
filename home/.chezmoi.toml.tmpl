@@ -1,28 +1,10 @@
 {{- $useSecrets  := promptBoolOnce . "use_secrets" "Use 1Password for secrets? (y/n)" -}}
-{{- $fullName    := "" -}}
-{{- $uniEmail    := "" -}}
-{{- $uniUserName := "" -}}
 {{- $hifumiIp    := "" -}}
 {{- $ttvProxyIp  := "" -}}
 
 {{- if $useSecrets -}}
-  {{- $fullName    = onepasswordRead "op://Personal/Private/Identification/full name" | default "" -}}
-  {{- $uniEmail    = onepasswordRead "op://Personal/Uni Mail/Internet Details/email"  | default "" -}}
-  {{- $uniUserName = onepasswordRead "op://Personal/Uni Mail/Identification/username" | default "" -}}
   {{- $hifumiIp    = onepasswordRead "op://Personal/Hifumi/ip"                        | default "" -}}
   {{- $ttvProxyIp  = onepasswordRead "op://Personal/TTV Proxy/ip"                     | default "" -}}
-{{- end -}}
-
-{{- if not $fullName -}}
-  {{- $fullName = promptStringOnce . "full_name" "Enter full name:" -}}
-{{- end -}}
-
-{{- if not $uniEmail -}}
-  {{- $uniEmail = promptStringOnce . "uni_email" "Enter uni email:" -}}
-{{- end -}}
-
-{{- if not $uniUserName -}}
-  {{- $uniUserName = promptStringOnce . "uni_username" "Enter uni username:" -}}
 {{- end -}}
 
 {{- if not $hifumiIp -}}
@@ -82,9 +64,6 @@ encryption = "age"
     os_id = {{ $osId | quote }}
     is_wsl = {{ hasSuffix "wsl" $osId }}
     use_secrets = {{ $useSecrets }}
-    full_name = {{ $fullName | quote }}
-    uni_email = {{ $uniEmail | quote }}
-    uni_username = {{ $uniUserName | quote }}
     hifumi_ip = {{ $hifumiIp | quote }}
     ttv_proxy_ip = {{ $ttvProxyIp | quote }}
     monospace_font = "ComicCodeLigatures Nerd Font Mono"

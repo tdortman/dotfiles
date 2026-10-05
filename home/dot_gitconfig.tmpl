@@ -73,8 +73,10 @@
 [credential "https://gist.github.com"]
     helper = !gh auth git-credential
 
-[includeIf "gitdir:/home/tim/projects/uni/"]
-    path = ~/.config/git/gitconfig-uni
+[includeIf "gitdir:~/Projects/uni/student/"]
+    path = ~/.config/git/gitconfig-uni-student
+[includeIf "gitdir:~/Projects/uni/work/"]
+    path = ~/.config/git/gitconfig-uni-work
 
 [gitbutler]
 	aiModelProvider = anthropic

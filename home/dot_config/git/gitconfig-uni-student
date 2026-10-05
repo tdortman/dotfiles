@@ -1,0 +1,4 @@
+[user]
+    name = Tim Dortmann
+    email = tdortman@students.uni-mainz.de
+    signingkey = ~/.ssh/gitlab-uni-student-signing.pub

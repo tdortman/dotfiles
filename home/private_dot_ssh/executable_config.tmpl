@@ -30,14 +30,20 @@ Host hf.co
     IdentityFile ~/.ssh/hf.pub
     IdentitiesOnly yes
 
+Host gitlab-uni-work
+    HostName gitlab.rlp.net
+    User git
+    IdentityFile ~/.ssh/gitlab-uni-work.pub
+    IdentitiesOnly yes
+
 Host gitlab.rlp.net
     HostName gitlab.rlp.net
     User git
-    IdentityFile ~/.ssh/gitlab-uni.pub
+    IdentityFile ~/.ssh/gitlab-uni-student.pub
     IdentitiesOnly yes
 
 Host hpcgate sshgate mogon mogon-nhr monster? dungeonkeeper gracehopper
-    User {{ .uni_username }}
+    User tdortman
     IdentityFile ~/.ssh/mogon.pub
     IdentitiesOnly yes
 {{- if output "ssh" "-G" "-F" "none" "-T" "localhost" | contains "\nwarnweakcrypto " }}

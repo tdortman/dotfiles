@@ -1,0 +1,9 @@
+[user]
+    name = Tim Dortmann
+    email = dortmann@uni-mainz.de
+    signingkey = ~/.ssh/gitlab-uni-work-signing.pub
+
+[url "git@gitlab-uni-work:"]
+    insteadOf = git@gitlab.rlp.net:
+[url "ssh://git@gitlab-uni-work/"]
+    insteadOf = ssh://git@gitlab.rlp.net/
