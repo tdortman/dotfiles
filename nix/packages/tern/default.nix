@@ -7,6 +7,7 @@
   glib,
   glib-networking,
   gsettings-desktop-schemas,
+  kdotool,
   libGL,
   libnotify,
   libsecret,
@@ -102,9 +103,24 @@ stdenv.mkDerivation (finalAttrs: {
     substituteInPlace $out/share/applications/so.stencil.tern{,.open}.desktop \
       --replace-fail 'Exec="'$out'/lib/tern/tern"' "Exec=$out/bin/tern"
 
-    # Only the main launcher may claim windows; the hidden MIME handler
-    # otherwise competes with it for Plasma taskbar grouping.
-    desktop-file-edit --remove-key=StartupWMClass \
+    # Raise the running Plasma window before selecting the file tab.
+    makeWrapper $out/bin/tern $out/bin/tern-open \
+      --add-flags "open --tab" \
+      --run ${lib.escapeShellArg ''
+        if [[ "''${KDE_SESSION_VERSION:-}" == 6 ]]; then
+          window=$(${lib.getExe' kdotool "kdotool"} search --limit 1 --class '^so\.stencil\.tern$') || exit $?
+          if [[ -n $window ]]; then
+            ${lib.getExe' kdotool "kdotool"} windowactivate "$window" || exit $?
+          fi
+        fi
+      ''}
+
+    # Only the main launcher may claim windows for Plasma taskbar grouping.
+    # Reusing a window does not complete a new-window startup notification.
+    desktop-file-edit \
+      --set-key=Exec --set-value="$out/bin/tern-open %f" \
+      --set-key=StartupNotify --set-value=false \
+      --remove-key=StartupWMClass \
       $out/share/applications/so.stencil.tern.open.desktop
 
     desktop-file-edit \
