@@ -113,6 +113,32 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   powerManagement.enable = true;
 
+  systemd.services.nvidia-power-limit = {
+    description = "Set the RTX 5070 Ti power limit to 250 W";
+
+    after = [
+      "nvidia-resume.service"
+      "systemd-hibernate.service"
+      "systemd-hybrid-sleep.service"
+      "systemd-modules-load.service"
+      "systemd-suspend-then-hibernate.service"
+      "systemd-suspend.service"
+    ];
+
+    wantedBy = [
+      "hibernate.target"
+      "hybrid-sleep.target"
+      "multi-user.target"
+      "suspend-then-hibernate.target"
+      "suspend.target"
+    ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${config.hardware.nvidia.package.bin}/bin/nvidia-smi --id=0000:0d:00.0 --power-limit=250";
+    };
+  };
+
   users = {
     groups.media = { };
 
