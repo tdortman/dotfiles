@@ -163,6 +163,8 @@
       };
 
       overrideConfig = true;
+      # Keep panel geometry available when displays reconnect after resume.
+      resetFilesExclude = [ "plasmashellrc" ];
 
       panels = [
         {
