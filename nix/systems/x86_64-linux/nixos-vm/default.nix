@@ -106,6 +106,7 @@
           withVencord = true;
         })
         btrfs-progs
+        custom.tern
         ghostty
         kdePackages.xdg-desktop-portal-kde
         librewolf
