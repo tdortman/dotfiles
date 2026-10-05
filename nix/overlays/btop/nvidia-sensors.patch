@@ -1,0 +1,155 @@
+--- a/src/btop_shared.hpp
++++ b/src/btop_shared.hpp
+@@ -174,6 +174,7 @@
+ 		long long decoder_utilization = 0;
+ 
+ 		long long fan_speed = -1;
++		bool fan_speed_percent = false;
+ 		deque<long long> fan_speed_history = {0};
+ 		long long power_limit = 0;
+ 		string pwr_state_name;
+--- a/src/linux/btop_collect.cpp
++++ b/src/linux/btop_collect.cpp
+@@ -209,6 +209,7 @@
+ 		nvmlReturn_t (*nvmlDeviceGetHandleByIndex)(unsigned int, nvmlDevice_t*);
+ 		nvmlReturn_t (*nvmlDeviceGetName)(nvmlDevice_t, char*, unsigned int);
+ 		nvmlReturn_t (*nvmlDeviceGetPowerManagementLimit)(nvmlDevice_t, unsigned int*);
++		nvmlReturn_t (*nvmlDeviceGetFanSpeed)(nvmlDevice_t, unsigned int*);
+ 		nvmlReturn_t (*nvmlDeviceGetTemperatureThreshold)(nvmlDevice_t, nvmlTemperatureThresholds_t, unsigned int*);
+ 		nvmlReturn_t (*nvmlDeviceGetUtilizationRates)(nvmlDevice_t, nvmlUtilization_t*);
+ 		nvmlReturn_t (*nvmlDeviceGetClockInfo)(nvmlDevice_t, nvmlClockType_t, unsigned int*);
+@@ -1468,6 +1469,7 @@
+ 			LOAD_SYM(nvmlDeviceGetDecoderUtilization);
+ 
+             #undef LOAD_SYM
++			nvmlDeviceGetFanSpeed = (decltype(nvmlDeviceGetFanSpeed))load_nvml_sym("nvmlDeviceGetFanSpeed");
+ 
+ 			//? Function calls
+ 			nvmlReturn_t result = nvmlInit();
+@@ -1538,16 +1540,6 @@
+ 						}
+ 						gpu_names[i] = trim(gpu_names[i]);
+         			}
+-
+-    				//? Power usage
+-    				unsigned int max_power;
+-    				result = nvmlDeviceGetPowerManagementLimit(devices[i], &max_power);
+-    				if (result != NVML_SUCCESS)
+-						Logger::warning("NVML: Failed to get maximum GPU power draw, defaulting to 225W: {}", nvmlErrorString(result));
+-					else {
+-						gpus[i].pwr_max_usage = max_power; // RSMI reports power in microWatts
+-						gpu_pwr_total_max += max_power;
+-					}
+ 
+ 					//? Get temp_max
+ 					unsigned int temp_max;
+@@ -1616,6 +1608,18 @@
+ 				}
+ 
+ 				// nvTimer.stop_rename_reset("Nv power");
++				//? NVML reports the current power limit in milliwatts.
++				const auto previous_limit = gpus_slice[i].power_limit;
++				unsigned int power_limit = 0;
++				result = nvmlDeviceGetPowerManagementLimit(devices[i], &power_limit);
++				gpus_slice[i].power_limit = result == NVML_SUCCESS ? power_limit : 0;
++				if (gpus_slice[i].power_limit > 0)
++					gpus_slice[i].pwr_max_usage = gpus_slice[i].power_limit;
++				else if (result != NVML_SUCCESS and (is_init or previous_limit > 0))
++					Logger::warning("NVML: Failed to get GPU power limit: {}", nvmlErrorString(result));
++				gpu_pwr_total_max += gpus_slice[i].power_limit - previous_limit;
++				if ((previous_limit > 0) != (gpus_slice[i].power_limit > 0)) Runner::redraw = true;
++
+     			//? Power usage & state
+ 				if (gpus_slice[i].supported_functions.pwr_usage) {
+     				unsigned int power;
+@@ -1625,7 +1629,7 @@
+ 						if constexpr(is_init) gpus_slice[i].supported_functions.pwr_usage = false;
+     				} else {
+     					gpus_slice[i].pwr_usage = (long long)power;
+-						if (gpus_slice[i].pwr_usage > gpus_slice[i].pwr_max_usage)
++						if (gpus_slice[i].power_limit <= 0 and gpus_slice[i].pwr_usage > gpus_slice[i].pwr_max_usage)
+ 								gpus_slice[i].pwr_max_usage = gpus_slice[i].pwr_usage;
+     					gpus_slice[i].gpu_percent.at("gpu-pwr-totals").push_back(clamp((long long)round((double)gpus_slice[i].pwr_usage * 100.0 / (double)gpus_slice[i].pwr_max_usage), 0ll, 100ll));
+     				}
+@@ -1640,6 +1644,23 @@
+     				} else gpus_slice[i].pwr_state = static_cast<int>(pState);
+     			}
+ 
++				//? NVML fan speed is a percentage, not RPM.
++				if (nvmlDeviceGetFanSpeed and (is_init or gpus_slice[i].supported_functions.fan_speed)) {
++					unsigned int speed;
++					result = nvmlDeviceGetFanSpeed(devices[i], &speed);
++					if constexpr (is_init) {
++						gpus_slice[i].supported_functions.fan_speed = result == NVML_SUCCESS;
++						gpus_slice[i].fan_speed_percent = true;
++					}
++					if (result == NVML_SUCCESS) {
++						gpus_slice[i].fan_speed = speed;
++					} else {
++						if (is_init or gpus_slice[i].fan_speed >= 0)
++							Logger::warning("NVML: Failed to get GPU fan speed: {}", nvmlErrorString(result));
++						gpus_slice[i].fan_speed = -1;
++					}
++				}
++
+ 				// nvTimer.stop_rename_reset("Nv temp");
+     			//? GPU temperature
+ 				if (gpus_slice[i].supported_functions.temp_info) {
+--- a/src/btop_draw.cpp
++++ b/src/btop_draw.cpp
+@@ -1015,6 +1015,7 @@
+ 	vector<Draw::Meter> pwr_meter_vec = {};
+ 	vector<Draw::Meter> enc_meter_vec = {};
+ 	vector<Draw::Meter> vid_meter_vec = {};
++	vector<Draw::Meter> fan_meter_vec = {};
+ 	vector<Draw::Graph> fan_graph_vec = {};
+ 	vector<long long> fan_graph_max = {};
+ 	vector<string> box = {};
+@@ -1036,6 +1037,7 @@
+ 		auto& pwr_meter = pwr_meter_vec[index];
+ 		auto& enc_meter = enc_meter_vec[index];
+ 		auto& vid_meter = vid_meter_vec[index];
++		auto& fan_meter = fan_meter_vec[index];
+ 		auto& fan_graph = fan_graph_vec[index];
+ 
+ 		if (force_redraw) redraw[index] = true;
+@@ -1088,10 +1090,12 @@
+ 				enc_meter = Draw::Meter{b_width/2 - 10, "cpu"};
+ 			if (gpu.supported_functions.video_utilization and not (gpu.supported_functions.encoder_utilization and gpu.supported_functions.decoder_utilization))
+ 				vid_meter = Draw::Meter{max(1, b_width - 13), "cpu"};
++			if (gpu.supported_functions.fan_speed and gpu.fan_speed_percent)
++				fan_meter = Draw::Meter{max(1, b_width - 11), "cpu"};
+ 		}
+ 
+-		//? Fan sparkline autoscaled to observed history max (no fan-max RPM exists)
+-		if (gpu.supported_functions.fan_speed) {
++		//? RPM fans use the observed history maximum.
++		if (gpu.supported_functions.fan_speed and not gpu.fan_speed_percent) {
+ 			long long fan_max = 1;
+ 			for (const auto v : gpu.fan_speed_history) fan_max = max(fan_max, v);
+ 			if (redraw[index] or fan_max != fan_graph_max[index]) {
+@@ -1153,10 +1157,14 @@
+ 			rows_used++;
+ 		}
+ 
+-		//? Fan speed in RPM with trend sparkline
++		//? Percentage fan meter or RPM trend sparkline.
+ 		if (gpu.supported_functions.fan_speed) {
+ 			out += Mv::to(b_y + rows_used, b_x + 1) + Theme::c("main_fg") + Fx::b + "FAN ";
+-			if (gpu.fan_speed < 0) out += "N/A";
++			if (gpu.fan_speed < 0) out += ljust("N/A", b_width - 6);
++			else if (gpu.fan_speed_percent) {
++				const auto speed = clamp(gpu.fan_speed, 0ll, 100ll);
++				out += fan_meter(speed) + Theme::g("cpu").at(speed) + rjust(to_string(gpu.fan_speed), 4) + Theme::c("main_fg") + '%';
++			}
+ 			else out += fan_graph(gpu.fan_speed_history, data_same or redraw[index]) + ' '
+ 				+ Theme::g("cpu").at(clamp(gpu.fan_speed * 100 / fan_graph_max[index], 0ll, 100ll)) + rjust(to_string(gpu.fan_speed), 5) + Theme::c("main_fg") + " RPM";
+ 			rows_used++;
+@@ -2407,6 +2415,7 @@
+ 			pwr_meter_vec.resize(shown);
+ 			enc_meter_vec.resize(shown);
+ 			vid_meter_vec.resize(shown);
++			fan_meter_vec.resize(shown);
+ 			fan_graph_vec.resize(shown);
+ 			fan_graph_max.resize(shown);
+ 			redraw.resize(shown);

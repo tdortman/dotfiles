@@ -8,6 +8,8 @@ final: prev: {
       ./intel-vram.patch
       ./gpu-metrics-display.patch
       ./intel-extra-sensors.patch
+      ./nvidia-sensors.patch
+
       # Parse /proc/<pid>/stat after the last ')' instead of reusing a space
       # count from comm cached on first sight. Processes that rename
       # themselves to a name with spaces otherwise show start time as RSS.
