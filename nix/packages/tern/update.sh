@@ -2,7 +2,7 @@
 #!nix-shell -i bash -p bash coreutils curl gnused jq nix git sqlite xdg-utils
 
 # Downloads require a build.stencil.so login. The session cookie is read from
-# the most recently used Firefox-family profile and only ever passed to curl
+# the most recently used LibreWolf profile and only ever passed to curl
 # on stdin; it is never written anywhere. Only the tarball enters the store.
 
 set -euo pipefail
@@ -19,14 +19,14 @@ if [[ -z "$old_version" ]]; then
   exit 1
 fi
 
-# Firefox keeps its cookie database locked, so query a copy on the user-only
+# LibreWolf keeps its cookie database locked, so query a copy on the user-only
 # runtime tmpfs.
 work="$(mktemp -d -p "${XDG_RUNTIME_DIR:-/tmp}")"
 trap 'rm -rf "$work"' EXIT
 
 read_cookie() {
   local db best="" best_seen=0 row
-  for db in ~/.librewolf/*/cookies.sqlite ~/.mozilla/firefox/*/cookies.sqlite; do
+  for db in ~/.librewolf/*/cookies.sqlite ~/.config/librewolf/librewolf/*/cookies.sqlite; do
     [[ -f "$db" ]] || continue
     cp "$db" "$work/cookies.sqlite"
     rm -f "$work/cookies.sqlite-wal"
@@ -68,7 +68,7 @@ if [[ -z "$build" ]] && $interactive; then
 fi
 
 if [[ -z "$build" ]]; then
-  echo "error: could not list tern builds; log in at $site/tern in LibreWolf or Firefox" >&2
+  echo "error: could not list tern builds; log in at $site/tern in LibreWolf" >&2
   exit 1
 fi
 
