@@ -431,25 +431,7 @@
           }
         ]
       ++ [
-        (custom.tern.override {
-          fontReplacements =
-            let
-              # Comic Code ships encrypted via chezmoi, so add the decrypted
-              # files to the store by hand.
-              comicCode =
-                weight: hash:
-                requireFile rec {
-                  inherit hash;
-                  message = "Run: nix-store --add-fixed sha256 ~/.local/share/fonts/ComicCode/${name}";
-                  name = "ComicCodeLigaturesNerdFontMono-${weight}.otf";
-                };
-            in
-            {
-              BerkeleyMonoNF-Medium = comicCode "Medium" "sha256-lFSs5w1MFk5RsTOn8bSYYrZqyJ9e8v8JuLzirkMZvg4=";
-              BerkeleyMonoNF-Regular = comicCode "Regular" "sha256-fQODaygKrl8Vzxd3rj5mQwlZdzEg9gJ33maICxPgi/U=";
-              Geist-Regular = "${inter}/share/fonts/truetype/InterVariable.ttf";
-            };
-        })
+        custom.tern
         (custom.vx.override {
           cudaPackages = config.custom.nvidia.cuda.packages;
           cudaSupport = true;

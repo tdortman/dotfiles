@@ -18,25 +18,21 @@
   openssl,
   perf,
   pipewire,
-  python3,
   requireFile,
   vulkan-loader,
   wayland,
   webkitgtk_4_1,
   xdg-utils,
   zenity,
-  # Embedded font PostScript name (e.g. "Geist-Regular") -> replacement font
-  # file, patched into the binary at build time.
-  fontReplacements ? { },
 }:
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "tern";
-  version = "0.4.5";
+  version = "0.5.0";
 
   src = requireFile {
     url = "https://build.stencil.so/tern";
-    hash = "sha256-+TU0GutIi4QGCsLC1syAB/IcdRe1orFfo+dMr+qmq/0=";
+    hash = "sha256-lt6kd1hpfgKtXkti3p3g+DjG0rSfbImyAzvoo3921BE=";
     name = "Tern-${finalAttrs.version}-linux-x86_64.tar.gz";
   };
 
@@ -54,19 +50,7 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    # Disables the per-launch ~/.local/bin/tern link and desktop file, which
-    # point at this store path, and swaps in fontReplacements.
-    ${python3.interpreter} ${./patch-binary.py} tern ${
-      lib.escapeShellArgs (lib.mapAttrsToList (name: font: "${name}=${font}") fontReplacements)
-    }
-
     install -Dm755 tern $out/lib/tern/tern
-
-    # The fonts are copied into the binary; referencing them keeps requireFile
-    # fonts in the store so later rebuilds don't need them re-added.
-    mkdir -p $out/nix-support
-    echo ${lib.escapeShellArg (lib.concatStringsSep "\n" (lib.attrValues fontReplacements))} \
-      > $out/nix-support/replacement-fonts
 
     # Without the schemas GTK reports -1 DPI on Wayland, breaking WebKit page
     # geometry and font sizing; glib-networking is WebKit's TLS backend.
@@ -130,10 +114,6 @@ stdenv.mkDerivation (finalAttrs: {
       --add-category=TerminalEmulator \
       $out/share/applications/so.stencil.tern.desktop
   '';
-
-  # strip rewrites the ELF from its section headers, dropping the font
-  # segment, which has none.
-  dontStrip = true;
 
   runtimeDependencies = [
     libGL
