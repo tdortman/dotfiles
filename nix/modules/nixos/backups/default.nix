@@ -85,6 +85,10 @@ let
 
   # snapper config name, derived from the snapshotted subvolume path.
   snapName = lib.last (lib.splitString "/" cfg.snapshots.subvolume);
+  # The restic module only unlocks after a successful backup, so a lock left by
+  # an interrupted prune makes every later run fail before it gets there.
+  # `unlock` removes stale locks only, so live runs are unaffected.
+  unlockStale = "${lib.getExe pkgs.restic} unlock";
 in
 {
   options.custom.backups = {
@@ -182,12 +186,13 @@ in
         inherit (cfg) passwordFile;
 
         backupCleanupCommand = ''
-          echo "Google Drive backup completed at $(date)"
+          echo "Google Drive backup finished at $(date): $SERVICE_RESULT"
         '';
 
         backupPrepareCommand = ''
           echo "Starting Google Drive backup at $(date)"
           echo "Backing up paths: ${pkgs.lib.concatStringsSep ", " config.services.restic.backups.gdrive.paths}"
+          ${unlockStale}
         '';
 
         createWrapper = true;
@@ -290,6 +295,7 @@ in
 
       services.restic.backups.local = {
         inherit (cfg) passwordFile;
+        backupPrepareCommand = unlockStale;
         createWrapper = true;
 
         exclude = commonExcludes ++ [
