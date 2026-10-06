@@ -299,10 +299,10 @@ in
           "/home/${cfg.user}/3rd-party"
           "/home/${cfg.user}/.lmstudio/models"
 
-          # Exclude any directory named "data" below ~/projects, but not arbitrary
+          # Exclude any directory named "data" below ~/Projects, but not arbitrary
           # "data" directories elsewhere in the home directory.
-          "/home/${cfg.user}/projects/data"
-          "/home/${cfg.user}/projects/**/data"
+          "/home/${cfg.user}/Projects/data"
+          "/home/${cfg.user}/Projects/**/data"
 
           # Large, reinstallable game content.
           "/home/${cfg.user}/.local/share/Steam/steamapps"
