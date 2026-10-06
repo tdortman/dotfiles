@@ -1,0 +1,108 @@
+--- a/app/index.js
++++ b/app/index.js
+@@ -721,7 +721,8 @@
+           config,
+           mainAppWindow.bindDisplayMediaHandler,
+           mainAppWindow.bindWindowOpenHandler,
+-          mainAppWindow.injectScreenSharingLogic
++          mainAppWindow.injectScreenSharingLogic,
++          mainAppWindow.bindProfileSessionAuth
+         );
+         profileViewManager.initialize();
+         await profileViewManager.bootstrapProfileZeroIfNeeded();
+--- a/app/mainAppWindow/index.js
++++ b/app/mainAppWindow/index.js
+@@ -93,6 +93,14 @@
+   });
+ }
+ 
++// Apply the auth-persistence setup to a session. Both helpers keep state on
++// the session they are handed, so Profile 0's startup call does not reach a
++// profile view's own partition session.
++function bindProfileSessionAuth(targetSession) {
++  keepMsalEncryptionCookiePersistent(targetSession);
++  return cleanExpiredAuthCookies(targetSession);
++}
++
+ function handleScreenSourceSelection(source, callback) {
+   try {
+     // Use the picker's source directly instead of re-querying
+@@ -804,14 +812,13 @@
+   }
+ 
+   addEventHandlers();
+-
+-  // Keep the msal.cache.encryption cookie
+-  // Run before loading Teams so the cookie gets caught right at the start
+-  keepMsalEncryptionCookiePersistent(window.webContents.session);
+ 
+-  // Clean expired auth cookies before loading Teams to prevent the
+-  // "We need you to sign in again" stale banner (#2296)
+-  await cleanExpiredAuthCookies(window.webContents.session);
++  // Keep the msal.cache.encryption cookie and drop expired auth cookies
++  // before loading Teams: the cookie must be caught right at the start, and
++  // the cleanup prevents the "We need you to sign in again" stale banner
++  // (#2296). Profile views get the same treatment as they are created -
++  // both helpers keep per-session state.
++  await bindProfileSessionAuth(window.webContents.session);
+ 
+   // Restore the last persisted auth-failure signal so login-popup
+   // correlation survives app restarts (the broken session does).
+@@ -905,6 +912,8 @@
+ };
+ 
+ exports.bindDisplayMediaHandler = bindDisplayMediaHandler;
++
++exports.bindProfileSessionAuth = bindProfileSessionAuth;
+ exports.bindWindowOpenHandler = bindWindowOpenHandler;
+ exports.injectScreenSharingLogic = injectScreenSharingLogic;
+ 
+--- a/app/mainAppWindow/profileViewManager.js
++++ b/app/mainAppWindow/profileViewManager.js
+@@ -84,6 +84,7 @@
+   #bindDisplayMediaHandler;
+   #bindWindowOpenHandler;
+   #onViewDidFinishLoad;
++  #bindProfileSessionAuth;
+   #views = new Map();
+   // Phase 2 foundation: webContents → profile attribution for main-process
+   // IPC handlers (tray/badge/notification aggregation consumes this next).
+@@ -127,6 +128,10 @@
+    *   Called on every `did-finish-load` of each profile view, mirroring the
+    *   root window's listener. Main uses it to inject the screen-sharing
+    *   script, which otherwise only reaches Profile 0 (#2979).
++   * @param {(session: Electron.Session) => void} [bindProfileSessionAuth]
++   *   Applies the auth-persistence setup to a session. Both helpers involved
++   *   keep per-session state, so Profile 0's setup at startup does not reach
++   *   a profile view's own partition session.
+    */
+   constructor(
+     window,
+@@ -134,7 +139,8 @@
+     config,
+     bindDisplayMediaHandler,
+     bindWindowOpenHandler = () => {},
+-    onViewDidFinishLoad = () => {}
++    onViewDidFinishLoad = () => {},
++    bindProfileSessionAuth = () => {}
+   ) {
+     this.#window = window;
+     this.#profilesManager = profilesManager;
+@@ -142,6 +148,7 @@
+     this.#bindDisplayMediaHandler = bindDisplayMediaHandler;
+     this.#bindWindowOpenHandler = bindWindowOpenHandler;
+     this.#onViewDidFinishLoad = onViewDidFinishLoad;
++    this.#bindProfileSessionAuth = bindProfileSessionAuth;
+     this.#registry = new SenderProfileMap(profilesManager);
+   }
+ 
+@@ -465,6 +472,9 @@
+     // `setDisplayMediaRequestHandler` is per-session and the root window's
+     // binding does not carry across to profile partitions (#2529).
+     this.#bindDisplayMediaHandler(view.webContents.session);
++    // Same per-session seam for auth persistence: both helpers hold state on
++    // the session they are handed, so each profile needs its own call.
++    this.#bindProfileSessionAuth(view.webContents.session);
+     this.#bindWindowOpenHandler(view.webContents, view.webContents, () =>
+       this.#activate(profileId)
+     );
