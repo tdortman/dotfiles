@@ -118,7 +118,7 @@
           runAlways = true;
 
           text = ''
-            setsid teams-for-linux --wayland --minimized --enableIncomingCallToast &
+            setsid teams-for-linux --wayland --minimized &
           '';
         };
       };
@@ -193,17 +193,40 @@
     "XKB_DEFAULT_OPTIONS="
   ];
 
-  xdg = {
-    # Brio 100 does 1920x1080@30 MJPEG but Teams' getUserMedia asks 720p.
-    # Force 1080p capture
-    configFile."teams-for-linux/config.json".text = builtins.toJSON {
-      media.camera.resolution = {
-        enabled = true;
-        height = 1080;
-        mode = "override";
-        width = 1920;
-      };
+  xdg.configFile."teams-for-linux/config.json".text = builtins.toJSON {
+    auth = {
+      # Recover in-app from a stale "sign in again" popup instead of dead-ending.
+      reauthRecovery.enabled = true;
+      # Electron/Chromium on Linux has no native FIDO2 backend
+      # (electron/electron#24573), so teams-for-linux ships an opt-in
+      # monkey-patch that shells out to the fido2-tools binaries.
+      webauthn.enabled = true;
     };
 
+    # Taskbar + KDE JobView progress bars and a completion notification.
+    download.enabled = true;
+    # Replaces the --enableIncomingCallToast CLI flag.
+    incomingCalls.toast = true;
+
+    # Brio 100 does 1920x1080@30 MJPEG but Teams' getUserMedia asks 720p.
+    # Force 1080p capture
+    media.camera.resolution = {
+      enabled = true;
+      height = 1080;
+      mode = "override";
+      width = 1920;
+    };
+
+    # ADR-020 single-window profile switcher: one tray icon, warm sessions.
+    # Mutually exclusive with auth.intune.enabled (which is off here).
+    multiAccount.enabled = true;
+
+    # [name, value] pairs; a bare string is a valueless switch.
+    performance.electronCLIFlags = [
+      [
+        "enable-blink-features"
+        "MiddleClickAutoscroll"
+      ]
+    ];
   };
 }

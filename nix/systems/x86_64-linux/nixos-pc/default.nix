@@ -457,6 +457,7 @@
         inputs.agenix.packages."${system}".default
         inputs.codex-desktop-linux.packages.${system}.codex-desktop-maximal-directory-watch
         kdePackages.xdg-desktop-portal-kde
+        libfido2 # fido2-token/-cred/-assert, used by teams-for-linux WebAuthn
         libnotify
         libratbag
         libreoffice-qt6
