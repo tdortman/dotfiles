@@ -113,6 +113,7 @@
         { "methods": ["GET"], "url": "https://downloads.factory.ai/factory-cli/LATEST", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://dspace.cvut.cz/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://export.arxiv.org/api/query", "port": 443, "comment": "global" },
+        { "methods": ["GET"], "url": "https://files.pythonhosted.org/packages", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://files.pythonhosted.org/packages/**/*.whl.metadata", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://files.pythonhosted.org/packages/**/fonttools-*.*.*-*.whl", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://files.pythonhosted.org/packages/**/pandas-*.*.*-cp*-cp*-manylinux_*_*_x86_64.*_*_*_x86_64.whl", "port": 443, "comment": "global" },
@@ -343,7 +344,6 @@
       { "path": "~/.pulse-cookie", "access": "read", "comment": "global" },
       { "path": "~/.ssh/allowed_signers", "access": "read", "comment": "global" },
       { "path": "~/.ssh/config", "access": "read", "comment": "global" },
-      { "path": "~/.ssh/mogon.pub", "access": "read", "comment": "global" },
       { "path": "~/.zcompdump", "access": "read", "comment": "global" },
       { "path": "~/.zshrc.zwc", "access": "read", "comment": "global" },
       { "path": "~/3rd-party/znap", "access": "read_write", "comment": "global" },
@@ -359,6 +359,7 @@
       { "path": "~/dotfiles/home/dot_config/direnv/direnvrc", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/dot_config/direnv/direnvrc", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/dot_config/gdb/cuda-gdbinit", "access": "read", "comment": "global" },
+      { "path": "~/dotfiles/home/dot_config/git/gitconfig-uni-work", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/dot_config/opencode/opencode.json", "access": "read_write", "comment": "global" },
       { "path": "~/dotfiles/home/dot_config/private_cursor/cli-config.json", "access": "read_write", "comment": "global" },
       { "path": "~/dotfiles/home/dot_config/zsh", "access": "read", "comment": "global" },
@@ -369,6 +370,7 @@
       { "path": "~/dotfiles/home/dot_zprofile", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/dot_zshenv", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/dot_zshrc", "access": "read", "comment": "global" },
+      { "path": "~/dotfiles/home/private_dot_ssh/mogon.pub", "access": "read", "comment": "global" },
       { "path": "~/miniforge3/etc", "access": "read", "comment": "global" }
     ],
     "deny": [
