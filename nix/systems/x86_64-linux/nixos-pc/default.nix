@@ -431,7 +431,6 @@
           }
         ]
       ++ [
-        custom.tern
         (custom.vx.override {
           cudaPackages = config.custom.nvidia.cuda.packages;
           cudaSupport = true;
@@ -448,6 +447,7 @@
         custom.danbooru-rs
         custom.fluxer
         custom.shiru
+        custom.tern
         dbeaver-bin
         ghidra
         ghostty

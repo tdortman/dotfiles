@@ -172,7 +172,6 @@
 
   environment = {
     systemPackages = with pkgs; [
-      custom.tern
       (discord.override {
         commandLineArgs = "--enable-blink-features=MiddleClickAutoscroll";
         withVencord = true;
@@ -181,6 +180,7 @@
       custom.danbooru-rs
       custom.fluxer
       custom.shiru
+      custom.tern
       ghostty
       glib
       google-chrome # Used by antigravity
