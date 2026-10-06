@@ -7,7 +7,6 @@
 
 let
   cfg = config.custom.backups;
-
   # Large, regenerable home content that generally does not belong in backups.
   #
   # Restic patterns without "/" match complete path components at any depth.
@@ -71,7 +70,6 @@ let
     ".local/share/recently-used.xbel"
     ".thumbnails"
   ];
-
   commonExtraBackupArgs = [
     # Exclude dirs marked with CACHEDIR.TAG.
     "--exclude-caches"
@@ -82,7 +80,7 @@ let
     # Case-insensitive catch-all for Cache, cache, Code Cache, GPUCache, etc.
     "--iexclude=**/*cache*"
   ];
-
+  notifyOnFailure = "backup-failure-notify@%n.service";
   # snapper config name, derived from the snapshotted subvolume path.
   snapName = lib.last (lib.splitString "/" cfg.snapshots.subvolume);
   # The restic module only unlocks after a successful backup, so a lock left by
@@ -241,6 +239,8 @@ in
           Persistent = true;
         };
       };
+
+      systemd.services.restic-backups-gdrive.onFailure = [ notifyOnFailure ];
     })
 
     (lib.mkIf cfg.snapshots.enable {
@@ -333,7 +333,33 @@ in
 
       # Never let restic write into a stale mountpoint on the root filesystem:
       # skip the backup entirely when the disk is not mounted.
-      systemd.services.restic-backups-local.unitConfig.RequiresMountsFor = cfg.local.mountPoint;
+      systemd.services.restic-backups-local = {
+        unitConfig.RequiresMountsFor = cfg.local.mountPoint;
+        onFailure = [ notifyOnFailure ];
+      };
+    })
+
+    (lib.mkIf (cfg.remote.enable || cfg.local.enable) {
+      # Instance name is the failed unit, e.g. backup-failure-notify@restic-backups-gdrive.service.
+      systemd.services."backup-failure-notify@" = {
+        description = "Desktop notification for failed backup %i";
+
+        serviceConfig = {
+          Type = "oneshot";
+          User = cfg.user;
+        };
+
+        # Delivered only while the user has a session bus; a missed notification
+        # repeats with the next scheduled failure.
+        script = ''
+          export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
+          notify-send --urgency=critical --app-name=Backups --icon=dialog-error \
+            "Backup failed: $1" "Check: journalctl -u $1"
+        '';
+
+        path = [ pkgs.libnotify ];
+        scriptArgs = "%i";
+      };
     })
   ];
 }
