@@ -74,6 +74,8 @@
         "umask=0002"
         "rw"
         "discard"
+        "nofail" # don't block the boot if the volume is unusable
+        "force" # ntfs3 refuses rw mount while the dirty flag is set (hard reset)
       ];
     };
 
@@ -88,6 +90,8 @@
         "umask=0002"
         "rw"
         "windows_names"
+        "nofail" # don't block the boot if the volume is unusable
+        "force" # ntfs3 refuses rw mount while the dirty flag is set (hard reset)
       ];
     };
   };
