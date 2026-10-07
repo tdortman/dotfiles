@@ -98,6 +98,7 @@
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.sandbox.googleapis.com/v1internal:streamGenerateContent", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://develop.kde.org/docs", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://developer.nvidia.com/", "port": 443, "comment": "global" },
+        { "methods": ["GET"], "url": "https://developers.openai.com/api/docs", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://dl.acm.org/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://dl.acm.org/doi", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://doc.rust-lang.org/", "port": 443, "comment": "global" },
