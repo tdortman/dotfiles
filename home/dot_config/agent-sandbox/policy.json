@@ -371,6 +371,7 @@
       { "path": "~/dotfiles/home/dot_zprofile", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/dot_zshenv", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/dot_zshrc", "access": "read", "comment": "global" },
+      { "path": "~/dotfiles/home/private_dot_ssh/gitlab-uni-work-signing.pub", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/private_dot_ssh/gitlab-uni-work.pub", "access": "read", "comment": "global" },
       { "path": "~/dotfiles/home/private_dot_ssh/mogon.pub", "access": "read", "comment": "global" },
       { "path": "~/miniforge3/etc", "access": "read", "comment": "global" }
