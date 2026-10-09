@@ -44,5 +44,9 @@ in
         libfprint = cfg.libfprintPkg;
       };
     };
+
+    # pam_kwallet needs the typed password to unlock the wallet at login; plasmalogin substacks `login`.
+    security.pam.services.login.fprintAuth =
+      lib.mkIf config.services.desktopManager.plasma6.enable false;
   };
 }
