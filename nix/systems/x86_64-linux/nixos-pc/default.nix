@@ -381,6 +381,24 @@
       # Read by Nix's cc-wrapper, so every gcc/clang link (cmake, make, ninja, cargo) in devShells uses mold.
       # gcc rejects paths in -fuse-ld; -B makes it pick the wrapped ld.mold, keeping Nix rpath handling.
       NIX_CFLAGS_LINK = "-B${pkgs.mold}/bin -fuse-ld=mold";
+      
+      # REA runs caller-supplied analysis tools and only accepts absolute paths.
+      REA_BINWALK_COMMAND = "${pkgs.binwalk}/bin/binwalk";
+      REA_BROWSER_EXECUTABLE = "${pkgs.google-chrome}/bin/google-chrome-stable";
+      REA_EVM_PRLIMIT_COMMAND = "${pkgs.util-linux}/bin/prlimit";
+      REA_FIRMWARE_PRLIMIT_COMMAND = "${pkgs.util-linux}/bin/prlimit";
+      REA_ILSPY_CMD_PATH = "${pkgs.ilspycmd}/bin/ilspycmd";
+      REA_JADX_MCP_JAR = "${pkgs.custom.jadx-headless-mcp}/share/java/jadx-headless-mcp.jar";
+      REA_JAVASCRIPT_PRLIMIT_COMMAND = "${pkgs.util-linux}/bin/prlimit";
+      REA_MITMDUMP_COMMAND = "${pkgs.mitmproxy}/bin/mitmdump";
+      REA_PWNTOOLS_PYTHON = "${pkgs.python3.withPackages (ps: [
+        ps.pyelftools
+        ps.pwntools
+        ps.unicorn
+      ])}/bin/python3";
+      REA_UNBLOB_COMMAND = "${pkgs.unblob}/bin/unblob";
+      REA_WAKARU_COMMAND = "${pkgs.custom.wakaru}/bin/wakaru";
+
       RUSTC_WRAPPER = lib.getExe pkgs.kache;
       SCCACHE_CACHE_SIZE = "50G";
       SCCACHE_DIR = "$HOME/.cache/sccache";
@@ -443,6 +461,7 @@
           withVencord = true;
         })
         antigravity-ide-fhs
+        binwalk
         btrfs-progs
         code-cursor-fhs
         # cuda.llama-cpp
@@ -455,11 +474,13 @@
         custom.rea
         custom.shiru
         custom.tern
+        custom.wakaru
         dbeaver-bin
         ghostty
         glib
         google-chrome # Used by antigravity
         gvfs
+        ilspycmd
         inputs.agenix.packages."${system}".default
         inputs.codex-desktop-linux.packages.${system}.codex-desktop-maximal-directory-watch
         kdePackages.xdg-desktop-portal-kde
@@ -470,6 +491,7 @@
         librewolf
         lsfg-vk
         lsfg-vk-ui
+        mitmproxy
         mpv
         nheko
         ntfs3g
@@ -477,6 +499,7 @@
         podman-compose
         samba
         teams-for-linux
+        unblob
         vlc
         vscode-fhs
         winboat
