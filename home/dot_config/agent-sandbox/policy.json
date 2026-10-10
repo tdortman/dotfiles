@@ -410,7 +410,10 @@
       { "kind": "device", "path": "/dev/shm/sem.*", "access": "open_read_write", "comment": "global" }
     ],
     "deny": [
-      { "kind": "unix_socket", "path": "/run/user/*/systemd/private", "access": "connect", "comment": "global" }
+      { "kind": "unix_socket", "path": "/run/podman/podman.sock", "access": "connect", "comment": "global" },
+      { "kind": "unix_socket", "path": "/run/user/*/systemd/private", "access": "connect", "comment": "global" },
+      { "kind": "unix_socket", "path": "/run/user/1000/podman/podman.sock", "access": "connect", "comment": "global" },
+      { "kind": "unix_socket", "path": "@abstract:/tmp/.X11-unix/X0", "access": "connect", "comment": "global" }
     ]
   },
   "dbus": {
@@ -489,6 +492,19 @@
           "member": "GetNameOwner",
           "message_kind": "method_call",
           "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.DBus",
+          "object_path": "/org/freedesktop/DBus",
+          "interface": "org.freedesktop.DBus",
+          "member": "ListNames",
+          "message_kind": "method_call",
+          "signature": "",
           "fd_metadata": []
         },
         "comment": "global"
@@ -622,8 +638,100 @@
           "fd_metadata": []
         },
         "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "system",
+          "destination": "org.freedesktop.DBus",
+          "object_path": "/org/freedesktop/DBus",
+          "interface": "org.freedesktop.DBus",
+          "member": "GetNameOwner",
+          "message_kind": "method_call",
+          "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "system",
+          "destination": "org.freedesktop.DBus",
+          "object_path": "/org/freedesktop/DBus",
+          "interface": "org.freedesktop.DBus",
+          "member": "ListActivatableNames",
+          "message_kind": "method_call",
+          "signature": "",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "system",
+          "destination": "org.freedesktop.DBus",
+          "object_path": "/org/freedesktop/DBus",
+          "interface": "org.freedesktop.DBus",
+          "member": "ListNames",
+          "message_kind": "method_call",
+          "signature": "",
+          "fd_metadata": []
+        },
+        "comment": "global"
       }
     ],
-    "deny": []
+    "deny": [
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.systemd1",
+          "object_path": "/org/freedesktop/systemd1",
+          "interface": "org.freedesktop.systemd1.Manager",
+          "member": "StartTransientUnit",
+          "message_kind": "method_call",
+          "signature": "*",
+          "fd_metadata": [
+            {
+              "kind": "unknown",
+              "read_only": false
+            },
+            {
+              "kind": "unknown",
+              "read_only": false
+            },
+            {
+              "kind": "unknown",
+              "read_only": false
+            }
+          ]
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "system",
+          "destination": "org.freedesktop.systemd1",
+          "object_path": "/org/freedesktop/systemd1",
+          "interface": "org.freedesktop.systemd1.Manager",
+          "member": "StartTransientUnit",
+          "message_kind": "method_call",
+          "signature": "(ssa(sv)a(sa(sv)))",
+          "fd_metadata": [
+            {
+              "kind": "unknown",
+              "read_only": false
+            },
+            {
+              "kind": "unknown",
+              "read_only": false
+            },
+            {
+              "kind": "unknown",
+              "read_only": false
+            }
+          ]
+        },
+        "comment": "global"
+      }
+    ]
   }
 }
