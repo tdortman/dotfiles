@@ -1,6 +1,36 @@
 {
   "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
-  "mcpServers": {},
+  "mcpServers": {
+    "ghidra": {
+      "type": "stdio",
+      "enabled": false,
+      "command": "bridge-mcp-ghidra",
+      "args": [
+        "--transport",
+        "stdio",
+        "--lazy",
+        "--default-groups",
+        "listing,function,program,headless"
+      ],
+      "env": {
+        "GHIDRA_MCP_URL": "http://127.0.0.1:8089"
+      },
+      "timeout": 1800000
+    },
+    "rea": {
+      "type": "stdio",
+      "enabled": false,
+      "command": "rea",
+      "args": [
+        "mcp"
+      ],
+      "env": {
+        "GHIDRA_INSTALL_DIR": "GHIDRA_INSTALL_DIR",
+        "JAVA_HOME": "JAVA_HOME"
+      },
+      "timeout": 1800000
+    }
+  },
   "disabledServers": [
     "node_repl"
   ]
