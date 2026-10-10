@@ -1,7 +1,9 @@
 {
   "network": {
     "direct": {
-      "allow": [],
+      "allow": [
+          { "host": "127.0.0.1", "port": 8089, "comment": "ghidra mcp" }
+      ],
       "deny": []
     },
     "http": {

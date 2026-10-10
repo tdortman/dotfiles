@@ -316,6 +316,7 @@
       { "path": "~/.config/dconf", "access": "read", "comment": "global" },
       { "path": "~/.config/gh/config.yml", "access": "read", "comment": "global" },
       { "path": "~/.config/gh/hosts.yml", "access": "read", "comment": "global" },
+      { "path": "~/.config/ghidramcp", "access": "write", "comment": "global" },
       { "path": "~/.config/google-chrome/Crash Reports", "access": "read", "comment": "global" },
       { "path": "~/.config/google-chrome/Crash Reports/settings.dat", "access": "read_write", "comment": "global" },
       { "path": "~/.config/nix/nix.conf", "access": "read_write", "comment": "global" },
