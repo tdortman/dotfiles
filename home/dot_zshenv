@@ -1,3 +1,15 @@
+# /etc/profile.d exports FPATH to point ksh at lmod's functions, and zsh takes an
+# inherited FPATH in place of its own default fpath. That drops the directory holding
+# compinit, add-zsh-hook and bashcompinit, so logins into zsh from bash lose plugins.
+if [[ -n $ZSH_VERSION ]]; then
+    typeset -U fpath
+    for d in "$HOME/.local/share/zsh/$ZSH_VERSION/functions" \
+        "/usr/share/zsh/$ZSH_VERSION/functions" /usr/share/zsh/functions \
+        /usr/local/share/zsh/site-functions /usr/share/zsh/site-functions; do
+        [[ -d $d ]] && fpath+=($d)
+    done
+fi
+
 export HISTFILE=$HOME/.zsh_history
 export HISTSIZE=500000
 export SAVEHIST=500000
