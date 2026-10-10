@@ -10,6 +10,12 @@ if [[ -n $ZSH_VERSION ]]; then
     done
 fi
 
+# /etc/profile.d/motd.sh prints the cluster banner with fastfetch. The bash login that
+# exec'd us already ran it, so ~/.zshrc drops this stub instead of printing it twice.
+if [[ -n $DOTFILES_BASH_HANDOFF ]]; then
+    fastfetch() { : }
+fi
+
 export HISTFILE=$HOME/.zsh_history
 export HISTSIZE=500000
 export SAVEHIST=500000

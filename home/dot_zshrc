@@ -1,3 +1,7 @@
+# /etc/profile.d/motd.sh has run by now; drop the stub ~/.zshenv defined for it.
+(( $+functions[fastfetch] )) && unset -f fastfetch
+unset DOTFILES_BASH_HANDOFF
+
 setopt appendhistory
 setopt INC_APPEND_HISTORY
 setopt SHARE_HISTORY

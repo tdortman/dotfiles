@@ -5,6 +5,18 @@ case $- in
 *) return ;;
 esac
 
+# Shared hosts keep bash as the login shell and don't allow chsh, so hand off to
+# zsh. ~/.local/bin/zsh wins because some hosts ship a zsh too old for ~/.zshrc.
+# Non-interactive shells returned above, so scp/rsync/ssh commands stay in bash.
+# The marker tells ~/.zshenv the cluster banner already ran in this shell.
+DOTFILES_BASH_HANDOFF=1
+export DOTFILES_BASH_HANDOFF
+if command -v "$HOME/.local/bin/zsh" >/dev/null 2>&1; then
+    exec "$HOME/.local/bin/zsh" -l
+elif command -v zsh >/dev/null 2>&1; then
+    exec zsh -l
+fi
+
 eval "$(oh-my-posh init bash --config ~/powerline_custom.omp.json)" &> /dev/null
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
