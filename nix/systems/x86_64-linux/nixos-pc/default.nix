@@ -45,6 +45,7 @@
 
       loopback.tcpPorts = [
         3080 # DSH
+        8089 # ghidra-mcp
       ];
     };
 
@@ -367,7 +368,9 @@
       CMAKE_CXX_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
       CMAKE_C_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
       CODEX_CLI_PATH = "/run/current-system/sw/bin/codex";
-      GHIDRA_ROOT = "${pkgs.ghidra}";
+      # REA's providers and pyghidra drive the packaged Ghidra; java is not on PATH.
+      GHIDRA_INSTALL_DIR = "${pkgs.ghidra}/lib/ghidra";
+      JAVA_HOME = "${pkgs.jdk21}";
       KACHE_FALLBACK = lib.getExe pkgs.sccache;
       # Stable PCI selection keeps the desktop on Arc regardless of DRM enumeration.
       KWIN_DRM_DEVICES = "/dev/dri/intel-arc:/dev/dri/nvidia-gaming";
@@ -446,10 +449,13 @@
         cuda.lmstudio
         custom.danbooru-rs
         custom.fluxer
+        custom.ghidra-mcp
+        # ghidra with the Ghidra MCP plugin loadable from the store
+        custom.ghidra-mcp.passthru.ghidra
+        custom.rea
         custom.shiru
         custom.tern
         dbeaver-bin
-        ghidra
         ghostty
         glib
         google-chrome # Used by antigravity
