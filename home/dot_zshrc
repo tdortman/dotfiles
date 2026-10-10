@@ -34,7 +34,6 @@ znap_fpath_once() {
   [[ -s "$dir/$name" ]] || znap fpath "$name" "$*"
 }
 
-command -v omp    >/dev/null && znap_fpath_once _omp    'omp completions zsh'
 command -v docker >/dev/null && znap_fpath_once _docker 'docker completion zsh'
 command -v podman >/dev/null && znap_fpath_once _podman 'podman completion zsh'
 command -v atuin  >/dev/null && znap_fpath_once _atuin  'atuin gen-completions --shell zsh'
