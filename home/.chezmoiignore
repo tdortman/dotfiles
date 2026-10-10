@@ -10,6 +10,21 @@ __pycache__
   .config/age/key
 {{- end }}
 
+{{/* No age key on this host: everything age-encrypted stays unapplied. */}}
+{{- if not (or .use_secrets (stat (joinPath .chezmoi.homeDir ".config" "age" "key"))) }}
+  .config/nextdns/doh.conf
+  .config/nextdns/resolved.conf
+  .config/nix/nix.conf
+  .config/wireguard/privatekey
+  .local/share/fonts/ComicCode/*.otf
+  .ssh/mogon
+{{- end }}
+
+{{/* Only hifumi owns ~/.ssh/authorized_keys; the template is empty elsewhere. */}}
+{{- if ne .chezmoi.hostname "hifumi" }}
+  .ssh/authorized_keys
+{{- end }}
+
 {{- if not .is_wsl }}
   .local/bin/xdg-open*
 {{- end -}}

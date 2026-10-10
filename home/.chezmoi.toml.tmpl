@@ -26,11 +26,7 @@
 
 {{- $ageKeyPath := joinPath .chezmoi.homeDir ".config" "age" "key" -}}
 {{- if not (or $useSecrets (stat $ageKeyPath)) -}}
-    {{- writeToStdout "\033[1;31mError: Age key required but 1Password secrets disabled.\033[0m\n" -}}
-    {{- writeToStdout "\n" -}}
-    {{- writeToStdout (printf "Please create: %s\n" $ageKeyPath) -}}
-    {{- writeToStdout "Copy your age key there and set permissions to 400.\n" -}}
-    {{- fail "Age key setup required before continuing" -}}
+    {{- writeToStdout "\033[1;33mNo age key and no 1Password: age-encrypted files stay unapplied.\033[0m\n" -}}
 {{- end -}}
 
 mode = "symlink"
