@@ -79,7 +79,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "vx-lang";
     repo = "Vx";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-D/xbEfBnQeYgncOXkfdr6ZS1L1ygN1sJhRVL8QsC48Y=";
+    hash = "sha256-VAdK6GDBfw0Dx0WrGIEQLJboskXIk2gSp+KUXXGVIvM=";
   };
 
   nativeBuildInputs = [
