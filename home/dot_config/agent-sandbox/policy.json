@@ -104,6 +104,7 @@
         { "methods": ["GET"], "url": "https://doc.rust-lang.org/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://docs.astral.sh/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://docs.factory.ai/changelog/release-notes.md", "port": 443, "comment": "global" },
+        { "methods": ["GET"], "url": "https://docs.hpc.uni-mainz.de/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://docs.kernel.org/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://docs.nvidia.com/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://docs.nvidia.com/cuda", "port": 443, "comment": "global" },
@@ -173,6 +174,7 @@
         { "methods": ["GET"], "url": "https://www.ecosia.org/search", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.eurecom.fr/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.freedesktop.org/wiki", "port": 443, "comment": "global" },
+        { "methods": ["GET"], "url": "https://www.open-mpi.org/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.postgresql.org/docs", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.rfc-editor.org/rfc/rfc*.json", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.rfc-editor.org/rfc/rfc*.txt", "port": 443, "comment": "global" },
@@ -204,6 +206,7 @@
     "allow": [
       { "path": "/dev/nvidia-caps", "access": "write", "comment": "global" },
       { "path": "/dev/shm/__KMP_REGISTERED_LIB_*_1000", "access": "read_write", "comment": "openmp" },
+      { "path": "/dev/shm/open_mpi.*", "access": "read_write", "comment": "global" },
       { "path": "/dev/shm/pulse-shm-*", "access": "read", "comment": "global" },
       { "path": "/dev/shm/sem.*", "access": "read_write", "comment": "global" },
       { "path": "/etc/group", "access": "read_write", "comment": "global" },
