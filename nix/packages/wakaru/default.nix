@@ -7,13 +7,13 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "wakaru";
-  version = "1.13.0";
+  version = "1.14.0";
 
   # The npm wrapper package only re-exports this platform package, which holds
   # the self-contained binary.
   src = fetchurl {
     url = "https://registry.npmjs.org/@wakaru/cli-linux-x64/-/cli-linux-x64-${finalAttrs.version}.tgz";
-    hash = "sha256-sWvdLUesq+9gYWWHvowB/EdzQ5tfXXcprFESlSiGPdQ=";
+    hash = "sha256-ppSvNP3o4TTzRfGAVuRo1csK81IfUYSODRFl5HYod4I=";
   };
 
   nativeBuildInputs = [ autoPatchelfHook ];
