@@ -468,6 +468,7 @@
         code-cursor-fhs
         # cuda.llama-cpp
         cuda.lmstudio
+        custom.artcraft
         custom.danbooru-rs
         custom.fluxer
         custom.ghidra-mcp
