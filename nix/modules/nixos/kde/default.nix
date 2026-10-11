@@ -50,10 +50,6 @@ in
       (final: prev: {
         kdePackages = prev.kdePackages.overrideScope (
           _: kprev: {
-            spectacle = kprev.spectacle.override {
-              tesseractLanguages = [ "all" ];
-            };
-
             # Merkuro's Contacts applet is installed into the profile's plugin
             # directory and declares X-Plasma-NotificationAreaCategory, so
             # PlasmoidRegistry::registerPlugin() auto-enables it in the system
@@ -71,6 +67,10 @@ in
                 rm "$applet"
               '';
             });
+
+            spectacle = kprev.spectacle.override {
+              tesseractLanguages = [ "all" ];
+            };
           }
         );
       })
