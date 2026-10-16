@@ -98,7 +98,11 @@
     };
 
     nix = {
-      package = pkgs.lixPackageSets.latest.lix;
+      # The 2.95 line has no `mimalloc` meson option, but nixpkgs passes
+      # -Dmimalloc unconditionally, so meson aborts in project(). 2.96 declares
+      # the option, so use that set instead of stripping the flag.
+      # Update when .latest.lix points to 2.96
+      package = pkgs.lixPackageSets.lix_2_96.lix;
 
       gc = {
         options = "--delete-older-than 14d";
