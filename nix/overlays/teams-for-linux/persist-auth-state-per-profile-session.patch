@@ -1,18 +1,18 @@
 --- a/app/index.js
 +++ b/app/index.js
-@@ -721,7 +721,8 @@
-           config,
+@@ -776,7 +776,8 @@
            mainAppWindow.bindDisplayMediaHandler,
            mainAppWindow.bindWindowOpenHandler,
--          mainAppWindow.injectScreenSharingLogic
-+          mainAppWindow.injectScreenSharingLogic,
+           mainAppWindow.injectScreenSharingLogic,
+-          mainAppWindow.setTitleOverride
++          mainAppWindow.setTitleOverride,
 +          mainAppWindow.bindProfileSessionAuth
          );
          profileViewManager.initialize();
          await profileViewManager.bootstrapProfileZeroIfNeeded();
 --- a/app/mainAppWindow/index.js
 +++ b/app/mainAppWindow/index.js
-@@ -93,6 +93,14 @@
+@@ -97,6 +97,14 @@
    });
  }
  
@@ -27,15 +27,14 @@
  function handleScreenSourceSelection(source, callback) {
    try {
      // Use the picker's source directly instead of re-querying
-@@ -804,14 +812,13 @@
-   }
+@@ -809,13 +817,12 @@
  
    addEventHandlers();
--
+ 
 -  // Keep the msal.cache.encryption cookie
 -  // Run before loading Teams so the cookie gets caught right at the start
 -  keepMsalEncryptionCookiePersistent(window.webContents.session);
- 
+-
 -  // Clean expired auth cookies before loading Teams to prevent the
 -  // "We need you to sign in again" stale banner (#2296)
 -  await cleanExpiredAuthCookies(window.webContents.session);
@@ -48,29 +47,28 @@
  
    // Restore the last persisted auth-failure signal so login-popup
    // correlation survives app restarts (the broken session does).
-@@ -905,6 +912,8 @@
+@@ -919,6 +926,7 @@
  };
  
  exports.bindDisplayMediaHandler = bindDisplayMediaHandler;
-+
 +exports.bindProfileSessionAuth = bindProfileSessionAuth;
  exports.bindWindowOpenHandler = bindWindowOpenHandler;
  exports.injectScreenSharingLogic = injectScreenSharingLogic;
- 
+ exports.setTitleOverride = setTitleOverride;
 --- a/app/mainAppWindow/profileViewManager.js
 +++ b/app/mainAppWindow/profileViewManager.js
-@@ -84,6 +84,7 @@
-   #bindDisplayMediaHandler;
+@@ -85,6 +85,7 @@
    #bindWindowOpenHandler;
    #onViewDidFinishLoad;
+   #setTitleOverride;
 +  #bindProfileSessionAuth;
    #views = new Map();
    // Phase 2 foundation: webContents → profile attribution for main-process
    // IPC handlers (tray/badge/notification aggregation consumes this next).
-@@ -127,6 +128,10 @@
-    *   Called on every `did-finish-load` of each profile view, mirroring the
-    *   root window's listener. Main uses it to inject the screen-sharing
-    *   script, which otherwise only reaches Profile 0 (#2979).
+@@ -135,6 +136,10 @@
+    *   Sets the window title from the active profile view's page title, or
+    *   hands it back to the root window (Profile 0) with null. Electron only
+    *   mirrors the root webContents' title onto the window (#3068).
 +   * @param {(session: Electron.Session) => void} [bindProfileSessionAuth]
 +   *   Applies the auth-persistence setup to a session. Both helpers involved
 +   *   keep per-session state, so Profile 0's setup at startup does not reach
@@ -78,25 +76,25 @@
     */
    constructor(
      window,
-@@ -134,7 +139,8 @@
-     config,
+@@ -143,7 +148,8 @@
      bindDisplayMediaHandler,
      bindWindowOpenHandler = () => {},
--    onViewDidFinishLoad = () => {}
-+    onViewDidFinishLoad = () => {},
+     onViewDidFinishLoad = () => {},
+-    setTitleOverride = () => {}
++    setTitleOverride = () => {},
 +    bindProfileSessionAuth = () => {}
    ) {
      this.#window = window;
      this.#profilesManager = profilesManager;
-@@ -142,6 +148,7 @@
-     this.#bindDisplayMediaHandler = bindDisplayMediaHandler;
+@@ -152,6 +158,7 @@
      this.#bindWindowOpenHandler = bindWindowOpenHandler;
      this.#onViewDidFinishLoad = onViewDidFinishLoad;
+     this.#setTitleOverride = setTitleOverride;
 +    this.#bindProfileSessionAuth = bindProfileSessionAuth;
      this.#registry = new SenderProfileMap(profilesManager);
    }
  
-@@ -465,6 +472,9 @@
+@@ -527,6 +534,9 @@
      // `setDisplayMediaRequestHandler` is per-session and the root window's
      // binding does not carry across to profile partitions (#2529).
      this.#bindDisplayMediaHandler(view.webContents.session);
