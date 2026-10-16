@@ -47,10 +47,6 @@
                   # given, so a KWIN_DRM_DEVICES symlink misses the cache and
                   # logind rejects the second open as already taken.
                   ./kwin-drm-gpu-handle-key.patch
-
-                  # Destroying output device mode resources early crashes
-                  # plasmashell. Reverted upstream on master (KDE bug 525314).
-                  ./kwin-revert-output-mode-destroy.patch
                 ];
               });
             }
