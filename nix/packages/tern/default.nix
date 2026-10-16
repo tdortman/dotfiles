@@ -17,6 +17,7 @@
   openssh,
   openssl,
   perf,
+  perl,
   pipewire,
   requireFile,
   vulkan-loader,
@@ -40,6 +41,7 @@ stdenv.mkDerivation (finalAttrs: {
     autoPatchelfHook
     desktop-file-utils
     makeWrapper
+    perl
   ];
 
   buildInputs = [
@@ -78,6 +80,19 @@ stdenv.mkDerivation (finalAttrs: {
   # Both desktop entries need the wrapper for WebKit and file dialogs.
   postInstall = ''
     autoPatchelf $out/lib/tern/tern
+
+    # Tern builds the login environment it gives panes, and the sandbox helper
+    # behind a tab's resource limits, around this baked PATH; the FHS default
+    # holds nothing on NixOS, so the helper cannot find systemctl. Rust bakes a
+    # literal's length into the executable, so the replacement stays 44 bytes
+    # (`:/..` pads the tail) and a build fails when a release moves it.
+    perl -0777 -pi -e '
+      my ($old, $new) = (q{/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin},
+                         q{/run/current-system/sw/bin:/usr/bin:/bin:/..});
+      die "login PATH literals differ in length\n" unless length($old) == length($new);
+      my $n = s/\Q$old\E/$new/g;
+      die "found $n login PATH literals, want 1\n" unless $n == 1;
+    ' $out/lib/tern/tern
 
     HOME=$TMPDIR/home $out/lib/tern/tern register
     mkdir -p $out/share
