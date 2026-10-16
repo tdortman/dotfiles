@@ -34,6 +34,11 @@
     network = {
       enable = true;
 
+      egressInterfaces.jgu0 = [
+        "134.93.0.0/16" # JGU
+        "131.246.0.0/16" # RPTU
+      ];
+
       httpProxy = {
         enable = true;
         http3.enable = true;
