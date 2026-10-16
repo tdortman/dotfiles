@@ -1,13 +1,13 @@
 modelRoles:
-  default: anthropic/claude-opus-5-5:medium
-  commit: opencode-go/muse-spark-1.3-contributor:xhigh
-  vision: google-antigravity/gemini-3.8-flash:medium
+  default: anthropic/claude-opus-5-5:high
+  commit: anthropic/claude-sonnet-5-5:medium
+  vision: google-antigravity/gemini-4-argon:medium
   plan: openai-codex/gpt-6-astra:high
-  smol: opencode-go/deepseek-v4.1-flash:high
-  task: opencode-go/muse-spark-1.3-contributor:xhigh
+  smol: anthropic/claude-haiku-5-5:high
+  task: anthropic/claude-sonnet-5-5:high
   slow: openai-codex/gpt-6-astra:medium
   advisor: openai-codex/gpt-6-astra:medium
-  tiny: opencode-go/deepseek-v4.1-flash:low
+  tiny: anthropic/claude-haiku-5-5:medium
   designer: openai-codex/gpt-6-astra:medium
   web: openai-codex/gpt-6-luna:high
   judge: typesafe/jev-latest
@@ -92,8 +92,6 @@ providers:
   anthropic:
     slowMode: auto
 setupVersion: 2
-bashInterceptor:
-  enabled: false
 python:
   kernelMode: session
 dev:
