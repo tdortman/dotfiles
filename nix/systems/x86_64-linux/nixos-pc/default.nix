@@ -45,7 +45,6 @@
 
       loopback.tcpPorts = [
         3080 # DSH
-        8089 # ghidra-mcp
       ];
     };
 
@@ -471,14 +470,13 @@
         custom.artcraft
         custom.danbooru-rs
         custom.fluxer
-        custom.ghidra-mcp
-        # ghidra with the Ghidra MCP plugin loadable from the store
-        custom.ghidra-mcp.passthru.ghidra
         custom.rea
         custom.shiru
         custom.tern
         custom.wakaru
         dbeaver-bin
+        # Driven by REA's providers and pyghidra through GHIDRA_INSTALL_DIR.
+        ghidra
         ghostty
         glib
         google-chrome # Used by antigravity
