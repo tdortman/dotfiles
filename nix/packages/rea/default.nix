@@ -9,8 +9,8 @@
 }:
 
 let
-  depsHash = "sha256-XuiMtaM/MPDkhjiHCr9dGC7WlsRBmsWepuNHRxAs3Nw=";
-  lockHash = "sha256-tlXiEYl71yAy72kmG+hxDlA3se3neBBsj+9zAwetAFk=";
+  depsHash = "sha256-EQKhS1S7Hsfjbo5GikMeAFc2HFtALsDcw6XnJATUryw=";
+  lockHash = "sha256-BIIIU3LFY8mbMlGfUTOesoCtwr2D79umqO/XzUpJ6fA=";
   # The registry tarball ships the built dist/ and the bridge sources, but not the
   # lockfile npm needs to resolve the runtime dependencies.
   src = runCommand "rea-agents-${version}-src" { } ''
@@ -28,8 +28,8 @@ let
       }
     } $out/package-lock.json
   '';
-  tarballHash = "sha256-WesWBLjbdfUi1Kl1w2zmtKKtRl5DutFl+aj3KDkdubg=";
-  version = "6.4.0";
+  tarballHash = "sha256-UxcXoG6SymUaq1JpEZD5FvrARCcsAfh14ixeKTIY5pk=";
+  version = "6.5.0";
 in
 buildNpmPackage {
   inherit src version;
