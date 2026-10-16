@@ -51,7 +51,10 @@ let
   };
 in
 {
-  options.custom.tern.enable = lib.mkEnableOption "Tern terminal integration and focus shortcut";
+  options.custom.tern = {
+    enable = lib.mkEnableOption "Tern terminal integration and focus shortcut";
+    autoStart = lib.mkEnableOption "starting the Tern session daemon at login";
+  };
 
   config = lib.mkIf cfg.enable {
     home.packages = [ tern-terminal ];
@@ -66,29 +69,42 @@ in
       shortcuts."services/tern-focus.desktop"._launch = "Meta+Return";
     };
 
-    xdg.desktopEntries = {
-      tern-focus = {
-        comment = "Focus Tern, or launch it if it isn't running";
-        exec = lib.getExe tern-focus;
-        name = "Focus or launch Tern";
-        noDisplay = true;
-        startupNotify = false;
+    xdg = {
+      configFile."autostart/so.stencil.tern.login.desktop" = lib.mkIf cfg.autoStart {
+        text = ''
+          [Desktop Entry]
+          Type=Application
+          Name=Tern
+          Exec=tern daemon --login
+          NoDisplay=true
+          X-GNOME-Autostart-enabled=true
+        '';
       };
 
-      tern-terminal = {
-        categories = [
-          "System"
-          "TerminalEmulator"
-        ];
+      desktopEntries = {
+        tern-focus = {
+          comment = "Focus Tern, or launch it if it isn't running";
+          exec = lib.getExe tern-focus;
+          name = "Focus or launch Tern";
+          noDisplay = true;
+          startupNotify = false;
+        };
 
-        comment = "Open and focus a terminal tab in the existing Tern window";
-        exec = lib.getExe tern-terminal;
-        icon = "so.stencil.tern";
-        name = "Tern (new tab)";
-        noDisplay = true;
-        settings.X-TerminalArgExec = "-e";
-        startupNotify = false;
-        terminal = false;
+        tern-terminal = {
+          categories = [
+            "System"
+            "TerminalEmulator"
+          ];
+
+          comment = "Open and focus a terminal tab in the existing Tern window";
+          exec = lib.getExe tern-terminal;
+          icon = "so.stencil.tern";
+          name = "Tern (new tab)";
+          noDisplay = true;
+          settings.X-TerminalArgExec = "-e";
+          startupNotify = false;
+          terminal = false;
+        };
       };
     };
   };
