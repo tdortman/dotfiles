@@ -186,6 +186,9 @@
     # }"
     # "LD_PRELOAD=${pkgs.cudaPackages.cuda_nvrtc.lib}/lib/libnvrtc.so"
 
+    # Only load the NVIDIA ICD, otherwise whisper.cpp picks the Arc (Vulkan device 0)
+    "VK_LOADER_DRIVERS_SELECT=nvidia*"
+
     "DOTOOL_XKB_LAYOUT=de"
     "DOTOOL_XKB_VARIANT="
     "XKB_DEFAULT_LAYOUT=de"
