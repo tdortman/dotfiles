@@ -9,18 +9,16 @@ let
   cfg = config.custom.kde;
 in
 {
-  options.custom.kde.enable = lib.mkEnableOption "KDE Plasma desktop environment";
+  options.custom.kde = {
+    enable = lib.mkEnableOption "KDE Plasma desktop environment";
+    patches.enable = lib.mkEnableOption "local KWin and kde-gtk-config patches for the multi-GPU HDR desktop";
+  };
 
   config = lib.mkIf cfg.enable {
     environment = {
-      plasma6.excludePackages =
-        with pkgs.kdePackages;
-        [
-          plasma-browser-integration
-        ]
-        ++ lib.optionals (lib.versionOlder pkgs.kdePackages.kwin.version "6.7.90") [
-          kwin-x11
-        ];
+      plasma6.excludePackages = with pkgs.kdePackages; [
+        plasma-browser-integration
+      ];
 
       systemPackages = with pkgs.kdePackages; [
         kcalc
@@ -49,7 +47,8 @@ in
     nixpkgs.overlays = [
       (final: prev: {
         kdePackages = prev.kdePackages.overrideScope (
-          _: kprev: {
+          _: kprev:
+          {
             # Merkuro's Contacts applet is installed into the profile's plugin
             # directory and declares X-Plasma-NotificationAreaCategory, so
             # PlasmoidRegistry::registerPlugin() auto-enables it in the system
@@ -71,6 +70,30 @@ in
             spectacle = kprev.spectacle.override {
               tesseractLanguages = [ "all" ];
             };
+          }
+          // lib.optionalAttrs cfg.patches.enable {
+            kde-gtk-config = kprev.kde-gtk-config.overrideAttrs (oldAttrs: {
+              # GTK can unload these modules while their file/theme callbacks
+              # remain connected, crashing Discord when colors.css changes.
+              # Keep their code resident; test-gtk-module-unload.py exercises
+              # CSS reload after GTK clears its module list.
+              patches = (oldAttrs.patches or [ ]) ++ [ ./gtk-modules-resident.patch ];
+            });
+
+            kwin = kprev.kwin.overrideAttrs (oldAttrs: {
+              patches = (oldAttrs.patches or [ ]) ++ [
+                # Reworks how hardware colour pipeline blocks are assigned to
+                # planes and outputs in the DRM backend (drm_colorop.cpp,
+                # drm_output.cpp), for HDR through gamescope.
+                ./kwin-drm-color-pipeline.patch
+
+                # After resume KWin re-adds a GPU under its canonical node
+                # path, but caches the open handle under the path it was
+                # given, so a KWIN_DRM_DEVICES symlink misses the cache and
+                # logind rejects the second open as already taken.
+                ./kwin-drm-gpu-handle-key.patch
+              ];
+            });
           }
         );
       })

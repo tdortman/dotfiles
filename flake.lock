@@ -638,22 +638,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-plasma-beta": {
-      "locked": {
-        "lastModified": 1791970458,
-        "narHash": "sha256-Gk3knClAOo0ID5ULlMxRAnAZG9l/mtvDVROri1MI+3U=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "88b6dc79b98093896b5a50396c9434a78949a07f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "pull/561955/head",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-temp": {
       "locked": {
         "lastModified": 1783898001,
@@ -826,7 +810,6 @@
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-flox": "nixpkgs-flox",
         "nixpkgs-master": "nixpkgs-master",
-        "nixpkgs-plasma-beta": "nixpkgs-plasma-beta",
         "nixpkgs-temp": "nixpkgs-temp",
         "omp": "omp",
         "pedantix": "pedantix",

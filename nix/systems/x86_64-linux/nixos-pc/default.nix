@@ -9,7 +9,6 @@
 
 {
   imports = [
-    ../../../modules/nixos/kde/beta.nix
     ./disko.nix
     ./hardware-configuration.nix
   ];
@@ -301,7 +300,11 @@
       username = "tdortman@uni-mainz.de";
     };
 
-    kde.enable = true;
+    kde = {
+      enable = true;
+      patches.enable = true;
+    };
+
     mime.librewolf.enable = true;
 
     nextdns = {
