@@ -29,11 +29,11 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "tern";
-  version = "0.9.0";
+  version = "0.9.3";
 
   src = requireFile {
     url = "https://build.stencil.so/tern";
-    hash = "sha256-Rz8PHxnsa+Nh7j9GaK17vOJfeFd0mtQzBBzewLBepvE=";
+    hash = "sha256-20BUPgMWW04lK/rnsKovfwN6QrThqO/34hIdtNDHfXc=";
     name = "Tern-${finalAttrs.version}-linux-x86_64.tar.gz";
   };
 
@@ -77,7 +77,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   # `tern register` executes the ELF, so patch it before the fixup phase.
-  # Both desktop entries need the wrapper for WebKit and file dialogs.
+  # Every desktop entry needs the wrapper for WebKit and file dialogs.
   postInstall = ''
     autoPatchelf $out/lib/tern/tern
 
@@ -99,7 +99,7 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r $TMPDIR/home/.local/share/{applications,icons} $out/share/
     rm -f $out/share/icons/hicolor/icon-theme.cache
 
-    substituteInPlace $out/share/applications/so.stencil.tern{,.open}.desktop \
+    substituteInPlace $out/share/applications/so.stencil.tern{,.open,.url}.desktop \
       --replace-fail 'Exec="'$out'/lib/tern/tern"' "Exec=$out/bin/tern"
 
     # Raise the running Plasma window before selecting the file tab.
@@ -115,6 +115,9 @@ stdenv.mkDerivation (finalAttrs: {
       ''}
 
     # Only the main launcher may claim windows for Plasma taskbar grouping.
+    desktop-file-edit --remove-key=StartupWMClass \
+      $out/share/applications/so.stencil.tern.url.desktop
+
     # Reusing a window does not complete a new-window startup notification.
     desktop-file-edit \
       --set-key=Exec --set-value="$out/bin/tern-open %f" \
