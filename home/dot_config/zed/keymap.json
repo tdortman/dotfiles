@@ -53,4 +53,15 @@
             ],
         },
     },
+    {
+        "context": "Editor && (extension == tex || extension == bib)",
+        "bindings": {
+            "f5": [
+                "task::Spawn",
+                {
+                    "task_name": "paper: latexmk",
+                },
+            ],
+        },
+    },
 ]
