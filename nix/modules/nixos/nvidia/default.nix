@@ -118,26 +118,45 @@ in
       # Driver configuration
       (lib.mkIf cfg.driver.enable {
         hardware.nvidia = {
-          package = cfg.driver.package // {
-            open = cfg.driver.package.open.overrideAttrs (old: {
-              patches = (old.patches or [ ]) ++ [
-                # (pkgs.fetchpatch {
-                #   name = "kernel-6.19";
-                #   url = "https://raw.githubusercontent.com/CachyOS/CachyOS-PKGBUILDS/master/nvidia/nvidia-utils/kernel-6.19.patch";
-                #   hash = "sha256-YuJjSUXE6jYSuZySYGnWSNG5sfVei7vvxDcHx3K+IN4=";
-                # })
+          # nvidia-smi and the other bundled programs segfault in the loader
+          # when patched with patchelf 0.19.2 (NixOS/nixpkgs#576412,
+          # NixOS/patchelf#674). Drop the override once the pinned nixpkgs
+          # contains NixOS/nixpkgs#576397 or a patchelf with NixOS/patchelf#672.
+          package =
+            cfg.driver.package.overrideAttrs (old: {
+              nativeBuildInputs = [
+                (pkgs.patchelf.overrideAttrs (
+                  finalAttrs: _: {
+                    version = "0.15.2";
+                    src = pkgs.fetchurl {
+                      url = "https://github.com/NixOS/patchelf/releases/download/${finalAttrs.version}/patchelf-${finalAttrs.version}.tar.bz2";
+                      hash = "sha256-F3RfVkFZyOIo/EEtplogSLhGxLa0Igt3y/IkFuAvLXw=";
+                    };
+                  }
+                ))
+              ]
+              ++ old.nativeBuildInputs;
+            })
+            // {
+              open = cfg.driver.package.open.overrideAttrs (old: {
+                patches = (old.patches or [ ]) ++ [
+                  # (pkgs.fetchpatch {
+                  #   name = "kernel-6.19";
+                  #   url = "https://raw.githubusercontent.com/CachyOS/CachyOS-PKGBUILDS/master/nvidia/nvidia-utils/kernel-6.19.patch";
+                  #   hash = "sha256-YuJjSUXE6jYSuZySYGnWSNG5sfVei7vvxDcHx3K+IN4=";
+                  # })
 
-                # nvidia-modeset frees the device twice when a failed resume
-                # revokes it, oopsing inside the PM notifier. Upstream PR
-                # NVIDIA/open-gpu-kernel-modules#1395
-                (pkgs.fetchpatch {
-                  hash = "sha256-aWzj+3AR7xjvWp5IL5iSNIts0SKp9kT35zgXUINBuhc=";
-                  name = "nvidia-modeset-ignore-nested-revoke.patch";
-                  url = "https://github.com/NVIDIA/open-gpu-kernel-modules/commit/5db24a72350ab2679376132ac8e31a06a0950343.patch";
-                })
-              ];
-            });
-          };
+                  # nvidia-modeset frees the device twice when a failed resume
+                  # revokes it, oopsing inside the PM notifier. Upstream PR
+                  # NVIDIA/open-gpu-kernel-modules#1395
+                  (pkgs.fetchpatch {
+                    hash = "sha256-aWzj+3AR7xjvWp5IL5iSNIts0SKp9kT35zgXUINBuhc=";
+                    name = "nvidia-modeset-ignore-nested-revoke.patch";
+                    url = "https://github.com/NVIDIA/open-gpu-kernel-modules/commit/5db24a72350ab2679376132ac8e31a06a0950343.patch";
+                  })
+                ];
+              });
+            };
 
           open = true;
           videoAcceleration = true;
