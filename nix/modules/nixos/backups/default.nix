@@ -83,6 +83,71 @@ let
   notifyOnFailure = "backup-failure-notify@%n.service";
   # snapper config name, derived from the snapshotted subvolume path.
   snapName = lib.last (lib.splitString "/" cfg.snapshots.subvolume);
+  # Btrfs snapshots stop at subvolume boundaries, so subvolumes below
+  # snapshots.projectsDir are empty directories in the snapper snapshots. After
+  # each timeline run, snapshot them into ~/.snapshots/<snapper number>/ and drop
+  # numbers that snapper has cleaned up, so they follow the same retention.
+  snapshotProjects = pkgs.writeShellApplication {
+    name = "snapper-projects";
+
+    runtimeInputs = [
+      pkgs.btrfs-progs
+      pkgs.coreutils
+      pkgs.fd
+    ];
+
+    text = ''
+      root=${cfg.snapshots.projectsDir}
+      snapper_dir=${cfg.snapshots.subvolume}/.snapshots
+      out=/home/${cfg.user}/.snapshots
+
+      install -d -m 700 -o ${cfg.user} "$out"
+
+      # Each number is one subvolume holding that run's project snapshots.
+      # Anything not named after a live snapper snapshot, including an
+      # interrupted "partial" run, is removed.
+      for dir in "$out"/*/; do
+        dir=''${dir%/}
+        [[ -d $dir ]] || continue
+        [[ -d $snapper_dir/$(basename "$dir") ]] && continue
+        btrfs subvolume delete --recursive "$dir"
+      done
+
+      latest=$(fd --no-ignore --max-depth 1 --type d '^[0-9]+$' "$snapper_dir" --format '{/}' | sort -n | tail -n 1)
+      [[ -n $latest && ! -e $out/$latest ]] || exit 0
+
+      # Subvolume roots are always inode 256. fd skips hidden and gitignored
+      # directories such as .git and target. Sorting puts every subvolume
+      # after the subvolumes containing it.
+      mapfile -d "" -t entries < <(
+        fd --type d . "$root" --exec-batch stat --printf '%i %n\0' | LC_ALL=C sort -z
+      )
+      wait $!
+
+      btrfs subvolume create "$out/partial"
+      snapshots=()
+      for entry in "''${entries[@]}"; do
+        [[ $entry == "256 "* ]] || continue
+        subvol=''${entry#256 }
+        dest=$out/partial/''${subvol#"$root"/}
+        # A nested subvolume shows up as an empty directory in its parent's
+        # snapshot; replace that with the nested snapshot.
+        if [[ -d $dest ]]; then
+          rmdir "$dest"
+        fi
+        mkdir -p "$(dirname "$dest")"
+        btrfs subvolume snapshot "$subvol" "$dest"
+        snapshots+=("$dest")
+      done
+
+      # Read-only only once every nested snapshot is in place.
+      for dest in "''${snapshots[@]}"; do
+        btrfs property set -ts "$dest" ro true
+      done
+
+      mv "$out/partial" "$out/$latest"
+    '';
+  };
   # The restic module only unlocks after a successful backup, so a lock left by
   # an interrupted prune makes every later run fail before it gets there.
   # `unlock` removes stale locks only, so live runs are unaffected.
@@ -144,6 +209,18 @@ in
 
     snapshots = {
       enable = lib.mkEnableOption "automatic btrfs snapshots of the home subvolume via snapper";
+
+      projectsDir = lib.mkOption {
+        type = lib.types.str;
+        default = "/home/${cfg.user}/Projects";
+        defaultText = lib.literalExpression ''"/home/''${config.custom.backups.user}/Projects"'';
+
+        description = ''
+          Directory whose btrfs subvolumes, at any depth, are snapshotted into
+          ~/.snapshots alongside each snapper timeline snapshot. Must be on the
+          same btrfs filesystem as the home directory.
+        '';
+      };
 
       subvolume = lib.mkOption {
         type = lib.types.str;
@@ -255,28 +332,41 @@ in
         TIMELINE_LIMIT_HOURLY = "7";
       };
 
-      # The NixOS snapper module only writes the config and timers. It does not
-      # create the .snapshots subvolume that snapper needs, so create it once
-      # before the timeline service is allowed to run.
-      systemd.services."snapper-${snapName}-init" = {
-        description = "Create btrfs .snapshots subvolume for snapper on ${cfg.snapshots.subvolume}";
+      systemd.services = {
+        # The NixOS snapper module only writes the config and timers. It does not
+        # create the .snapshots subvolume that snapper needs, so create it once
+        # before the timeline service is allowed to run.
+        "snapper-${snapName}-init" = {
+          description = "Create btrfs .snapshots subvolume for snapper on ${cfg.snapshots.subvolume}";
 
-        before = [
-          "snapper-cleanup.service"
-          "snapper-timeline.service"
-        ];
+          before = [
+            "snapper-cleanup.service"
+            "snapper-timeline.service"
+          ];
 
-        after = [ "local-fs.target" ];
-        requires = [ "local-fs.target" ];
-        wantedBy = [ "multi-user.target" ];
+          after = [ "local-fs.target" ];
+          requires = [ "local-fs.target" ];
+          wantedBy = [ "multi-user.target" ];
 
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${pkgs.btrfs-progs}/bin/btrfs subvolume create ${cfg.snapshots.subvolume}/.snapshots";
-          RemainAfterExit = true;
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${pkgs.btrfs-progs}/bin/btrfs subvolume create ${cfg.snapshots.subvolume}/.snapshots";
+            RemainAfterExit = true;
+          };
+
+          unitConfig.ConditionPathExists = "!${cfg.snapshots.subvolume}/.snapshots";
         };
 
-        unitConfig.ConditionPathExists = "!${cfg.snapshots.subvolume}/.snapshots";
+        snapper-projects = {
+          description = "Snapshot btrfs subvolumes under ${cfg.snapshots.projectsDir} alongside snapper";
+
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = lib.getExe snapshotProjects;
+          };
+        };
+
+        snapper-timeline.onSuccess = [ "snapper-projects.service" ];
       };
     })
 
