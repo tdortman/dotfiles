@@ -6,13 +6,13 @@
 
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "jadx-headless-mcp";
-  version = "0.7.1";
+  version = "0.8.0";
 
-  # REA audits this release jar by SHA-256 (release v0.7.1, source commit
-  # 5844800a486d2248fa949b74c9896285f5b54de2), so the digest is load bearing.
+  # REA audits this release jar by SHA-256 (release v0.8.0, source commit
+  # e9e14f155db9ff7d8b5330c1e1247a0860721c30), so the digest is load bearing.
   src = fetchurl {
     url = "https://github.com/1013503897/jadx-headless-mcp/releases/download/v${finalAttrs.version}/jadx-headless-mcp-${finalAttrs.version}-all.jar";
-    hash = "sha256-bl6s9QC2QpK/tzxJeXwZWPbuRGRuQ+hoA5rn/rVz/3U=";
+    hash = "sha256-S5oBwjhFwSPCF4QBgtK18sJqfKIN7D0IgQsxD8gKI3I=";
   };
 
   installPhase = ''
