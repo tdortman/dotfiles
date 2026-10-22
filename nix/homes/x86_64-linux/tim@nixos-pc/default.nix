@@ -199,6 +199,8 @@
   xdg.configFile."teams-for-linux/config.json".text = builtins.toJSON {
     auth = {
       # Recover in-app from a stale "sign in again" popup instead of dead-ending.
+      # Keeps ESTSAUTHPERSISTENT, so the occasional sign-out is a one-click
+      # re-login from the account picker rather than a full login flow.
       reauthRecovery.enabled = true;
       # Electron/Chromium on Linux has no native FIDO2 backend
       # (electron/electron#24573), so teams-for-linux ships an opt-in
