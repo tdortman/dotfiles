@@ -24,7 +24,11 @@
   config = {
     custom = {
       onepassword.enable = true;
-      tern.enable = true;
+
+      tern = {
+        enable = true;
+        autoStart = true;
+      };
     };
 
     programs = {

@@ -53,7 +53,7 @@ in
 {
   options.custom.tern = {
     enable = lib.mkEnableOption "Tern terminal integration and focus shortcut";
-    autoStart = lib.mkEnableOption "starting the Tern session daemon at login";
+    autoStart = lib.mkEnableOption "opening a Tern window at login";
   };
 
   config = lib.mkIf cfg.enable {
@@ -70,12 +70,13 @@ in
     };
 
     xdg = {
+      # Tern's Start at login entry only starts the daemon; a window also starts it.
       configFile."autostart/so.stencil.tern.login.desktop" = lib.mkIf cfg.autoStart {
         text = ''
           [Desktop Entry]
           Type=Application
           Name=Tern
-          Exec=tern daemon --login
+          Exec=tern
           NoDisplay=true
           X-GNOME-Autostart-enabled=true
         '';
