@@ -13,7 +13,24 @@
       options it87 force_id=0x8628
     '';
 
-    extraModulePackages = [ config.boot.kernelPackages.zenpower ];
+    # ponytail: local fix for NixOS/nixpkgs#575192 (zenpower installs its .ko
+    # by hand, so kmodigest never writes the .ko.cer aggregateModules needs);
+    # drop once nixpkgs routes zenpower through modules_install.
+    extraModulePackages = [
+      (config.boot.kernelPackages.zenpower.overrideAttrs (old: {
+        makeFlags = config.boot.kernelPackages.kernelModuleMakeFlags ++ old.makeFlags;
+        installTargets = [ "modules_install" ];
+        installFlags = [
+          "-C"
+          "${config.boot.kernelPackages.kernel.dev}/lib/modules/${config.boot.kernelPackages.kernel.modDirVersion}/build"
+          "M=$(PWD)"
+          "INSTALL_MOD_PATH=${placeholder "out"}"
+          "INSTALL_MOD_DIR=kernel/drivers/hwmon/zenpower"
+          "DEPMOD=true"
+        ];
+        installPhase = null;
+      }))
+    ];
 
     initrd = {
       availableKernelModules = [
