@@ -127,6 +127,8 @@
         { "methods": ["GET"], "url": "https://files.pythonhosted.org/packages/**/pandas-*.*.*-cp*-cp*-manylinux_*_*_x86_64.*_*_*_x86_64.whl", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://files.pythonhosted.org/packages/**/pyparsing-*.*.*-py3-none-any.whl", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://files.pythonhosted.org/packages/**/pypdf-*.*.*-py3-none-any.whl", "port": 443, "comment": "global" },
+        { "methods": ["POST"], "url": "https://github.com/DietrichGebert/ponytail.git/git-upload-pack", "port": 443, "comment": "global" },
+        { "methods": ["GET"], "url": "https://github.com/DietrichGebert/ponytail.git/info/refs", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://github.com/openai/plugins.git", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://github.com/openai/plugins.git/git-upload-pack", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://github.com/rapidsai", "port": 443, "comment": "global" },
