@@ -50,6 +50,7 @@
       hydra-check
       hyperfine
       imagemagick
+      inputs.tern-nom.packages.${system}.default
       jq
       kdePackages.breeze-gtk
       kmod
@@ -68,7 +69,6 @@
       nftables
       nil
       nix-init
-      nix-output-monitor
       nixd
       nixfmt
       nodejs

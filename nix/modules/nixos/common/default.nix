@@ -3,6 +3,7 @@
   lib,
   pkgs,
   inputs,
+  system,
   ...
 }:
 
@@ -55,7 +56,7 @@
       };
 
       shellAliases = {
-        flake-update = "nix flake update --flake $NH_FLAKE";
+        flake-update = "nom flake update --flake $NH_FLAKE";
         hydra-check = "${lib.getExe pkgs.hydra-check} -c unstable -a x86_64-linux";
         nix-shell = ''command nix-shell --command "''${SHELL:-bash}"'';
         nixos-boot = "nh os boot";
@@ -170,7 +171,11 @@
         '';
       };
 
-      nh.enable = true;
+      nh = {
+        enable = true;
+        # nh with tern-nom as its nom; in Tern the card shows nh's package diff.
+        package = inputs.tern-nom.packages.${system}.nh;
+      };
 
       nix-index = {
         enableBashIntegration = true;

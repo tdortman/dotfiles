@@ -244,6 +244,17 @@
       url = "github:tdortman/spicetify-nix";
     };
 
+    tern-nom = {
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        pedantix.follows = "pedantix";
+        snowfall-lib.follows = "snowfall-lib";
+        treefmt-nix.follows = "treefmt-nix";
+      };
+
+      url = "github:tdortman/tern-nom";
+    };
+
     treefmt-nix = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:numtide/treefmt-nix";
