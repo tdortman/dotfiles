@@ -50,7 +50,7 @@
       hydra-check
       hyperfine
       imagemagick
-      inputs.tern-nom.packages.${system}.default
+      inputs.tern-plugins.packages.${system}.tern-nom
       jq
       kdePackages.breeze-gtk
       kmod

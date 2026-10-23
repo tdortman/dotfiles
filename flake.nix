@@ -244,7 +244,7 @@
       url = "github:tdortman/spicetify-nix";
     };
 
-    tern-nom = {
+    tern-plugins = {
       inputs = {
         nixpkgs.follows = "nixpkgs";
         pedantix.follows = "pedantix";
@@ -252,7 +252,7 @@
         treefmt-nix.follows = "treefmt-nix";
       };
 
-      url = "github:tdortman/tern-nom";
+      url = "github:tdortman/tern-plugins";
     };
 
     treefmt-nix = {

@@ -816,7 +816,7 @@
         "plasma-manager": "plasma-manager",
         "snowfall-lib": "snowfall-lib",
         "spicetify-nix": "spicetify-nix",
-        "tern-nom": "tern-nom",
+        "tern-plugins": "tern-plugins",
         "treefmt-nix": "treefmt-nix",
         "voxtype": "voxtype"
       }
@@ -1027,7 +1027,7 @@
         "type": "github"
       }
     },
-    "tern-nom": {
+    "tern-plugins": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -1043,16 +1043,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1792789477,
-        "narHash": "sha256-VqNn1g1kgBy3c2txFTvMMYvbSLROPgSBMNzIOVq0KHc=",
+        "lastModified": 1792791278,
+        "narHash": "sha256-dJ1xUK8j0iE/+GNKHvtJjQTcG9Tip6snI+bJZcPNz/c=",
         "owner": "tdortman",
-        "repo": "tern-nom",
-        "rev": "ff78df9efb875c739b7e394fe6e19636262fa122",
+        "repo": "tern-plugins",
+        "rev": "860dde77cdd0d92a90ef5a93f2c2bed37f711e34",
         "type": "github"
       },
       "original": {
         "owner": "tdortman",
-        "repo": "tern-nom",
+        "repo": "tern-plugins",
         "type": "github"
       }
     },

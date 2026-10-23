@@ -174,7 +174,7 @@
       nh = {
         enable = true;
         # nh with tern-nom as its nom; in Tern the card shows nh's package diff.
-        package = inputs.tern-nom.packages.${system}.nh;
+        package = inputs.tern-plugins.packages.${system}.nh;
       };
 
       nix-index = {
