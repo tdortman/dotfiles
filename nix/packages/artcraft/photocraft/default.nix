@@ -4,14 +4,14 @@
 }:
 
 let
-  version = "0.14.0";
+  version = "0.15.1";
 in
 callPackage ../craft-app.nix {
   inherit version;
 
   src = fetchurl {
     url = "https://github.com/storytold/photocraft/releases/download/v${version}/photocraft-${version}-linux-x86_64.tar.gz";
-    hash = "sha256-PR9gp2wlqvv1PyPP7dNoe9metvUwmSDhQNWIvTISyTY=";
+    hash = "sha256-tiK+QDVVEwVvgVKv6JXQoFwbw8NEoCf3cqmhL6PRwiM=";
   };
 
   description = "Open-source, clean-room reimplementation of Adobe Photoshop";
