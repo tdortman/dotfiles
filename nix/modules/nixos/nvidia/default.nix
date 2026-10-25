@@ -166,13 +166,6 @@ in
       })
 
       (lib.mkIf (cfg.driver.enable && cfg.driver.resetBeforeResume.enable) {
-        assertions = [
-          {
-            assertion = config.boot.initrd.systemd.enable;
-            message = "custom.nvidia.driver.resetBeforeResume needs boot.initrd.systemd.enable, which runs the reset before systemd-hibernate-resume.";
-          }
-        ];
-
         boot.initrd.systemd.services.nvidia-gpu-reset = {
           description = "Reset the NVIDIA GPU before restoring the hibernation image";
           before = [ "systemd-hibernate-resume.service" ];
