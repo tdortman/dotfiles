@@ -299,12 +299,14 @@
       { "path": "~/.cache/fontconfig", "access": "read", "comment": "global" },
       { "path": "~/.cache/kache", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/matplotlib", "access": "read", "comment": "global" },
+      { "path": "~/.cache/matplotlib/tex.cache", "access": "write", "comment": "global" },
       { "path": "~/.cache/mesa_shader_cache", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/nix", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/nvidia/GLCache", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/oh-my-posh", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/pnpm", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/sccache", "access": "read_write", "comment": "global" },
+      { "path": "~/.cache/stencil-term", "access": "read", "comment": "global" },
       { "path": "~/.cache/treefmt", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/uv", "access": "read_write", "comment": "global" },
       { "path": "~/.cache/uv/archive-v0/*/bin/ruff", "access": "execute", "comment": "global" },
@@ -649,6 +651,19 @@
           "member": "NameAcquired",
           "message_kind": "signal",
           "signature": "s",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "system",
+          "destination": "org.bluez",
+          "object_path": "/",
+          "interface": "org.freedesktop.DBus.ObjectManager",
+          "member": "GetManagedObjects",
+          "message_kind": "method_call",
+          "signature": "",
           "fd_metadata": []
         },
         "comment": "global"
