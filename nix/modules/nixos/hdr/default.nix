@@ -31,7 +31,7 @@ let
 
     runtimeInputs = with pkgs; [
       jq
-      kdePackages.libkscreen
+      kdePackages.kscreen
     ];
 
     text = scriptText;
@@ -85,8 +85,8 @@ in
       description = ''
         Default display output to use when no output is specified.
         When null (the default), the enabled, connected Plasma primary
-        output (priority 1 in 'kscreen-doctor -j') is resolved at invocation.
-        Use 'kscreen-doctor -o' to list available outputs.
+        output ("primary" in 'kscreenctl list-outputs --json') is resolved at invocation.
+        Use 'kscreenctl list-outputs' to list available outputs.
       '';
     };
 

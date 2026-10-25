@@ -12,7 +12,7 @@ show_usage() {
 Usage:
 $(basename "$0") [enable|disable|toggle|help] [output] [ICC profile]
 
-KDE Plasma desktop HDR toggler. Utilises kscreen-doctor.
+KDE Plasma desktop HDR toggler. Utilises kscreenctl.
 To be used with launch wrapper scripts or command lines such as Steam or Lutris.
 
 Steam:
@@ -24,7 +24,7 @@ Post-exit script: '$(basename "$0") disable'
 
 If [output] is omitted, the configured default output is used, or the
 current primary output when no default is configured.
-See 'kscreen-doctor -o' to list available outputs.
+See 'kscreenctl list-outputs' to list available outputs.
 To disable this script globally, run: 'export DISABLE_HDR_TOGGLING=true'.
 EOF
 }
@@ -37,23 +37,23 @@ help | h | -h | --help)
     ;;
 esac
 
-# This is KDE Plasma 6 only for now
-_session="${DESKTOP_SESSION:-}"
-if [[ "$_session" != "plasma" && "${_session##*/}" != "plasma.desktop" ]] || [[ "${DISABLE_HDR_TOGGLING:-false}" == "true" ]]; then
+# This is KDE Plasma 6 only for now. XDG_CURRENT_DESKTOP is a colon-separated
+# list; unlike DESKTOP_SESSION it reaches terminals started outside the session (e.g. tern).
+if [[ ":${XDG_CURRENT_DESKTOP:-}:" != *:KDE:* ]] || [[ "${DISABLE_HDR_TOGGLING:-false}" == "true" ]]; then
     echo "Plasma desktop not active or DISABLE_HDR_TOGGLING has been set to true. Bailing."
     exit 1
 fi
 
-# Single kscreen-doctor snapshot for primary resolution and HDR state.
-# Pinned schema (libkscreen 6.7.5 ConfigSerializer::serializeOutput):
-# the primary output has priority == 1 (Doctor::setPrimary sets priority 1),
-# and the "hdr" key exists only on HDR-capable outputs.
-if ! KSCREEN_SNAPSHOT=$(kscreen-doctor -j); then
-    echo "hdr-toggle: kscreen-doctor -j failed, cannot read output state." >&2
+# Single kscreenctl snapshot for primary resolution and HDR state.
+# Pinned schema (kscreen 6.8.0 kscreenctl list-outputs --json): a top-level
+# array where "primary" marks the Plasma primary and "capabilities" lists
+# "hdr" on HDR-capable outputs.
+if ! KSCREEN_SNAPSHOT=$(kscreenctl list-outputs --json); then
+    echo "hdr-toggle: kscreenctl list-outputs failed, cannot read output state." >&2
     exit 1
 fi
 
-PRIMARY_OUTPUT=$(jq -r '[.outputs[] | select(.connected == true and .enabled == true and .priority == 1) | .name] | first // empty' <<<"$KSCREEN_SNAPSHOT")
+PRIMARY_OUTPUT=$(jq -r '[.[] | select(.connected == true and .enabled == true and .primary == true) | .name] | first // empty' <<<"$KSCREEN_SNAPSHOT")
 
 if [[ -n "$EXPLICIT_OUTPUT" ]]; then
     OUTPUT="$EXPLICIT_OUTPUT"
@@ -68,11 +68,11 @@ fi
 
 RESOLVED_DEFAULT="${DEFAULT_OUTPUT:-$PRIMARY_OUTPUT}"
 
-MATCHED_STATES=$(jq -r --arg name "$OUTPUT" '.outputs[] | select(.name == $name) | if has("hdr") then (if .hdr then "enabled" else "disabled" end) else "incapable" end' <<<"$KSCREEN_SNAPSHOT")
+MATCHED_STATES=$(jq -r --arg name "$OUTPUT" '.[] | select(.name == $name) | if any(.capabilities[]?; . == "hdr") then (if .hdr then "enabled" else "disabled" end) else "incapable" end' <<<"$KSCREEN_SNAPSHOT")
 OUTPUT_HDR_STATE="${MATCHED_STATES%%$'\n'*}"
 
 if [[ -z "$OUTPUT_HDR_STATE" ]]; then
-    echo "hdr-toggle: output '$OUTPUT' not found. See 'kscreen-doctor -o' for available outputs." >&2
+    echo "hdr-toggle: output '$OUTPUT' not found. See 'kscreenctl list-outputs' for available outputs." >&2
     exit 1
 fi
 
@@ -83,26 +83,25 @@ fi
 
 # The default ICC profile applies only to the resolved default output and
 # only when set; an explicit profile always wins. Empty means skip ICC.
-ICC_ARGS=()
+ICC_PROFILE=""
 if [[ -n "$EXPLICIT_ICC_PROFILE" ]]; then
-    ICC_ARGS=(output."$OUTPUT".iccprofile."$EXPLICIT_ICC_PROFILE")
+    ICC_PROFILE="$EXPLICIT_ICC_PROFILE"
 elif [[ -n "$DEFAULT_ICC_PROFILE" && -n "$RESOLVED_DEFAULT" && "$OUTPUT" == "$RESOLVED_DEFAULT" ]]; then
-    ICC_ARGS=(output."$OUTPUT".iccprofile."$DEFAULT_ICC_PROFILE")
+    ICC_PROFILE="$DEFAULT_ICC_PROFILE"
 fi
 
 hdr_disable() {
     echo "$OUTPUT: Toggling HDR off"
-    kscreen-doctor \
-        output."$OUTPUT".hdr.disable \
-        output."$OUTPUT".wcg.disable \
-        "${ICC_ARGS[@]}"
+    kscreenctl "$OUTPUT" set-hdr-and-wcg false
+    # kscreenctl runs one command per call, so the SDR profile is a second apply.
+    if [[ -n "$ICC_PROFILE" ]]; then
+        kscreenctl "$OUTPUT" set-icc-profile "$ICC_PROFILE"
+    fi
 }
 
 hdr_enable() {
     echo "$OUTPUT: Toggling HDR on"
-    kscreen-doctor \
-        output."$OUTPUT".hdr.enable \
-        output."$OUTPUT".wcg.enable
+    kscreenctl "$OUTPUT" set-hdr-and-wcg true
 }
 
 case "$TOGGLE" in
