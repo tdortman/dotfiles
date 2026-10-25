@@ -86,12 +86,6 @@ in
                 # planes and outputs in the DRM backend (drm_colorop.cpp,
                 # drm_output.cpp), for HDR through gamescope.
                 ./kwin-drm-color-pipeline.patch
-
-                # After resume KWin re-adds a GPU under its canonical node
-                # path, but caches the open handle under the path it was
-                # given, so a KWIN_DRM_DEVICES symlink misses the cache and
-                # logind rejects the second open as already taken.
-                ./kwin-drm-gpu-handle-key.patch
               ];
             });
           }
