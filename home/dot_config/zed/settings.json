@@ -313,6 +313,10 @@
         "YAML": {
             "tab_size": 2,
             "hard_tabs": false
+        },
+        "LaTeX": {
+            "format_on_save": "off",
+            "formatter": "none"
         }
     },
     "lsp": {
@@ -322,6 +326,7 @@
                     "build": {
                         "onSave": false,
                     },
+                    "latexFormatter": "none",
                 },
             },
         },
