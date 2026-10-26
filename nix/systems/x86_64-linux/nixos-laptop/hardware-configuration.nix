@@ -48,8 +48,6 @@
         enable = true;
         devices = [ "nodev" ];
         efiSupport = true;
-        font = "${pkgs.nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf";
-        fontSize = 26;
 
         # Listed only when a Windows Boot Manager exists on any ESP.
         extraEntries = ''
@@ -63,6 +61,9 @@
             }
           fi
         '';
+
+        font = "${pkgs.nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf";
+        fontSize = 26;
       };
     };
 
