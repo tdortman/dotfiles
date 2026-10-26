@@ -1,28 +1,31 @@
 _:
 
 final: prev: {
-  # vencord = prev.master.vencord.overrideAttrs (
-  #   finalAttrs: oldAttrs: {
-  #     version = "1.15.0";
+  vencord = final.master.vencord.overrideAttrs (
+    finalAttrs: _: {
+      version = "1.15.13";
 
-  #     src = prev.fetchFromGitHub {
-  #       owner = "Vendicated";
-  #       repo = "Vencord";
-  #       rev = "v${finalAttrs.version}";
-  #       hash = "sha256-z3EY/nc9pHPjuMteY8ubYM3sqgjASznEG6B1U4mNCU4=";
-  #     };
+      src = prev.fetchFromGitHub {
+        owner = "Vendicated";
+        repo = "Vencord";
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-YuzFkZafNJ0brt2S3gg+pm6xYXZEAjBkDH76cb0dmd8=";
+      };
 
-  #     pnpmDeps = prev.fetchPnpmDeps {
-  #       inherit (finalAttrs)
-  #         pname
-  #         src
-  #         ;
+      pnpmDeps = prev.fetchPnpmDeps {
+        inherit (finalAttrs)
+          patches
+          pname
+          postPatch
+          src
+          ;
 
-  #       fetcherVersion = 4;
-  #       hash = "sha256-JmTSfUVHsMG0TcOwXkZWinRxpONZagtwKzESd8Q4LlQ=";
-  #       pnpm = prev.pnpm_11;
-  #     };
-  #   }
-  # );
-  inherit (final.master) vencord;
+        fetcherVersion = 4;
+        hash = "sha256-4dZTLwLoWnz6/svC6HH6SFuroYmPWDEpEAtByGzGHEw=";
+        pnpm = final.master.pnpm_11;
+      };
+    }
+  );
+
+  # inherit (final.master) vencord;
 }
