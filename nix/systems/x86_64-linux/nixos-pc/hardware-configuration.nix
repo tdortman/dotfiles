@@ -18,8 +18,6 @@
     # drop once nixpkgs routes zenpower through modules_install.
     extraModulePackages = [
       (config.boot.kernelPackages.zenpower.overrideAttrs (old: {
-        makeFlags = config.boot.kernelPackages.kernelModuleMakeFlags ++ old.makeFlags;
-        installTargets = [ "modules_install" ];
         installFlags = [
           "-C"
           "${config.boot.kernelPackages.kernel.dev}/lib/modules/${config.boot.kernelPackages.kernel.modDirVersion}/build"
@@ -28,7 +26,10 @@
           "INSTALL_MOD_DIR=kernel/drivers/hwmon/zenpower"
           "DEPMOD=true"
         ];
+
         installPhase = null;
+        installTargets = [ "modules_install" ];
+        makeFlags = config.boot.kernelPackages.kernelModuleMakeFlags ++ old.makeFlags;
       }))
     ];
 
