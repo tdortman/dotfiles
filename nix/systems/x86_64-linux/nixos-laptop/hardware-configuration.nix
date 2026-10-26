@@ -50,6 +50,19 @@
         efiSupport = true;
         font = "${pkgs.nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf";
         fontSize = 26;
+
+        # Listed only when a Windows Boot Manager exists on any ESP.
+        extraEntries = ''
+          if search --no-floppy --file --set=winroot /EFI/Microsoft/Boot/bootmgfw.efi; then
+            menuentry "Windows" --class windows --class os {
+              insmod part_gpt
+              insmod fat
+              insmod chain
+              search --no-floppy --file --set=root /EFI/Microsoft/Boot/bootmgfw.efi
+              chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+            }
+          fi
+        '';
       };
     };
 
