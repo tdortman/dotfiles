@@ -8,10 +8,6 @@
       "args": [
         "mcp"
       ],
-      "env": {
-        "GHIDRA_INSTALL_DIR": "GHIDRA_INSTALL_DIR",
-        "JAVA_HOME": "JAVA_HOME"
-      },
       "timeout": 1800000
     }
   },

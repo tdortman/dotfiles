@@ -1,0 +1,30 @@
+{
+  "build": {
+    "jadx-headless-mcp": {
+      "version": "0.7.1",
+      "url": "https://github.com/1013503897/jadx-headless-mcp/releases/download/v0.7.1/jadx-headless-mcp-0.7.1-all.jar",
+      "hash": "sha256-bl6s9QC2QpK/tzxJeXwZWPbuRGRuQ+hoA5rn/rVz/3U="
+    },
+    "sigrok-cli": {
+      "version": "0.7.2",
+      "url": "https://sigrok.org/download/source/sigrok-cli/sigrok-cli-0.7.2.tar.gz",
+      "hash": "sha256-cdBEPzaJe/Vlcy3sIGgw2+oPJ4m2YBzxBTayhtEUCrg="
+    },
+    "wabt": {
+      "version": "1.0.42",
+      "url": "https://github.com/WebAssembly/wabt/releases/download/1.0.42/wabt-1.0.42.tar.xz",
+      "hash": "sha256-p2zaPBdKQwl4Y6B/wLDCAvdw9T4hgG6iY28WfR/7HjA="
+    },
+    "wakaru": {
+      "version": "1.14.0",
+      "url": "https://registry.npmjs.org/@wakaru/cli-linux-x64/-/cli-linux-x64-1.14.0.tgz",
+      "hash": "sha256-ppSvNP3o4TTzRfGAVuRo1csK81IfUYSODRFl5HYod4I="
+    }
+  },
+  "nixpkgs": {
+    "binwalk": "3\\.1\\..*",
+    "ghidra": "12\\.1\\..*",
+    "mitmproxy": "12\\.2\\.3",
+    "unblob": "26\\.6\\..*"
+  }
+}

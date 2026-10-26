@@ -364,9 +364,6 @@
       CMAKE_CXX_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
       CMAKE_C_COMPILER_LAUNCHER = lib.getExe pkgs.kache;
       CODEX_CLI_PATH = "/run/current-system/sw/bin/codex";
-      # REA's providers and pyghidra drive the packaged Ghidra; java is not on PATH.
-      GHIDRA_INSTALL_DIR = "${pkgs.ghidra}/lib/ghidra";
-      JAVA_HOME = "${pkgs.jdk21}";
       KACHE_FALLBACK = lib.getExe pkgs.sccache;
       # Stable PCI selection keeps the desktop on Arc regardless of DRM enumeration.
       KWIN_DRM_DEVICES = "/dev/dri/intel-arc:/dev/dri/nvidia-gaming";
@@ -377,26 +374,6 @@
       # Read by Nix's cc-wrapper, so every gcc/clang link (cmake, make, ninja, cargo) in devShells uses mold.
       # gcc rejects paths in -fuse-ld; -B makes it pick the wrapped ld.mold, keeping Nix rpath handling.
       NIX_CFLAGS_LINK = "-B${pkgs.mold}/bin -fuse-ld=mold";
-      # REA runs caller-supplied analysis tools and only accepts absolute paths.
-      REA_BINWALK_COMMAND = "${pkgs.binwalk}/bin/binwalk";
-      REA_BROWSER_EXECUTABLE = "${pkgs.google-chrome}/bin/google-chrome-stable";
-      REA_EVM_PRLIMIT_COMMAND = "${pkgs.util-linux}/bin/prlimit";
-      REA_FIRMWARE_PRLIMIT_COMMAND = "${pkgs.util-linux}/bin/prlimit";
-      REA_ILSPY_CMD_PATH = "${pkgs.ilspycmd}/bin/ilspycmd";
-      REA_JADX_MCP_JAR = "${pkgs.custom.jadx-headless-mcp}/share/java/jadx-headless-mcp.jar";
-      REA_JAVASCRIPT_PRLIMIT_COMMAND = "${pkgs.util-linux}/bin/prlimit";
-      REA_MITMDUMP_COMMAND = "${pkgs.mitmproxy}/bin/mitmdump";
-
-      REA_PWNTOOLS_PYTHON = "${
-        pkgs.python3.withPackages (ps: [
-          ps.pyelftools
-          ps.pwntools
-          ps.unicorn
-        ])
-      }/bin/python3";
-
-      REA_UNBLOB_COMMAND = "${pkgs.unblob}/bin/unblob";
-      REA_WAKARU_COMMAND = "${pkgs.custom.wakaru}/bin/wakaru";
       RUSTC_WRAPPER = lib.getExe pkgs.kache;
       SCCACHE_CACHE_SIZE = "50G";
       SCCACHE_DIR = "$HOME/.cache/sccache";
@@ -459,7 +436,6 @@
           withVencord = true;
         })
         antigravity-ide-fhs
-        binwalk
         btrfs-progs
         code-cursor-fhs
         # cuda.llama-cpp
@@ -470,15 +446,12 @@
         custom.rea
         custom.shiru
         custom.tern
-        custom.wakaru
         dbeaver-bin
-        # Driven by REA's providers and pyghidra through GHIDRA_INSTALL_DIR.
         ghidra
         ghostty
         glib
         google-chrome # Used by antigravity
         gvfs
-        ilspycmd
         inputs.agenix.packages."${system}".default
         inputs.codex-desktop-linux.packages.${system}.codex-desktop-maximal-directory-watch
         kdePackages.xdg-desktop-portal-kde
@@ -489,7 +462,6 @@
         librewolf
         lsfg-vk
         lsfg-vk-ui
-        mitmproxy
         mpv
         nheko
         ntfs3g
