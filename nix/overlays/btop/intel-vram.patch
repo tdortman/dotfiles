@@ -1,6 +1,6 @@
 --- a/src/linux/btop_collect.cpp
 +++ b/src/linux/btop_collect.cpp
-@@ -34,10 +34,12 @@
+@@ -34,10 +34,12 @@ tab-size = 4
  
  #include <arpa/inet.h> // for inet_ntop()
  #include <dlfcn.h>
@@ -13,7 +13,7 @@
  #include <unistd.h>
  
  #include <fmt/format.h>
-@@ -68,6 +70,7 @@
+@@ -68,6 +70,7 @@ tab-size = 4
  	#define class class_
  extern "C" {
  	#include "intel_gpu_top/intel_gpu_top.h"
@@ -21,7 +21,7 @@
  }
  	#undef class
  
-@@ -352,6 +355,107 @@
+@@ -352,6 +355,107 @@ namespace Gpu {
  				if (!hwmon_has_prev) hwmon_energy_path.clear();
  			}
  		}
@@ -127,9 +127,9 @@
 +			return true;
 +		}
  	}
- }
  
-@@ -1980,6 +2084,7 @@
+ 	//? AMD sysfs (consumer GPU / iGPU) data collection — fallback when amd-smi/rocm-smi
+@@ -2009,6 +2113,7 @@ namespace Gpu {
  			}
  
  			pmu_sample(engines);
@@ -137,7 +137,7 @@
  
  			device_count = 1;
  
-@@ -2006,6 +2111,13 @@
+@@ -2035,6 +2140,13 @@ namespace Gpu {
  				free_engines(engines);
  				engines = nullptr;
  			}
@@ -151,7 +151,7 @@
  			initialized = false;
  			return true;
  		}
-@@ -2022,8 +2134,8 @@
+@@ -2051,8 +2163,8 @@ namespace Gpu {
  					.pwr_usage = true,
  					.pwr_state = false,
  					.temp_info = !hwmon_temp_path.empty(),
@@ -162,7 +162,7 @@
  					.pcie_txrx = false,
  					.encoder_utilization = false,
  					.decoder_utilization = false
-@@ -2100,6 +2212,28 @@
+@@ -2129,6 +2241,28 @@ namespace Gpu {
  			double freq = pmu_calc(&engines->freq_act.val, 1, t, 1); // in MHz
  			gpus_slice->gpu_clock_speed = (unsigned int)round(freq);
  

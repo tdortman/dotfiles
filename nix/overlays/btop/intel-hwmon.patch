@@ -1,6 +1,6 @@
 --- a/src/linux/btop_collect.cpp
 +++ b/src/linux/btop_collect.cpp
-@@ -293,6 +293,49 @@
+@@ -309,6 +309,49 @@ namespace Gpu {
  		bool shutdown();
  		template <bool is_init> bool collect(gpu_info* gpus_slice);
  		uint32_t device_count = 0;
@@ -48,9 +48,9 @@
 +			}
 +		}
  	}
- }
  
-@@ -1904,6 +1947,7 @@
+ 	//? AMD sysfs (consumer GPU / iGPU) data collection — fallback when amd-smi/rocm-smi
+@@ -1947,6 +1990,7 @@ namespace Gpu {
  			}
  
  			free(gpu_device_id);
@@ -58,7 +58,7 @@
  
  			engines = discover_engines(device);
  			if (!engines) {
-@@ -1959,7 +2003,7 @@
+@@ -2006,7 +2050,7 @@ namespace Gpu {
  					.mem_clock = false,
  					.pwr_usage = true,
  					.pwr_state = false,
@@ -67,7 +67,7 @@
  					.mem_total = false,
  					.mem_used = false,
  					.pcie_txrx = false,
-@@ -1967,7 +2011,9 @@
+@@ -2014,7 +2058,9 @@ namespace Gpu {
  					.decoder_utilization = false
  				};
  
@@ -78,7 +78,7 @@
  			}
  
  			pmu_sample(engines);
-@@ -1983,12 +2029,55 @@
+@@ -2030,12 +2076,55 @@ namespace Gpu {
  			}
  			gpus_slice->gpu_percent.at("gpu-totals").push_back((long long)round(max_util));
  
