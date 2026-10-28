@@ -744,7 +744,7 @@
     "ltex.language": "en-GB",
     "extensions.autoUpdate": "off",
     "extensions.autoCheckUpdates": true,
-    "python.defaultInterpreterPath": "/run/current-system/sw/bin/python",
+    "python.defaultInterpreterPath": "/home/tim/Projects/dynamic-demi-log/.venv",
     "window.autoDetectColorScheme": false,
     "workbench.agentsWindowButton.enabled": false,
     "todo-tree.ripgrep.ripgrep": "/run/current-system/sw/bin/rg",
