@@ -14,7 +14,6 @@
   ilspycmd,
   jdk21,
   makeWrapper,
-  mitmproxy,
   nodejs_26,
   python3,
   rizin,
@@ -96,7 +95,6 @@ let
     inherit
       binwalk
       ghidra
-      mitmproxy
       unblob
       ;
   };
@@ -133,6 +131,14 @@ let
   pins = lib.importJSON ./pins.json;
   prlimit = lib.getExe' util-linux "prlimit";
   # REA admits these only at the exact release it audited.
+  mitmproxy = python3.pkgs.toPythonApplication (
+    python3.pkgs.mitmproxy.overridePythonAttrs (old: {
+      inherit (pins.build.mitmproxy) version;
+      src = fetchPin pins.build.mitmproxy;
+      # 12.3 replaced zstandard with backports-zstd, which nixpkgs follows.
+      dependencies = old.dependencies ++ [ python3.pkgs.zstandard ];
+    })
+  );
   sigrok = sigrok-cli.overrideAttrs {
     inherit (pins.build.sigrok-cli) version;
     src = fetchPin pins.build.sigrok-cli;

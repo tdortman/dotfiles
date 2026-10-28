@@ -82,17 +82,16 @@ const required = (value, name) => {
   if (typeof value !== "string" || value === "") throw new Error(`REA no longer exports ${name}`);
   return value;
 };
-const escape = (version) => version.replaceAll(".", "\\.");
 const line = ({ major, minor }) => `${major}\\.${minor}\\..*`;
 const [ghidraMajor, ghidraMinor] = required(SUPPORTED_GHIDRA_VERSION, "SUPPORTED_GHIDRA_VERSION").split(".");
 console.log(JSON.stringify({
   jadx: { version: required(JADX_RELEASE.version, "JADX_RELEASE"), url: JADX_RELEASE.url, sha256: JADX_RELEASE.sha256 },
   wabt: required(WABT_VERSION, "WABT_VERSION"),
   wakaru: required(WAKARU_RELEASE.version, "WAKARU_RELEASE"),
+  mitmproxy: required(MITMPROXY_CAPTURE_PROVIDER_IDENTITY.version, "MITMPROXY_CAPTURE_PROVIDER_IDENTITY"),
   nixpkgs: {
     binwalk: line(FIRMWARE_TOOL_REQUIREMENTS.binwalk),
     ghidra: line({ major: ghidraMajor, minor: ghidraMinor }),
-    mitmproxy: escape(required(MITMPROXY_CAPTURE_PROVIDER_IDENTITY.version, "MITMPROXY_CAPTURE_PROVIDER_IDENTITY")),
     unblob: line(FIRMWARE_TOOL_REQUIREMENTS.unblob),
   },
 }));
@@ -130,6 +129,7 @@ jadx_version="$(jq -r .jadx.version "$work/requirements.json")"
 jadx_url="$(jq -r .jadx.url "$work/requirements.json")"
 wabt_version="$(jq -r .wabt "$work/requirements.json")"
 wakaru_version="$(jq -r .wakaru "$work/requirements.json")"
+mitmproxy_version="$(jq -r .mitmproxy "$work/requirements.json")"
 
 jadx_pin="$(pin jadx-headless-mcp "$jadx_version" "$jadx_url")"
 # REA identifies the jar by digest, so a re-uploaded asset must not slip in.
@@ -141,15 +141,16 @@ jadx_expected="$(nix hash convert --hash-algo sha256 --to sri "$(jq -r .jadx.sha
 
 jq -n \
   --argjson jadx "$jadx_pin" \
+  --argjson mitmproxy "$(pin mitmproxy "$mitmproxy_version" "https://github.com/mitmproxy/mitmproxy/archive/refs/tags/v$mitmproxy_version.tar.gz")" \
   --argjson sigrok "$(pin sigrok-cli "$sigrok_version" "https://sigrok.org/download/source/sigrok-cli/sigrok-cli-$sigrok_version.tar.gz")" \
   --argjson wabt "$(pin wabt "$wabt_version" "https://github.com/WebAssembly/wabt/releases/download/$wabt_version/wabt-$wabt_version.tar.xz")" \
   --argjson wakaru "$(pin wakaru "$wakaru_version" "https://registry.npmjs.org/@wakaru/cli-linux-x64/-/cli-linux-x64-$wakaru_version.tgz")" \
   --slurpfile requirements "$work/requirements.json" \
   '{
-    build: { "jadx-headless-mcp": $jadx, "sigrok-cli": $sigrok, wabt: $wabt, wakaru: $wakaru },
+    build: { "jadx-headless-mcp": $jadx, mitmproxy: $mitmproxy, "sigrok-cli": $sigrok, wabt: $wabt, wakaru: $wakaru },
     nixpkgs: $requirements[0].nixpkgs
   }' >"$work/pins.json"
 mv "$work/pins.json" "$pins_path"
 
 nix build .#rea --no-link
-echo "rea $(sed -nE 's/^  version = "([^"]+)";$/\1/p' "$path") pins: jadx-headless-mcp $jadx_version, sigrok-cli $sigrok_version, wabt $wabt_version, wakaru $wakaru_version"
+echo "rea $(sed -nE 's/^  version = "([^"]+)";$/\1/p' "$path") pins: jadx-headless-mcp $jadx_version, mitmproxy $mitmproxy_version, sigrok-cli $sigrok_version, wabt $wabt_version, wakaru $wakaru_version"

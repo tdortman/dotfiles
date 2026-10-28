@@ -5,6 +5,11 @@
       "url": "https://github.com/1013503897/jadx-headless-mcp/releases/download/v0.7.1/jadx-headless-mcp-0.7.1-all.jar",
       "hash": "sha256-bl6s9QC2QpK/tzxJeXwZWPbuRGRuQ+hoA5rn/rVz/3U="
     },
+    "mitmproxy": {
+      "version": "12.2.3",
+      "url": "https://github.com/mitmproxy/mitmproxy/archive/refs/tags/v12.2.3.tar.gz",
+      "hash": "sha256-OQc/QUzbmgv0OLh12g55uzBry30TMbWAdjiG9Qn3jBs="
+    },
     "sigrok-cli": {
       "version": "0.7.2",
       "url": "https://sigrok.org/download/source/sigrok-cli/sigrok-cli-0.7.2.tar.gz",
@@ -24,7 +29,6 @@
   "nixpkgs": {
     "binwalk": "3\\.1\\..*",
     "ghidra": "12\\.1\\..*",
-    "mitmproxy": "12\\.2\\.3",
     "unblob": "26\\.6\\..*"
   }
 }
