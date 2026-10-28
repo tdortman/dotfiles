@@ -11,7 +11,7 @@ in
 {
   options.custom.kde = {
     enable = lib.mkEnableOption "KDE Plasma desktop environment";
-    patches.enable = lib.mkEnableOption "local KWin and kde-gtk-config patches for the multi-GPU HDR desktop";
+    patches.enable = lib.mkEnableOption "local kde-gtk-config patch that keeps GTK modules resident";
   };
 
   config = lib.mkIf cfg.enable {
@@ -78,15 +78,6 @@ in
               # Keep their code resident; test-gtk-module-unload.py exercises
               # CSS reload after GTK clears its module list.
               patches = (oldAttrs.patches or [ ]) ++ [ ./gtk-modules-resident.patch ];
-            });
-
-            kwin = kprev.kwin.overrideAttrs (oldAttrs: {
-              patches = (oldAttrs.patches or [ ]) ++ [
-                # Reworks how hardware colour pipeline blocks are assigned to
-                # planes and outputs in the DRM backend (drm_colorop.cpp,
-                # drm_output.cpp), for HDR through gamescope.
-                ./kwin-drm-color-pipeline.patch
-              ];
             });
           }
         );
