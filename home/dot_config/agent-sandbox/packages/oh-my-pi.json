@@ -1,7 +1,9 @@
 {
   "network": {
     "direct": {
-      "allow": [],
+      "allow": [
+        { "host": "127.0.0.1", "port": 9931, "comment": "omp plugins" }
+      ],
       "deny": []
     },
     "http": {
@@ -39,6 +41,7 @@
     "allow": [
       { "kind": "unix_socket", "path": "/run/user/*/at-spi/bus_0", "access": "connect", "comment": "computer use" },
       { "kind": "unix_socket", "path": "/run/user/1000/at-spi2-*/socket", "access": "connect", "comment": "computer use" },
+      { "kind": "unix_socket", "path": "/run/user/1000/tern/daemon.sock", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "/run/user/1000/wayland-0", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.local/state/omp", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/broker.sock", "access": "connect", "comment": "global_package" },
