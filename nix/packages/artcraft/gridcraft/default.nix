@@ -4,14 +4,14 @@
 }:
 
 let
-  version = "0.12.1";
+  version = "0.13.0";
 in
 callPackage ../craft-app.nix {
   inherit version;
 
   src = fetchurl {
     url = "https://github.com/storytold/gridcraft/releases/download/v${version}/gridcraft-${version}-linux-x86_64.tar.gz";
-    hash = "sha256-HBdQ3W0mN2z4yK8itG3A7T2NXLsRXlVfD8fQz3qa6po=";
+    hash = "sha256-IMbFbsH/1rvP/ubN7ljPa1yt0vSgSkNg3XzGTVOtl+U=";
   };
 
   description = "Open-source, clean-room spreadsheet in the style of Microsoft Excel";
