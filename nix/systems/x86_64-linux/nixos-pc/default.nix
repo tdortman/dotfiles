@@ -139,7 +139,9 @@
   };
 
   boot = {
-    initrd.kernelModules = [ "i915" ];
+    # Stage 2, not the initrd: an i915 probed by the hibernation restore kernel
+    # once left the Arc's GuC unable to load after resume.
+    kernelModules = [ "i915" ];
     kernelPackages = pkgs.linuxPackages_latest;
   };
 
