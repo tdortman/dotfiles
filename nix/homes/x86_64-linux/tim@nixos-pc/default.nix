@@ -22,6 +22,8 @@
       "applications:steam.desktop"
       "applications:spotify.desktop"
     ];
+
+    tern.remote = true;
   };
 
   home = {

@@ -54,6 +54,7 @@ in
   options.custom.tern = {
     enable = lib.mkEnableOption "Tern terminal integration and focus shortcut";
     autoStart = lib.mkEnableOption "opening a Tern window at login";
+    remote = lib.mkEnableOption "Tern's remote server for this user";
   };
 
   config = lib.mkIf cfg.enable {
@@ -67,6 +68,28 @@ in
       };
 
       shortcuts."services/tern-focus.desktop"._launch = "Meta+Return";
+    };
+
+    # Mirrors the unit `tern remote install --user` writes, but follows the current package.
+    systemd.user.services.tern-remote = lib.mkIf cfg.remote {
+      Install.WantedBy = [ "default.target" ];
+
+      Service = {
+        Type = "exec";
+        ExecStart = "${lib.getExe pkgs.custom.tern} remote serve --user --state-dir ${config.xdg.configHome}/tern";
+        # The session daemon and its shells outlive the server; a stop signals only the server.
+        KillMode = "process";
+        Restart = "on-failure";
+        RestartPreventExitStatus = 2;
+        RestartSec = 2;
+        TimeoutStopSec = 10;
+      };
+
+      Unit = {
+        Description = "Tern remote sessions (this user)";
+        StartLimitBurst = 10;
+        StartLimitIntervalSec = 60;
+      };
     };
 
     xdg = {
