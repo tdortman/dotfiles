@@ -155,6 +155,21 @@ in
                     name = "nvidia-modeset-ignore-nested-revoke.patch";
                     url = "https://github.com/NVIDIA/open-gpu-kernel-modules/commit/5db24a72350ab2679376132ac8e31a06a0950343.patch";
                   })
+
+                  # Opt-in FRL training backoff (frl_train_backoff_ms) and FRL
+                  # caps retention across failed re-assessments
+                  # (frl_caps_retention), so HDMI 2.1 modes survive wake.
+                  # Upstream PR NVIDIA/open-gpu-kernel-modules#1505
+                  (pkgs.fetchpatch {
+                    hash = "sha256-jkebXDERnHWg4ByhSoVtijDM/7KPUuQkfjanDRDxlFA=";
+                    name = "nvidia-modeset-frl-train-backoff.patch";
+                    url = "https://github.com/NVIDIA/open-gpu-kernel-modules/commit/f535c6b6580420e3daa5b578337fcfd943ca7956.patch";
+                  })
+                  (pkgs.fetchpatch {
+                    hash = "sha256-X8LzhcqbZWwslI0+aXNKK61fwEJ2LGhg56GCb1pBKlk=";
+                    name = "nvidia-modeset-frl-caps-retention.patch";
+                    url = "https://github.com/NVIDIA/open-gpu-kernel-modules/commit/0d7a67beff5c86302bb3ea676d71277f1fae718e.patch";
+                  })
                 ];
               });
             };

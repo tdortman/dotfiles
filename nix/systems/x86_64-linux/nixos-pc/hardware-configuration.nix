@@ -11,6 +11,7 @@
 
     extraModprobeConfig = ''
       options it87 force_id=0x8628
+      options nvidia_modeset frl_train_backoff_ms=500 frl_caps_retention=1
     '';
 
     # ponytail: local fix for NixOS/nixpkgs#575192 (zenpower installs its .ko
