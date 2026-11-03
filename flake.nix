@@ -21,6 +21,10 @@
           "electron-40.10.5" # winboat
           "olm-3.2.16" # nheko
         ];
+
+        problems.handlers = {
+          "gtk+".broken = "warn"; # or "ignore"
+        };
       };
 
       homes.modules = with inputs; [

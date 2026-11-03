@@ -43,7 +43,6 @@
       git
       git-filter-repo
       git-lfs
-      gtk2
       gtk3
       gtk4
       hex
