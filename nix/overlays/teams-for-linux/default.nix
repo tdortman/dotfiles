@@ -10,6 +10,10 @@ prev: {
   teams-for-linux = prev.teams-for-linux.overrideAttrs (oldAttrs: {
     patches = (oldAttrs.patches or [ ]) ++ [
       ./persist-auth-state-per-profile-session.patch
+      # Local preference: with auth.reauthRecovery on, a stale session gets
+      # Teams' ignorable "sign in again" banner (click = in-app recovery)
+      # instead of an automatic reload into the account picker.
+      ./no-silent-auth-recovery-reload.patch
     ];
   });
 }

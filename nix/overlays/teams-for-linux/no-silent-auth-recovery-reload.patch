@@ -1,0 +1,57 @@
+--- a/app/mainAppWindow/index.js
++++ b/app/mainAppWindow/index.js
+@@ -424,14 +424,6 @@
+ const OPT_IN_AUTH_FAILURE_PATTERNS = ['Uncaught Error: UPR:'];
+ // Only trust auth failure signals from Teams/Microsoft origins
+ const TRUSTED_AUTH_SOURCES = ['teams.cloud.microsoft', 'teams.microsoft.com', 'login.microsoftonline.com'];
+-// Loop guard for the automatic clear-and-reload. A cooldown rather than a
+-// single-shot flag: a long-running app can hit a second stale session hours
+-// after the first recovery (observed in the field: recovery at 10:55, the
+-// session went stale again at 12:11 and the old once-per-process flag
+-// silently swallowed it), while the cooldown still prevents rapid
+-// reload loops if a recovery fails to fix the session.
+-let lastAuthRecoveryAt = 0;
+-const AUTH_RECOVERY_COOLDOWN_MS = 30 * 60 * 1000;
+ // Worker UPRs are transient during active calls (#2428); suppress them only while
+ // a call is in progress so startup recovery still works for stale-token loops (#2480).
+ let callActive = false;
+@@ -503,35 +495,10 @@
+   // drives automatically — see the silent-reload guard below.
+   recordAuthFailureSignal();
+ 
+-  if (Date.now() - lastAuthRecoveryAt < AUTH_RECOVERY_COOLDOWN_MS) return;
+-
+-  if (callActive) {
+-    handleMidCallAuthSignal(source);
+-    return;
+-  }
+-
+-  // Outside a call, only the reliable interaction-required signal triggers the
+-  // silent clear-and-reload. A worker UPR is too noisy to auto-recover on
+-  // (healthy sessions emit them ~hourly, UPR-heavy tenants constantly — #2629);
+-  // it has already fed popup correlation above, so it can still drive an in-app
+-  // recovery via the banner-click intercept, just never silently on its own.
+-  if (!isReliableSignal) return;
+-
+-  scheduleAuthRecovery();
+-}
+-
+-function scheduleAuthRecovery() {
+-  lastAuthRecoveryAt = Date.now();
+-  console.info('[AUTH_RECOVERY] Auth failure detected, scheduling recovery');
+-
+-  // Delay to let Teams' own retry mechanism attempt recovery first
+-  setTimeout(
+-    () =>
+-      triggerAuthRecovery().catch((err) => {
+-        console.error('[AUTH_RECOVERY] Failed to trigger auth recovery:', err);
+-      }),
+-    5000
+-  );
++  // Outside a call, leave Teams' own "sign in again" banner up rather than
++  // silently clearing the session and reloading; clicking the banner still
++  // runs in-app recovery via the login-popup intercept.
++  if (callActive) handleMidCallAuthSignal(source);
+ }
+ 
+ // ── Mid-call handling ──────────────────────────────────────────────────────
