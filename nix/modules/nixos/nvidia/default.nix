@@ -156,10 +156,12 @@ in
                     url = "https://github.com/NVIDIA/open-gpu-kernel-modules/commit/5db24a72350ab2679376132ac8e31a06a0950343.patch";
                   })
 
-                  # Opt-in FRL training backoff (frl_train_backoff_ms) and FRL
-                  # caps retention across failed re-assessments
-                  # (frl_caps_retention), so HDMI 2.1 modes survive wake.
-                  # Upstream PR NVIDIA/open-gpu-kernel-modules#1505
+                  # Opt-in FRL training backoff (frl_train_backoff_ms), FRL caps
+                  # retention across failed re-assessments (frl_caps_retention),
+                  # and a retrain when the sink drops an active FRL link, so
+                  # HDMI 2.1 modes survive wake and monitor power cycles.
+                  # Upstream PR NVIDIA/open-gpu-kernel-modules#1505; these are the
+                  # pre-rebase commits based on 615.78.08 (the PR head targets 620).
                   (pkgs.fetchpatch {
                     hash = "sha256-jkebXDERnHWg4ByhSoVtijDM/7KPUuQkfjanDRDxlFA=";
                     name = "nvidia-modeset-frl-train-backoff.patch";
@@ -169,6 +171,11 @@ in
                     hash = "sha256-X8LzhcqbZWwslI0+aXNKK61fwEJ2LGhg56GCb1pBKlk=";
                     name = "nvidia-modeset-frl-caps-retention.patch";
                     url = "https://github.com/NVIDIA/open-gpu-kernel-modules/commit/0d7a67beff5c86302bb3ea676d71277f1fae718e.patch";
+                  })
+                  (pkgs.fetchpatch {
+                    hash = "sha256-XLIRhVuc9k6xf2PqzIxur8afix9cuIahfGFEgsLX4Sc=";
+                    name = "nvidia-modeset-frl-lost-link-retrain.patch";
+                    url = "https://github.com/NVIDIA/open-gpu-kernel-modules/commit/4437442488c3a1d7445fa776fa9d2320d930c17e.patch";
                   })
                 ];
               });
