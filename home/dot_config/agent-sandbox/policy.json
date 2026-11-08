@@ -388,6 +388,7 @@
       { "path": "~/.config/op/config", "access": "read", "comment": "global" },
       { "path": "~/.config/opencode/AGENTS.md", "access": "read", "comment": "global" },
       { "path": "~/.config/ponytail/config.json", "access": "read_write", "comment": "global" },
+      { "path": "~/.config/tern/settings.json", "access": "read", "comment": "global" },
       { "path": "~/.config/user-dirs.dirs", "access": "read", "comment": "global" },
       { "path": "~/.config/zsh", "access": "read", "comment": "global" },
       { "path": "~/.cursor/.gitignore", "access": "read_write", "comment": "global" },
@@ -473,8 +474,6 @@
       { "kind": "device", "path": "/dev/dri/render*", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/nvidia*", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/nvidia-caps", "access": "open_read", "comment": "global" },
-      { "kind": "device", "path": "/dev/ptmx", "access": "open_read_write", "comment": "global" },
-      { "kind": "device", "path": "/dev/pts", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/shm/cuda_injection_path_shm", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/shm/sem.*", "access": "open_read_write", "comment": "global" }
     ],
@@ -482,7 +481,8 @@
       { "kind": "unix_socket", "path": "/run/podman/podman.sock", "access": "connect", "comment": "global" },
       { "kind": "unix_socket", "path": "/run/user/*/systemd/private", "access": "connect", "comment": "global" },
       { "kind": "unix_socket", "path": "/run/user/1000/podman/podman.sock", "access": "connect", "comment": "global" },
-      { "kind": "unix_socket", "path": "@abstract:/tmp/.X11-unix/X0", "access": "connect", "comment": "global" }
+      { "kind": "unix_socket", "path": "@abstract:/tmp/.X11-unix/X0", "access": "connect", "comment": "global" },
+      { "kind": "unix_socket", "path": "/run/user/1000/tern/daemon.sock", "access": "connect", "comment": "global_package" }
     ]
   },
   "dbus": {
