@@ -22,7 +22,9 @@ function minimizeCoveredApps() {
 
         for (let above = index + 1; above < windows.length; ++above) {
             const cover = windows[above];
+            // Spectacle's capture overlay is a fullscreen window per output
             if (!cover.minimized && cover.normalWindow && cover.opacity === 1
+                && cover.desktopFileName !== "org.kde.spectacle"
                 && isOnCurrentDesktop(cover)
                 && (cover.fullScreen || cover.maximizeMode === 3)
                 && contains(cover.frameGeometry, target.frameGeometry)) {
