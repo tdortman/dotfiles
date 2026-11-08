@@ -83,15 +83,14 @@ const required = (value, name) => {
   return value;
 };
 const line = ({ major, minor }) => `${major}\\.${minor}\\..*`;
-const [ghidraMajor, ghidraMinor] = required(SUPPORTED_GHIDRA_VERSION, "SUPPORTED_GHIDRA_VERSION").split(".");
 console.log(JSON.stringify({
   jadx: { version: required(JADX_RELEASE.version, "JADX_RELEASE"), url: JADX_RELEASE.url, sha256: JADX_RELEASE.sha256 },
+  ghidra: required(SUPPORTED_GHIDRA_VERSION, "SUPPORTED_GHIDRA_VERSION"),
   wabt: required(WABT_VERSION, "WABT_VERSION"),
   wakaru: required(WAKARU_RELEASE.version, "WAKARU_RELEASE"),
   mitmproxy: required(MITMPROXY_CAPTURE_PROVIDER_IDENTITY.version, "MITMPROXY_CAPTURE_PROVIDER_IDENTITY"),
   nixpkgs: {
     binwalk: line(FIRMWARE_TOOL_REQUIREMENTS.binwalk),
-    ghidra: line({ major: ghidraMajor, minor: ghidraMinor }),
     unblob: line(FIRMWARE_TOOL_REQUIREMENTS.unblob),
   },
 }));
@@ -128,6 +127,10 @@ pin() {
 jadx_version="$(jq -r .jadx.version "$work/requirements.json")"
 jadx_url="$(jq -r .jadx.url "$work/requirements.json")"
 wabt_version="$(jq -r .wabt "$work/requirements.json")"
+ghidra_version="$(jq -r .ghidra "$work/requirements.json")"
+# Release zips carry a build date that only the release listing knows.
+ghidra_url="$(curl -fsSL "https://api.github.com/repos/NationalSecurityAgency/ghidra/releases/tags/Ghidra_${ghidra_version}_build" |
+  jq -r '[.assets[].browser_download_url | select(test("/ghidra_[^/]*_PUBLIC_[0-9]+\\.zip$"))] | if length == 1 then .[0] else error("expected one PUBLIC zip, got \(length)") end')"
 wakaru_version="$(jq -r .wakaru "$work/requirements.json")"
 mitmproxy_version="$(jq -r .mitmproxy "$work/requirements.json")"
 
@@ -140,6 +143,7 @@ jadx_expected="$(nix hash convert --hash-algo sha256 --to sri "$(jq -r .jadx.sha
 }
 
 jq -n \
+  --argjson ghidra "$(pin ghidra "$ghidra_version" "$ghidra_url")" \
   --argjson jadx "$jadx_pin" \
   --argjson mitmproxy "$(pin mitmproxy "$mitmproxy_version" "https://github.com/mitmproxy/mitmproxy/archive/refs/tags/v$mitmproxy_version.tar.gz")" \
   --argjson sigrok "$(pin sigrok-cli "$sigrok_version" "https://sigrok.org/download/source/sigrok-cli/sigrok-cli-$sigrok_version.tar.gz")" \
@@ -147,10 +151,10 @@ jq -n \
   --argjson wakaru "$(pin wakaru "$wakaru_version" "https://registry.npmjs.org/@wakaru/cli-linux-x64/-/cli-linux-x64-$wakaru_version.tgz")" \
   --slurpfile requirements "$work/requirements.json" \
   '{
-    build: { "jadx-headless-mcp": $jadx, mitmproxy: $mitmproxy, "sigrok-cli": $sigrok, wabt: $wabt, wakaru: $wakaru },
+    build: { ghidra: $ghidra, "jadx-headless-mcp": $jadx, mitmproxy: $mitmproxy, "sigrok-cli": $sigrok, wabt: $wabt, wakaru: $wakaru },
     nixpkgs: $requirements[0].nixpkgs
   }' >"$work/pins.json"
 mv "$work/pins.json" "$pins_path"
 
 nix build .#rea --no-link
-echo "rea $(sed -nE 's/^  version = "([^"]+)";$/\1/p' "$path") pins: jadx-headless-mcp $jadx_version, mitmproxy $mitmproxy_version, sigrok-cli $sigrok_version, wabt $wabt_version, wakaru $wakaru_version"
+echo "rea $(sed -nE 's/^  version = "([^"]+)";$/\1/p' "$path") pins: ghidra $ghidra_version, jadx-headless-mcp $jadx_version, mitmproxy $mitmproxy_version, sigrok-cli $sigrok_version, wabt $wabt_version, wakaru $wakaru_version"

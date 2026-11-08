@@ -1,5 +1,10 @@
 {
   "build": {
+    "ghidra": {
+      "version": "12.1.4",
+      "url": "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.1.4_build/ghidra_12.1.4_PUBLIC_20260921.zip",
+      "hash": "sha256-3axJ+QPanVusgz5cx5OVCYucM8/TJ5vl8xvQA4fS1Ns="
+    },
     "jadx-headless-mcp": {
       "version": "0.7.1",
       "url": "https://github.com/1013503897/jadx-headless-mcp/releases/download/v0.7.1/jadx-headless-mcp-0.7.1-all.jar",
@@ -28,7 +33,6 @@
   },
   "nixpkgs": {
     "binwalk": "3\\.1\\..*",
-    "ghidra": "12\\.1\\..*",
     "unblob": "26\\.6\\..*"
   }
 }

@@ -9,7 +9,7 @@
   binwalk,
   buildNpmPackage,
   gdb,
-  ghidra,
+  ghidra-bin,
   google-chrome,
   ilspycmd,
   jdk21,
@@ -20,6 +20,7 @@
   runCommand,
   sigrok-cli,
   unblob,
+  unzip,
   util-linux,
   wabt,
   wireshark-cli,
@@ -55,7 +56,7 @@ let
   # REA only runs tools from absolute paths it is given; --set-default lets a
   # caller's environment still override each one.
   env = {
-    GHIDRA_INSTALL_DIR = "${ghidra}/lib/ghidra";
+    GHIDRA_INSTALL_DIR = "${ghidraPinned}/lib/ghidra";
     JAVA_HOME = "${jdk21}";
     REA_ADB_PATH = lib.getExe' android-tools "adb";
     REA_APKTOOL_COMMAND = lib.getExe apktool;
@@ -89,6 +90,11 @@ let
     REA_WAKARU_COMMAND = "${wakaru}/bin/wakaru";
   };
   fetchPin = pin: fetchurl { inherit (pin) hash url; };
+  ghidraPinned = ghidra-bin.overrideAttrs (old: {
+    inherit (pins.build.ghidra) version;
+    src = fetchPin pins.build.ghidra;
+    nativeBuildInputs = old.nativeBuildInputs ++ [ unzip ];
+  });
   lockHash = "sha256-HY+g8zsxJdPmAeyDKxjZ01s3RT82NA3AUH8GWo3hWK0=";
   # REA admits these only at the exact release it audited.
   mitmproxy = python3.pkgs.toPythonApplication (
@@ -103,7 +109,6 @@ let
   nixpkgsTools = {
     inherit
       binwalk
-      ghidra
       unblob
       ;
   };
