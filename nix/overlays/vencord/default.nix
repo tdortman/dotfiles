@@ -30,6 +30,10 @@ final: prev: {
 
       postPatch = "";
 
+      preBuild = ''
+        mkdir -p src/userplugins
+        cp -r ${./emojiPickerRefocus} src/userplugins/emojiPickerRefocus
+      '';
     }
   );
 
