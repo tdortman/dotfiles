@@ -23,6 +23,7 @@
       codesnap
       containerd
       curl
+      custom.ovnfs
       deadnix
       delta
       devenv
