@@ -142,6 +142,9 @@
           "oh-my-pi.cachix.org-1:FRLFzcZnCIB2GfSpDkgHsl8uGa1zDrx1F+bBlVIy7Wo="
         ];
 
+        http-connections = 25; # Throttle parallel socket pool to prevent CDN resets
+        narinfo-cache-negative-ttl = 0; # Don't cache failed substitutions
+
         trusted-users = [
           "@wheel"
         ];
