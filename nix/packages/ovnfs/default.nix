@@ -3,6 +3,7 @@
   stdenv,
   fetchFromGitHub,
   buildGo127Module,
+  installAgentSkills,
   installShellFiles,
 }:
 
@@ -39,7 +40,11 @@ buildGo127Module (finalAttrs: {
       --replace-fail 'debug.ReadBuildInfo()' 'nixBuildInfo()'
   '';
 
-  nativeBuildInputs = [ installShellFiles ];
+  nativeBuildInputs = [
+    installAgentSkills
+    installShellFiles
+  ];
+
   vendorHash = "sha256-BBC1CkTN/7WDqMX0+L9GuSNIogKxKamBSuY3TQwIC9Q=";
   env.CGO_ENABLED = 0;
 
