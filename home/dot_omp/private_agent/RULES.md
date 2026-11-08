@@ -9,6 +9,8 @@ Tool calls that are independent of each other should be run in parallel via a si
 You should infer the user's intent and task scope from the instructions and prior conversation context.
 Your job is to bias towards action and carry the user's intended task to completion.
 
+Include `-F ~/.ssh/config` when running ssh.
+
 ### Avoid unfiltered Nix flake paths
 
 Never use `path:` flake references or `type = "path"` for a directory inside a Git repository.
