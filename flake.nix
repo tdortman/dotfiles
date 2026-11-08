@@ -184,7 +184,7 @@
         treefmt-nix.follows = "treefmt-nix";
       };
 
-      url = "github:kunobi-ninja/kache/a7aafc6caaa821dc19b856b30725e9532d9b0e28";
+      url = "github:kunobi-ninja/kache/v2.0.1";
     };
 
     llm-agents = {
@@ -204,7 +204,7 @@
       url = "github:nix-community/NixOS-WSL/main";
     };
 
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/1d060086d60cb76a40cf37109f979d88a5bd6396";
     nixpkgs-flox.url = "github:flox/nixpkgs/unstable";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-temp.url = "github:NixOS/nixpkgs/pull/540416/head";

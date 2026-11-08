@@ -73,7 +73,6 @@
       nixfmt
       nodejs
       oh-my-posh
-      oha
       ookla-speedtest
       opencl-headers
       openssh
