@@ -3,14 +3,17 @@ _:
 final: prev: {
   vencord = final.master.vencord.overrideAttrs (
     finalAttrs: _: {
-      version = "1.15.13";
+      version = "1.15.16";
 
       src = prev.fetchFromGitHub {
         owner = "Vendicated";
         repo = "Vencord";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-YuzFkZafNJ0brt2S3gg+pm6xYXZEAjBkDH76cb0dmd8=";
+        hash = "sha256-aUJubLJpyLAZWiOezqFxPY6oVPgWVPQpajFqrJvrO9U=";
       };
+
+      # nixpkgs' @types/react pin is upstream since 1.15.16
+      patches = [ ];
 
       pnpmDeps = prev.fetchPnpmDeps {
         inherit (finalAttrs)
@@ -21,9 +24,12 @@ final: prev: {
           ;
 
         fetcherVersion = 4;
-        hash = "sha256-4dZTLwLoWnz6/svC6HH6SFuroYmPWDEpEAtByGzGHEw=";
+        hash = "sha256-HS8uZNepvDefjrsG3buVLFCVv7sHvazcwdpcT3EQ/78=";
         pnpm = final.master.pnpm_11;
       };
+
+      postPatch = "";
+
     }
   );
 
