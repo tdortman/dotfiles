@@ -481,8 +481,7 @@
       { "kind": "unix_socket", "path": "/run/podman/podman.sock", "access": "connect", "comment": "global" },
       { "kind": "unix_socket", "path": "/run/user/*/systemd/private", "access": "connect", "comment": "global" },
       { "kind": "unix_socket", "path": "/run/user/1000/podman/podman.sock", "access": "connect", "comment": "global" },
-      { "kind": "unix_socket", "path": "@abstract:/tmp/.X11-unix/X0", "access": "connect", "comment": "global" },
-      { "kind": "unix_socket", "path": "/run/user/1000/tern/daemon.sock", "access": "connect", "comment": "global_package" }
+      { "kind": "unix_socket", "path": "@abstract:/tmp/.X11-unix/X0", "access": "connect", "comment": "global" }
     ]
   },
   "dbus": {
