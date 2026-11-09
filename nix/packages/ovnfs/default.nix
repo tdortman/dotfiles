@@ -47,6 +47,8 @@ buildGo127Module (finalAttrs: {
 
   vendorHash = "sha256-BBC1CkTN/7WDqMX0+L9GuSNIogKxKamBSuY3TQwIC9Q=";
   env.CGO_ENABLED = 0;
+  # nix-update prefetches goModules with outputHash = "", which defeats the hook's FOD guard.
+  overrideModAttrs = _: { dontInstallAgentSkills = true; };
 
   postInstall = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
     installShellCompletion --cmd ovnfs \
