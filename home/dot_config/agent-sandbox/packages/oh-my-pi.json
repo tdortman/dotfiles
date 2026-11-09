@@ -34,6 +34,7 @@
       { "path": "~/.config/orca/agent-hooks", "access": "read", "comment": "global_package" },
       { "path": "~/.local/state/tern", "access": "write", "comment": "global_package" },
       { "path": "~/.pi/agent/ayu/checkpoints/sessions", "access": "write", "comment": "global_package" },
+      { "path": "~/checkouts", "access": "write", "comment": "global_package" },
       { "path": "~/dotfiles/home/dot_omp", "access": "read_write", "comment": "global_package" }
     ],
     "deny": []
