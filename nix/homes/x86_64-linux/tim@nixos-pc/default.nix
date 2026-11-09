@@ -1,9 +1,7 @@
 {
   lib,
   pkgs,
-  inputs,
   osConfig,
-  system,
   ...
 }:
 
@@ -129,7 +127,7 @@
 
     voxtype = {
       enable = true;
-      package = inputs.voxtype.packages.${system}.vulkan;
+      package = pkgs.voxtype-vulkan;
       engine = "whisper";
       model.name = "large-v3-turbo";
       service.enable = true;
