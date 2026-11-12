@@ -607,8 +607,8 @@
     ratbagd.enable = true;
 
     udev.extraRules = ''
-      # Colon-free aliases avoid escaping PCI paths in KWin's device list.
-      SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:07:00.0", SYMLINK+="dri/intel-arc"
+      # Colon-free aliases avoid escaping PCI paths in KWin's device list; cap Arc clocks to prevent thermal oscillation at idle.
+      SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:07:00.0", SYMLINK+="dri/intel-arc", ATTR{gt/gt0/slpc_power_profile}="power_saving", ATTR{gt/gt0/rps_boost_freq_mhz}="1000", ATTR{gt/gt0/rps_max_freq_mhz}="1400", ATTR{gt/gt0/slpc_ignore_eff_freq}="1"
       SUBSYSTEM=="drm", KERNEL=="card[0-9]*", KERNELS=="0000:0d:00.0", SYMLINK+="dri/nvidia-gaming"
 
       # StreamController text input

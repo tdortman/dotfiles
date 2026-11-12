@@ -156,6 +156,39 @@
       ExecStart = "${config.hardware.nvidia.package.bin}/bin/nvidia-smi --id=0000:0d:00.0 --power-limit=250";
     };
   };
+  systemd.services.intel-arc-power-profile = {
+    description = "Set Intel Arc GPU SLPC power-saving profile and frequency caps";
+
+    after = [
+      "systemd-hibernate.service"
+      "systemd-hybrid-sleep.service"
+      "systemd-modules-load.service"
+      "systemd-suspend-then-hibernate.service"
+      "systemd-suspend.service"
+    ];
+
+    wantedBy = [
+      "hibernate.target"
+      "hybrid-sleep.target"
+      "multi-user.target"
+      "suspend-then-hibernate.target"
+      "suspend.target"
+    ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "intel-arc-power-profile" ''
+        for card in /sys/class/drm/card*; do
+          if [ -d "$card/gt/gt0" ] && [ "$(${pkgs.coreutils}/bin/cat "$card/device/vendor" 2>/dev/null)" = "0x8086" ]; then
+            echo power_saving > "$card/gt/gt0/slpc_power_profile" 2>/dev/null || true
+            echo 1000 > "$card/gt/gt0/rps_boost_freq_mhz" 2>/dev/null || true
+            echo 1400 > "$card/gt/gt0/rps_max_freq_mhz" 2>/dev/null || true
+            echo 1 > "$card/gt/gt0/slpc_ignore_eff_freq" 2>/dev/null || true
+          fi
+        done
+      '';
+    };
+  };
 
   users = {
     groups.media = { };
