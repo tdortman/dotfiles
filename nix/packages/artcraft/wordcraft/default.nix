@@ -4,14 +4,14 @@
 }:
 
 let
-  version = "0.16.0";
+  version = "0.18.1";
 in
 callPackage ../craft-app.nix {
   inherit version;
 
   src = fetchurl {
     url = "https://github.com/storytold/wordcraft/releases/download/v${version}/wordcraft-${version}-linux-x86_64.tar.gz";
-    hash = "sha256-MluX8Vu/UyYooxdqnBcUinF18+Txm5MT3jI6tRNgl1I=";
+    hash = "sha256-MSoFfUbdgFl8EtzP0Ql84l7epAuqrrULy28BrBrrrbU=";
   };
 
   description = "Open-source, clean-room reimplementation of Microsoft Word";
