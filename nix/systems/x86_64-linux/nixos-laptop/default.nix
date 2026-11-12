@@ -197,11 +197,13 @@
       nheko
       ntfs3g
       qpwgraph
+      rnote
       samba
       teams-for-linux
       vlc
       xdg-desktop-portal
       xdg-utils
+      xournalpp
       zed-editor-fhs
     ];
 
