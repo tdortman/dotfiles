@@ -395,6 +395,9 @@ in
           "/home/${cfg.user}/3rd-party"
           "/home/${cfg.user}/.lmstudio/models"
 
+          # ovnfs FUSE mount, unreadable by root; its data is in ~/.local/state/ovnfs.
+          "/home/${cfg.user}/checkouts"
+
           # Exclude any directory named "data" below ~/Projects, but not arbitrary
           # "data" directories elsewhere in the home directory.
           "/home/${cfg.user}/Projects/data"
