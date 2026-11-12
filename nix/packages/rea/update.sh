@@ -73,11 +73,11 @@ node="$(nix build .#rea.nodejs --no-link --print-out-paths)/bin/node"
 const dist = process.argv[2];
 const load = (module) => import(`${dist}/${module}`);
 const { JADX_RELEASE } = await load("android/JadxRelease.js");
-const { WABT_VERSION } = await load("wasm/WabtRelease.js");
-const { WAKARU_RELEASE } = await load("javascript/recovery/WakaruRelease.js");
+const { WABT_VERSION } = await load("domain/wasm/wasmArtifact.js");
+const { WAKARU_RELEASE } = await load("javascript/recovery/WakaruProviderIdentity.js");
 const { FIRMWARE_TOOL_REQUIREMENTS } = await load("contracts/firmware/firmwareToolRequirements.js");
 const { SUPPORTED_GHIDRA_VERSION } = await load("ghidra/GhidraReleasePolicy.js");
-const { MITMPROXY_CAPTURE_PROVIDER_IDENTITY } = await load("browser/history/CaptureRelease.js");
+const { MITMPROXY_CAPTURE_PROVIDER_IDENTITY } = await load("browser/history/CaptureProviderIdentities.js");
 const required = (value, name) => {
   if (typeof value !== "string" || value === "") throw new Error(`REA no longer exports ${name}`);
   return value;

@@ -52,7 +52,7 @@ let
     nodejs = nodejs_26;
     npmFlags = [ "--ignore-scripts" ];
   };
-  depsHash = "sha256-3WPXD+qm5WVfrTEvepKwX5RZBfbLBcPB0uDmKIx4MR8=";
+  depsHash = "sha256-6hRmFRsPY6U5O0tpwA3mAUZIic5cO+M/kAs326Q3lNI=";
   # REA only runs tools from absolute paths it is given; --set-default lets a
   # caller's environment still override each one.
   env = {
@@ -95,7 +95,7 @@ let
     src = fetchPin pins.build.ghidra;
     nativeBuildInputs = old.nativeBuildInputs ++ [ unzip ];
   });
-  lockHash = "sha256-HY+g8zsxJdPmAeyDKxjZ01s3RT82NA3AUH8GWo3hWK0=";
+  lockHash = "sha256-PLzox45vpKtpYY3PmifqHzRnC8FmTqd3/XmTkB4IoWM=";
   # REA admits these only at the exact release it audited.
   mitmproxy = python3.pkgs.toPythonApplication (
     python3.pkgs.mitmproxy.overridePythonAttrs (old: {
@@ -165,8 +165,8 @@ let
       }
     } $out/package-lock.json
   '';
-  tarballHash = "sha256-jVQux2qcs1BYS2CmycCIcG/4EtW7WwlMIMlbbcJWmLs=";
-  version = "6.8.0";
+  tarballHash = "sha256-MiM4oVBeJVdwKhYBLn1Gq9tXKWQdmJOGYnYt+/t5Jio=";
+  version = "6.9.0";
   wabtPinned = wabt.overrideAttrs {
     inherit (pins.build.wabt) version;
     src = fetchPin pins.build.wabt;
