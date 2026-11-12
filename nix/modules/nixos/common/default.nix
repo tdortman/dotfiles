@@ -34,10 +34,17 @@
 
     environment = {
       etc."librewolf/policies/policies.json".text = builtins.toJSON {
-        policies.ExtensionSettings."firefox-extension@deepl.com".runtime_blocked_hosts = [
-          "*://openrouter.ai"
-          "*://*.openrouter.ai"
-        ];
+        policies.ExtensionSettings = {
+          "firefox-extension@deepl.com".runtime_blocked_hosts = [
+            "*://openrouter.ai"
+            "*://*.openrouter.ai"
+          ];
+          # invisible recaptcha enterprise drops trust to 0 when it detects buster 
+          "{e58d3966-3d76-4cd9-8552-1582fbc800c1}".runtime_blocked_hosts = [
+            "*://motorola.com"
+            "*://*.motorola.com"
+          ];
+        };
       };
 
       interactiveShellInit = ''
