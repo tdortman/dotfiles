@@ -29,7 +29,12 @@
         ScrollFactor = 0.75;
       };
 
-      kwinrc.Xwayland.Scale = 1.25;
+      kwinrc = {
+        # KWin only pops up the on-screen keyboard when a text field is focused by touch or pen.
+        # The profile path survives rebuilds; the KCM would store a store path.
+        Wayland.InputMethod = "/run/current-system/sw/share/applications/org.kde.plasma.keyboard.desktop";
+        Xwayland.Scale = 1.25;
+      };
 
       kwinrulesrc = {
         "2c49b7ea-aa4c-480f-b254-0caf6115a221" = {
