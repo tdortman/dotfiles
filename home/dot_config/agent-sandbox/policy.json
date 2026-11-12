@@ -225,6 +225,7 @@
         { "methods": ["GET"], "url": "https://www.postgresql.org/docs", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.rfc-editor.org/rfc/rfc*.json", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.rfc-editor.org/rfc/rfc*.txt", "port": 443, "comment": "global" },
+        { "methods": ["GET"], "url": "https://www.sciencedirect.com/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.startpage.com/", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://www.startpage.com/sp/search", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.teltarif.de/", "port": 443, "comment": "global" },
