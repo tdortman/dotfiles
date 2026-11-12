@@ -9,13 +9,13 @@
 
 buildGo127Module (finalAttrs: {
   pname = "ovnfs";
-  version = "0.4.0";
+  version = "0.5.2";
 
   src = fetchFromGitHub {
     owner = "stencil-hq";
     repo = "ovnfs";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-Rzqs/ReUj4dhC5y9NSl7l/MxPdP5PjC38YHMYISGae0=";
+    hash = "sha256-8V0M9swWDYF6H+ZMpv7dtCtM6XLcZOBGbnym+/XjDcQ=";
   };
 
   # Go only stamps the module version into builds made by `go install pkg@version`, so a
