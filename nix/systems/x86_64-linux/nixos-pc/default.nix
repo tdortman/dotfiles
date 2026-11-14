@@ -58,6 +58,10 @@
       in
       [
         {
+          package = agents.antigravity-cli;
+          readwriteDirs = [ "~/.gemini" ];
+        }
+        {
           package = agents.codex;
           readwriteDirs = [ "~/.codex" ];
         }

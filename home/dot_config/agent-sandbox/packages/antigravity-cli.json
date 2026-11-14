@@ -1,0 +1,43 @@
+{
+  "network": {
+    "direct": {
+      "allow": [],
+      "deny": []
+    },
+    "http": {
+      "allow": [
+        { "methods": ["GET"], "url": "https://aicode.googleapis.com/v1alpha:fetchConfig", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal/cascadeNuxes", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:fetchAdminControls", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:fetchUserInfo", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:listExperiments", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:writeTrajectoryAcls", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://lh3.googleusercontent.com/", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://play.googleapis.com/log", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://www.googleapis.com/oauth2/v2/userinfo", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://www.gstatic.com/antigravity/plugins-partners/marketplace.json", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://www.gstatic.com/antigravity/plugins/marketplace.json", "port": 443, "comment": "global_package" }
+      ],
+      "deny": []
+    }
+  },
+  "sudo": {
+    "allow": [],
+    "deny": []
+  },
+  "filesystem": {
+    "allow": [
+      { "path": "/dev/shm/libpod_rootless_lock_1000", "access": "read_write", "comment": "global_package" },
+      { "path": "/run/user/1000/libpod/tmp/alive", "access": "read", "comment": "global_package" },
+      { "path": "/run/user/1000/libpod/tmp/alive.lck", "access": "read_write", "comment": "global_package" },
+      { "path": "/run/user/1000/libpod/tmp/pause.pid", "access": "read_write", "comment": "global_package" },
+      { "path": "~/.local/share/containers/storage/db.sql", "access": "read_write", "comment": "global_package" }
+    ],
+    "deny": []
+  },
+  "resources": {
+    "allow": [],
+    "deny": []
+  }
+}
