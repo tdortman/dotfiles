@@ -73,13 +73,13 @@ let
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "vx";
-  version = "0.0.3";
+  version = "0.0.4";
 
   src = fetchFromGitHub {
     owner = "vx-lang";
     repo = "Vx";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-VAdK6GDBfw0Dx0WrGIEQLJboskXIk2gSp+KUXXGVIvM=";
+    hash = "sha256-5isFylrIGQfNnJYgAVBg8olLJdv6sOXBb7EdtNpS5LY=";
   };
 
   nativeBuildInputs = [
@@ -98,7 +98,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     zlib
   ];
 
-  cargoHash = "sha256-3r6XTi+bRYYeH1IfEUEMrtGZYGulT3eC5Lqqtv3ptiI=";
+  cargoHash = "sha256-DO4j3OMwA1xqJ09RHYkDalhfG/8LyMEIxVr6a8DzfZs=";
   env = lib.optionalAttrs cudaSupport { CUDA_HOME = cudaHome; };
   # The upstream suite JITs programs through clang and needs the source checkout layout.
   doCheck = false;
