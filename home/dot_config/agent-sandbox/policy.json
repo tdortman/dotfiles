@@ -48,6 +48,8 @@
         { "methods": ["GET"], "url": "https://api.anthropic.com/v1/models", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://api.anthropic.com/v1/oauth/token", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.commandcode.ai/provider/v1/models", "port": 443, "comment": "global" },
+        { "methods": ["POST"], "url": "https://api.copilot.nsight.ngc.nvidia.com/mcp/cuda-docs", "port": 443, "comment": "global" },
+        { "methods": ["POST"], "url": "https://api.copilot.nsight.ngc.nvidia.com/register", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.crossref.org/", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://api.deepseek.com/chat/completions", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.deepseek.com/models", "port": 443, "comment": "global" },

@@ -1,6 +1,6 @@
 ---
 name: cuda-profiling
-description: CUDA profiling skill for NVIDIA GPU performance analysis. Use when profiling kernels with Nsight Systems or Nsight Compute, interpreting roofline models, diagnosing memory-bound vs compute-bound kernels, or annotating code with NVTX ranges. Activates on queries about Nsight, NCU, ncu CLI, GPU roofline, occupancy metrics, or CUDA profiling workflow.
+description: "Use for CUDA profiling with Nsight Systems or Nsight Compute, NVBench/CCCL benchmark runs and before-after comparisons, roofline and occupancy analysis, CPU/GPU overlap, or NVTX instrumentation."
 ---
 
 # CUDA Profiling
@@ -19,6 +19,10 @@ Guide agents through profiling CUDA applications with Nsight Systems (timeline-l
 - Interpreting occupancy, memory throughput, and SM utilization metrics
 
 ## Workflow
+
+For API, CLI, or metric questions, query `nvidia-cuda-docs/search_cuda_docs` first with the installed version and target GPU. In omp, read `xd://mcp__nvidia_cuda_docs_search_cuda_docs` for the schema, then write a JSON object containing `query` to that device. Confirm version-sensitive options with installed tool help.
+
+For NVBench or CCCL benchmark work, read [references/nvbench.md](references/nvbench.md) before building or running. It covers timing scope, explicit device selection, retained JSON/Markdown results, noise-aware comparisons, and profiler-only execution.
 
 ### 1. Choose profiling tool
 
@@ -109,8 +113,8 @@ ncu --metrics \
 # CSV export for CI
 ncu --csv --metrics dram__bytes_read.sum,dram__bytes_write.sum ./my_cuda_app
 
-# Set kernel replay mode for accurate counters
-ncu --kernel-replay-mode application ./my_cuda_app
+# Replay the application when the workload requires application replay
+ncu --replay-mode application ./my_cuda_app
 ```
 
 ### 6. Memory-bound vs compute-bound diagnosis
@@ -135,7 +139,7 @@ Performance (GFLOP/s)
     +------------------ Arithmetic Intensity (FLOP/byte)
 ```
 
-Measure arithmetic intensity: `smsp__sass_thread_inst_executed_op_ffma_pred_on.sum * 2 / dram__bytes.sum`
+Compute arithmetic intensity from the workload's floating-point operations divided by transferred bytes. Include the relevant precisions and operation classes; an FFMA-only counter is not a general FLOP count. Verify metric names and units with `ncu --query-metrics`, and use the matching NCU roofline section where available.
 
 ### 7. Occupancy analysis
 
@@ -149,7 +153,7 @@ launch__occupancy_limit_block_size \
 
 | Limiting factor | Typical fix |
 |-----------------|-------------|
-| Registers | `-maxrregcount`, simplify kernel |
+| Registers | Check live ranges and spills before experimenting with register caps |
 | Shared memory | Reduce tile size, split phases |
 | Block size | Try 128 or 256 instead of 512+ |
 
@@ -183,6 +187,9 @@ ncu --csv --metrics sm__throughput.avg.pct_of_peak_sustained_elapsed ./app_v2 > 
 
 ## Related Skills
 
+- `cuda-sass-analysis` — inspect native code and resource usage to test a profiled optimization hypothesis
+- `cccl-algorithms` — choose and compose Thrust, CUB, and libcu++ algorithms before writing kernels
+- `nvidia-cccl-runtime` — explicit devices, streams, typed storage, and resource lifetime
 - `skills/gpu/cuda` — kernel writing, occupancy tuning, nvcc flags
 - `skills/gpu/gpu-memory-model` — coalescing, bank conflicts, SIMT model
 - `skills/gpu/cuda-debugging` — correctness before performance tuning
