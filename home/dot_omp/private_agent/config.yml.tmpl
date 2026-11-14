@@ -91,7 +91,7 @@ providers:
     codeMode: "on"
   anthropic:
     slowMode: auto
-setupVersion: 2
+setupVersion: 3
 python:
   kernelMode: session
 dev:
@@ -126,7 +126,8 @@ plan:
   defaultOnStartup: false
 defaultThinkingLevel: high
 codexResets:
-  autoRedeem: "no"
+  autoRedeem5h: "no"
+  autoRedeemWeekly: "no"
 hideThinkingBlock: false
 branchSummary:
   enabled: false
@@ -206,7 +207,8 @@ find:
 error:
   notify: "on"
 claudeResets:
-  autoRedeem: "no"
+  autoRedeem5h: "no"
+  autoRedeemWeekly: "no"
 spelling:
   autocomplete: {{ if eq .chezmoi.hostname "nixos-laptop" }}auto{{ else }}smollm{{ end }}
 web_search:
