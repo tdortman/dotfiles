@@ -88,6 +88,7 @@
         { "methods": ["HEAD"], "url": "https://cache.nixos.org/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://cdn.ek.aero/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://channels.nixos.org/flake-registry.json", "port": 443, "comment": "global" },
+        { "methods": ["HEAD"], "url": "https://chatgpt.com/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/aardvark/scan_configurations", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/accounts/verified_access", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/alpha/search", "port": 443, "comment": "global" },
@@ -176,7 +177,8 @@
         { "methods": ["GET"], "url": "https://opencode.ai/zen/go/v1/usage", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://opencode.ai/zen/v1/chat/completions", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://opencode.ai/zen/v1/messages", "port": 443, "comment": "global" },
-        { "methods": ["GET"], "url": "https://opencode.ai/zen/v1/models", "port": 443, "comment": "global" },
+        { "methods": ["GET", "POST"], "url": "https://opencode.ai/zen/v1/models", "port": 443, "comment": "global" },
+        { "methods": ["POST"], "url": "https://opencode.ai/zen/v1/responses", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://openlex.de/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://openproceedings.org/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://openrouter.ai/api/v1/embeddings/models", "port": 443, "comment": "global" },
@@ -646,6 +648,19 @@
           "member": "Register",
           "message_kind": "method_call",
           "signature": "(sa{sv})",
+          "fd_metadata": []
+        },
+        "comment": "global"
+      },
+      {
+        "target": {
+          "bus": "session",
+          "destination": "org.freedesktop.portal.Desktop",
+          "object_path": "/org/freedesktop/portal/desktop",
+          "interface": "org.freedesktop.portal.OpenURI",
+          "member": "OpenURI",
+          "message_kind": "method_call",
+          "signature": "(ssa{sv})",
           "fd_metadata": []
         },
         "comment": "global"
