@@ -27,6 +27,7 @@
       "allow": [
         { "methods": ["GET"], "url": "http://clients2.google.com/time/1/current", "port": 80, "comment": "global" },
         { "methods": ["GET"], "url": "http://connectivitycheck.gstatic.com/generate_204", "port": 80, "comment": "global" },
+        { "methods": ["GET"], "url": "http://dl.acm.org/", "port": 80, "comment": "global" },
         { "methods": ["GET"], "url": "http://edgedl.me.gvt1.com/edgedl/diffgen-puffin", "port": 80, "comment": "global" },
         { "methods": ["GET"], "url": "http://export.arxiv.org/api/query", "port": 80, "comment": "global" },
         { "methods": ["GET"], "url": "http://specifications.freedesktop.org/", "port": 80, "comment": "global" },
@@ -204,6 +205,7 @@
         { "methods": ["POST"], "url": "https://update.googleapis.com/service/update2/json", "port": 443, "comment": "global" },
         { "methods": ["HEAD"], "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://vldb.org/", "port": 443, "comment": "global" },
+        { "methods": ["GET"], "url": "https://www.acm.org/", "port": 443, "comment": "global" },
         { "methods": ["GET", "POST"], "url": "https://www.amazon.de/", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.amazon.de/-/en/s", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://www.andrew.cmu.edu/", "port": 443, "comment": "global" },
