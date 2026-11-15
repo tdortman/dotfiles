@@ -39,7 +39,7 @@ in
         description = "Run no-rgb every 2 hours";
 
         timerConfig = {
-          OnBootSec = "0";
+          OnBootSec = "10min";
           OnUnitActiveSec = "2h";
         };
 
