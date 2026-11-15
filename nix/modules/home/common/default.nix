@@ -9,21 +9,16 @@
   options.custom.panelLaunchers = lib.mkOption {
     type = lib.types.listOf lib.types.str;
 
-    default = [
-      "applications:org.kde.kdeconnect.app.desktop"
-      "applications:com.mitchellh.ghostty.desktop"
-      "applications:org.kde.dolphin.desktop"
-      "applications:librewolf.desktop"
-      "applications:discord.desktop"
-      "applications:spotify.desktop"
-    ];
     defaultText = lib.literalExpression ''
       [
         "applications:org.kde.kdeconnect.app.desktop"
+        "applications:thunderbird.desktop"
         "applications:com.mitchellh.ghostty.desktop"
+        "applications:so.stencil.tern.desktop"
         "applications:org.kde.dolphin.desktop"
         "applications:librewolf.desktop"
         "applications:discord.desktop"
+        "applications:steam.desktop"
         "applications:spotify.desktop"
       ]
     '';
@@ -220,101 +215,108 @@
       enable = lib.mkDefault true;
     };
 
-    # plasma-manager recreates the panel at login and the tray builds its nested
-    # applets afterwards, so a single write lands in a tray that has no volume
-    # applet yet, or is thrown away when the panel is recreated again. Keep
-    # writing over the window in which that happens instead of once.
-    systemd.user.services.plasma-volume-virtual-devices = {
-      Install.WantedBy = [ "plasma-plasmashell.service" ];
+    systemd.user.services = {
+      # plasma-manager recreates the panel at login and the tray builds its nested
+      # applets afterwards, so a single write lands in a tray that has no volume
+      # applet yet, or is thrown away when the panel is recreated again. Keep
+      # writing over the window in which that happens instead of once.
+      plasma-volume-virtual-devices = {
+        Install.WantedBy = [ "plasma-plasmashell.service" ];
 
-      Service = {
-        Type = "oneshot";
+        Service = {
+          Type = "oneshot";
 
-        ExecStart = pkgs.writeShellScript "plasma-volume-virtual-devices" ''
-          set -eu
+          ExecStart = pkgs.writeShellScript "plasma-volume-virtual-devices" ''
+            set -eu
 
-          qdbus=${lib.getExe' pkgs.qt6Packages.qttools "qdbus"}
+            qdbus=${lib.getExe' pkgs.qt6Packages.qttools "qdbus"}
 
-          script='
-          var configured = 0;
-          for (const containment of panels().concat(desktops())) {
-            for (const widget of containment.widgets()) {
-              if (widget.type === "org.kde.plasma.volume") {
-                widget.currentConfigGroup = ["General"];
-                widget.writeConfig("showVirtualDevices", true);
-                configured++;
-              } else if (widget.type === "org.kde.plasma.systemtray") {
-                widget.currentConfigGroup = ["Applets"];
-                // Qt exposes a live list that changes with currentConfigGroup.
-                for (const id of Array.from(widget.configGroups)) {
-                  widget.currentConfigGroup = ["Applets", id];
-                  if (widget.readConfig("plugin", "") === "org.kde.plasma.volume") {
-                    widget.currentConfigGroup = ["Applets", id, "Configuration", "General"];
-                    widget.writeConfig("showVirtualDevices", true);
-                    configured++;
+            script='
+            var configured = 0;
+            for (const containment of panels().concat(desktops())) {
+              for (const widget of containment.widgets()) {
+                if (widget.type === "org.kde.plasma.volume") {
+                  widget.currentConfigGroup = ["General"];
+                  widget.writeConfig("showVirtualDevices", true);
+                  configured++;
+                } else if (widget.type === "org.kde.plasma.systemtray") {
+                  widget.currentConfigGroup = ["Applets"];
+                  // Qt exposes a live list that changes with currentConfigGroup.
+                  for (const id of Array.from(widget.configGroups)) {
+                    widget.currentConfigGroup = ["Applets", id];
+                    if (widget.readConfig("plugin", "") === "org.kde.plasma.volume") {
+                      widget.currentConfigGroup = ["Applets", id, "Configuration", "General"];
+                      widget.writeConfig("showVirtualDevices", true);
+                      configured++;
+                    }
                   }
                 }
               }
             }
-          }
-          print("configured=" + configured);
-          '
+            print("configured=" + configured);
+            '
 
-          attempts=30
-          attempt=0
-          replies=0
-          configured=0
-          rejected=0
+            attempts=30
+            attempt=0
+            replies=0
+            configured=0
+            rejected=0
 
-          while [ "$attempt" -lt "$attempts" ]; do
-            attempt=$((attempt + 1))
-            result=$($qdbus org.kde.plasmashell /PlasmaShell \
-              org.kde.PlasmaShell.evaluateScript "$script" 2>/dev/null || true)
+            while [ "$attempt" -lt "$attempts" ]; do
+              attempt=$((attempt + 1))
+              result=$($qdbus org.kde.plasmashell /PlasmaShell \
+                org.kde.PlasmaShell.evaluateScript "$script" 2>/dev/null || true)
 
-            if [ -n "$result" ]; then
-              replies=$((replies + 1))
+              if [ -n "$result" ]; then
+                replies=$((replies + 1))
+              fi
+
+              case $result in
+                *configured=0) ;;
+                *configured=*)
+                  if [ "$configured" -eq 0 ]; then
+                    echo "volume applet found on attempt $attempt"
+                  fi
+                  configured=$((configured + 1))
+                  ;;
+                "")
+                  ;;
+                *)
+                  if [ "$rejected" -eq 0 ]; then
+                    echo "plasmashell rejected the script: $result" >&2
+                  fi
+                  rejected=$((rejected + 1))
+                  ;;
+              esac
+
+              sleep 1
+            done
+
+            if [ "$configured" -gt 0 ]; then
+              echo "enabled virtual audio devices in $configured of $attempt attempts"
+            elif [ "$rejected" -gt 0 ]; then
+              exit 1
+            elif [ "$replies" -eq 0 ]; then
+              echo "plasmashell did not answer $attempts calls" >&2
+              exit 1
+            else
+              echo "no volume applet in the Plasma tray, nothing to configure"
             fi
+          '';
+        };
 
-            case $result in
-              *configured=0) ;;
-              *configured=*)
-                if [ "$configured" -eq 0 ]; then
-                  echo "volume applet found on attempt $attempt"
-                fi
-                configured=$((configured + 1))
-                ;;
-              "")
-                ;;
-              *)
-                if [ "$rejected" -eq 0 ]; then
-                  echo "plasmashell rejected the script: $result" >&2
-                fi
-                rejected=$((rejected + 1))
-                ;;
-            esac
-
-            sleep 1
-          done
-
-          if [ "$configured" -gt 0 ]; then
-            echo "enabled virtual audio devices in $configured of $attempt attempts"
-          elif [ "$rejected" -gt 0 ]; then
-            exit 1
-          elif [ "$replies" -eq 0 ]; then
-            echo "plasmashell did not answer $attempts calls" >&2
-            exit 1
-          else
-            echo "no volume applet in the Plasma tray, nothing to configure"
-          fi
-        '';
-      };
-
-      Unit = {
-        After = [ "plasma-plasmashell.service" ];
-        Description = "Show virtual audio devices in the Plasma volume applet";
+        Unit = {
+          After = [ "plasma-plasmashell.service" ];
+          Description = "Show virtual audio devices in the Plasma volume applet";
+        };
       };
     };
 
+    # plasmashell ignores SIGTERM on shutdown (KDE bug 525727, needs Qt 6.12.1),
+    # so the shipped 40s stop timeout is all spent waiting. Cut it until the fix lands.
+    # A systemd.user.services entry would generate a whole unit here that shadows
+    # plasma-workspace's real one, leaving it without ExecStart, so use a drop-in.
+    # (see the xdg.configFile entry below)
     xdg.configFile."systemd/user/plasma-plasmashell.service.d/10-timeout.conf".text = ''
       [Service]
       TimeoutStopSec=5s
