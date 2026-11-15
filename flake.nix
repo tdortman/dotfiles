@@ -48,6 +48,7 @@
         modules.nixos = with inputs; [
           agenix.nixosModules.default
           agent-sandbox.nixosModules.agent-sandbox
+          bootvine.nixosModules.default
           disko.nixosModules.disko
           home-manager.nixosModules.home-manager
           kache.nixosModules.default
@@ -159,6 +160,11 @@
       };
 
       url = "github:tdortman/agent-sandbox";
+    };
+
+    bootvine = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "git+https://codeberg.org/wvhulle/bootvine";
     };
 
     codex-desktop-linux = {

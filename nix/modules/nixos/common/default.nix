@@ -29,14 +29,36 @@
       secrets.login-password.file = "${inputs.self}/nix/secrets/login-password.age";
     };
 
-    console.useXkbConfig = true;
     boot.initrd.systemd.services.bootvine = {
       after = [ "systemd-vconsole-setup.service" ];
       wants = [ "systemd-vconsole-setup.service" ];
     };
 
+    console = {
+      colors = [
+        "0b0c0f"
+        "f43e5c"
+        "27d797"
+        "fab795"
+        "26bbd9"
+        "b877db"
+        "25b0bc"
+        "bbbbbb"
+        "48494c"
+        "e95678"
+        "27d797"
+        "fac29a"
+        "26bbd9"
+        "ee64ac"
+        "21bfc2"
+        "d5d8da"
+      ];
+
       earlySetup = true;
       font = "${pkgs.custom.comic-code-nerd-font}/share/consolefonts/comic-code-nerd-font.psf";
+      useXkbConfig = true;
+    };
+
     custom.common.username = lib.mkDefault "tim";
 
     environment = {
@@ -229,6 +251,13 @@
         layout = "us,de";
         variant = "altgr-intl,";
       };
+    };
+
+    services.bootvine.enable = true;
+
+    systemd.services.bootvine = {
+      after = [ "systemd-vconsole-setup.service" ];
+      wants = [ "systemd-vconsole-setup.service" ];
     };
 
     time.timeZone = "Europe/Berlin";
