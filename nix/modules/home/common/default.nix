@@ -17,6 +17,16 @@
       "applications:discord.desktop"
       "applications:spotify.desktop"
     ];
+    defaultText = lib.literalExpression ''
+      [
+        "applications:org.kde.kdeconnect.app.desktop"
+        "applications:com.mitchellh.ghostty.desktop"
+        "applications:org.kde.dolphin.desktop"
+        "applications:librewolf.desktop"
+        "applications:discord.desktop"
+        "applications:spotify.desktop"
+      ]
+    '';
 
     description = "Application launchers in the shared Plasma panel, in display order.";
   };
@@ -146,7 +156,6 @@
 
             widgets = [
               { kickoff = { }; }
-              { pager = { }; }
               { iconTasks.launchers = config.custom.panelLaunchers; }
               "org.kde.plasma.marginsseparator"
               "org.kde.plasma.systemtray"
