@@ -59,6 +59,7 @@
       [
         {
           package = agents.antigravity-cli;
+          launchArgs.unsandboxed = [ "--dangerously-skip-permissions" ];
           readwriteDirs = [ "~/.gemini" ];
         }
         {
@@ -105,12 +106,19 @@
         {
           package = inputs.omp.packages.${system}.default;
 
-          launchHook = ''
-            unset XDG_DATA_HOME
-            export LD_LIBRARY_PATH="${
-              lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ]
-            }''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          '';
+          launchHook =
+            let
+              hook = ''
+                unset XDG_DATA_HOME
+                export LD_LIBRARY_PATH="${
+                  lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ]
+                }''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+              '';
+            in
+            {
+              sandboxed = hook;
+              unsandboxed = hook;
+            };
 
           readwriteDirs = [
             "~/.omp"
@@ -591,7 +599,7 @@
 
     kmscon.config = {
       font-dpi = 256;
-      font-name = "JetBrainsMono Nerd Font Mono";
+      font-name = "ComicCodeLigatures Nerd Font Mono";
       font-size = 26;
       hwaccel = true;
     };
