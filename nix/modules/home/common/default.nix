@@ -314,5 +314,10 @@
         Description = "Show virtual audio devices in the Plasma volume applet";
       };
     };
+
+    xdg.configFile."systemd/user/plasma-plasmashell.service.d/10-timeout.conf".text = ''
+      [Service]
+      TimeoutStopSec=5s
+    '';
   };
 }
