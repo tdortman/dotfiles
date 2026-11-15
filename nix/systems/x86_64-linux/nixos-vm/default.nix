@@ -150,7 +150,7 @@
 
     kmscon.config = {
       font-dpi = 256;
-      font-name = "JetBrainsMono Nerd Font Mono";
+      font-name = "ComicCodeLigatures Nerd Font Mono";
       font-size = 26;
       hwaccel = true;
     };

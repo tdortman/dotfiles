@@ -62,8 +62,8 @@
           fi
         '';
 
-        font = "${pkgs.nerd-fonts.jetbrains-mono}/share/fonts/truetype/NerdFonts/JetBrainsMono/JetBrainsMonoNerdFont-Regular.ttf";
-        fontSize = 26;
+        font = "${pkgs.custom.comic-code-nerd-font}/share/fonts/opentype/ComicCodeLigaturesNerdFontMono-Regular.otf";
+        fontSize = 32;
       };
     };
 

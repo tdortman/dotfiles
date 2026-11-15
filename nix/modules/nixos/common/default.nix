@@ -30,6 +30,13 @@
     };
 
     console.useXkbConfig = true;
+    boot.initrd.systemd.services.bootvine = {
+      after = [ "systemd-vconsole-setup.service" ];
+      wants = [ "systemd-vconsole-setup.service" ];
+    };
+
+      earlySetup = true;
+      font = "${pkgs.custom.comic-code-nerd-font}/share/consolefonts/comic-code-nerd-font.psf";
     custom.common.username = lib.mkDefault "tim";
 
     environment = {
@@ -79,10 +86,10 @@
 
       packages = with pkgs; [
         corefonts
+        custom.comic-code-nerd-font
         inter
         nerd-fonts.caskaydia-mono
         nerd-fonts.fira-code
-        nerd-fonts.jetbrains-mono
         noto-fonts-cjk-sans
       ];
     };
