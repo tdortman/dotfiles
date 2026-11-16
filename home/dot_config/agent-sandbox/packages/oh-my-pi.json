@@ -47,7 +47,8 @@
       { "kind": "unix_socket", "path": "/run/user/1000/wayland-0", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.local/state/omp", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/broker.sock", "access": "connect", "comment": "global_package" },
-      { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/text-predict-*.sock", "access": "connect", "comment": "global_package" }
+      { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/text-predict-*.sock", "access": "connect", "comment": "global_package" },
+      { "kind": "device", "path": "/dev/fuse", "access": "open_read_write", "comment": "global_package" }
     ],
     "deny": []
   },
