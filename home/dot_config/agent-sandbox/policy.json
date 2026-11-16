@@ -505,7 +505,8 @@
       { "kind": "device", "path": "/dev/nvidia*", "access": "open_read_write", "comment": "global" },
       { "kind": "device", "path": "/dev/nvidia-caps", "access": "open_read", "comment": "global" },
       { "kind": "device", "path": "/dev/shm/cuda_injection_path_shm", "access": "open_read_write", "comment": "global" },
-      { "kind": "device", "path": "/dev/shm/sem.*", "access": "open_read_write", "comment": "global" }
+      { "kind": "device", "path": "/dev/shm/sem.*", "access": "open_read_write", "comment": "global" },
+      { "kind": "device", "path": "/dev/udmabuf", "access": "open_read_write", "comment": "global" }
     ],
     "deny": [
       { "kind": "unix_socket", "path": "/run/podman/podman.sock", "access": "connect", "comment": "global" },
