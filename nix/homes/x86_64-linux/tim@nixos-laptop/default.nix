@@ -1,5 +1,7 @@
 {
+  config,
   lib,
+  pkgs,
   osConfig,
   ...
 }:
@@ -118,6 +120,49 @@
       '';
     };
 
+  };
+
+  # Plasma has no per-mode panel visibility, so follow KWin's tablet mode and
+  # autohide the panels while the display is flipped round for drawing.
+  systemd.user.services.plasma-tablet-panel-autohide = {
+    Install.WantedBy = [ "plasma-plasmashell.service" ];
+
+    Service = {
+      ExecStart = pkgs.writeShellScript "plasma-tablet-panel-autohide" ''
+        set -eu
+
+        gdbus=${lib.getExe' pkgs.glib "gdbus"}
+        qdbus=${lib.getExe' pkgs.qt6Packages.qttools "qdbus"}
+
+        # The first line confirms the subscription, so applying the state on it
+        # cannot miss a flip that happens before the loop starts.
+        "$gdbus" monitor --session --dest org.kde.KWin --object-path /org/kde/KWin |
+          while read -r line; do
+            case $line in
+              "Monitoring signals"* | *TabletModeManager.tabletModeChanged*) ;;
+              *) continue ;;
+            esac
+
+            if [ "$("$qdbus" org.kde.KWin /org/kde/KWin org.kde.KWin.TabletModeManager.tabletMode)" = true ]; then
+              hiding=autohide
+            else
+              hiding=${(lib.head config.programs.plasma.panels).hiding}
+            fi
+
+            echo "tablet mode change, panels: $hiding"
+            "$qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript \
+              "panels().forEach(function (panel) { panel.hiding = \"$hiding\"; })"
+          done
+      '';
+
+      Restart = "on-failure";
+    };
+
+    Unit = {
+      After = [ "plasma-plasmashell.service" ];
+      Description = "Autohide Plasma panels in tablet mode";
+      PartOf = [ "plasma-plasmashell.service" ];
+    };
   };
 
 }
