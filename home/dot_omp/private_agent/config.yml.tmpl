@@ -18,7 +18,7 @@ symbolPreset: nerd
 stt:
   enabled: false
 theme:
-  dark: dark-one
+  dark: dark-celestial
 statusLine:
   preset: default
   separator: powerline-thin
@@ -49,6 +49,7 @@ compaction:
     - soft
     - shake
     - handoff
+  idleEnabled: true
 memory:
   backend: mnemopi
 edit:
@@ -71,11 +72,14 @@ task:
   maxRecursionDepth: -1
   showResolvedModelBadge: true
   batch: true
-  maxConcurrency: 0
   agentAdvisor:
     task: "off"
   enableEffort: false
   perCallModel: "on"
+  structured: true
+  steps: true
+  maxConcurrency: 0
+  workerThreads: 4
 secrets:
   enabled: true
 contextPromotion:
@@ -90,6 +94,8 @@ providers:
     codeMode: "on"
   anthropic:
     slowMode: auto
+  openaiResponsesWebsockets: true
+  openaiLiveSteering: true
 setupVersion: 3
 python:
   kernelMode: session
@@ -119,6 +125,7 @@ mnemopi:
   llmMode: smol
   polyphonicRecall: true
   enhancedRecall: true
+  recallRelevance: auto
 github:
   enabled: true
 plan:
@@ -148,6 +155,7 @@ bash:
   autoBackground:
     enabled: true
   direnv: auto
+  gitGuard: true
 shellMinimizer:
   sourceOutlineLevel: default
 generate_image:
@@ -166,10 +174,11 @@ disabledExtensions:
   - extension-module:orca-titlebar-spinner
 composer:
   shape: band
+  tokenRate: false
 extendedContext: false
 isolation:
   backend: auto
-treeFilterMode: default
+treeFilterMode: user-only
 retry:
   fallbackChains:
     web:
@@ -216,3 +225,12 @@ spelling:
 web_search:
   enabled: true
 emojiAutocomplete: false
+eval:
+  autoBackground:
+    enabled: true
+ratchet:
+  enabled: true
+ida:
+  enabled: true
+mcp:
+  notifications: true
