@@ -110,6 +110,8 @@
             let
               hook = ''
                 unset XDG_DATA_HOME
+                export GHIDRA_INSTALL_DIR="${pkgs.ghidra}/lib/ghidra"
+                export JAVA_HOME="${pkgs.jdk25}/lib/openjdk"
                 export LD_LIBRARY_PATH="${
                   lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ]
                 }''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
