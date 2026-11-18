@@ -9,13 +9,13 @@
 
 buildGo127Module (finalAttrs: {
   pname = "ovnfs";
-  version = "0.7.0";
+  version = "0.8.1";
 
   src = fetchFromGitHub {
     owner = "stencil-hq";
     repo = "ovnfs";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-YFHEy6lTDvbhd3Ff8KiSfgf+VS78gwwwvernb7XoLwo=";
+    hash = "sha256-HuovVdxpSs5nHeampw8uRdl6eQmke9ZLyd7YfpvrHcw=";
   };
 
   # Go only stamps the module version into builds made by `go install pkg@version`, so a
@@ -38,6 +38,12 @@ buildGo127Module (finalAttrs: {
     substituteInPlace main.go send.go \
       --replace-fail '"runtime/debug"' "" \
       --replace-fail 'debug.ReadBuildInfo()' 'nixBuildInfo()'
+
+    # Where setxattr fails (Nix's sandbox filter returns ENOTSUP) the upper keeps
+    # identities in a `.wh..wh.ids` table, which is overlay metadata, but `upperEmpty`
+    # counts it as a change: every checkout reads as dirty and folder attaches refuse.
+    substituteInPlace checkout/operations.go \
+      --replace-fail 'p == ".wh..wh.work" ||' 'p == ".wh..wh.work" || p == ".wh..wh.ids" ||'
   '';
 
   nativeBuildInputs = [
