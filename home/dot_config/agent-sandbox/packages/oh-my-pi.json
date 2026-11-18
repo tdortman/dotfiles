@@ -8,6 +8,7 @@
     },
     "http": {
       "allow": [
+        { "methods": ["POST"], "url": "https://api.copilot.nsight.ngc.nvidia.com/token", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://catalog.stencil.so/models.json.zstd", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/resolve/93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/resolve/93efa2f097d58c2a74874c7e644dbc9b0cee75a2/config.json", "port": 443, "comment": "word prediction" },
