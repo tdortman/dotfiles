@@ -3,13 +3,13 @@ _:
 final: prev: {
   vencord = final.master.vencord.overrideAttrs (
     finalAttrs: _: {
-      version = "1.15.17";
+      version = "1.15.18";
 
       src = prev.fetchFromGitHub {
         owner = "Vendicated";
         repo = "Vencord";
         tag = "v${finalAttrs.version}";
-        hash = "sha256-+dN4wAFNmYVDiEe0QStqrFBRFHBBRkApqbmhuvsLZZM=";
+        hash = "sha256-7gDMxfE48jUvry3PcQW3IzjxWjSHgMm5DY1QhjXZqIk=";
       };
 
       # nixpkgs' @types/react pin is upstream since 1.15.16
