@@ -28,6 +28,7 @@
       };
 
       homes.modules = with inputs; [
+        agent-sandbox.homeModules.agent-sandbox
         plasma-manager.homeModules.plasma-manager
         voxtype.homeManagerModules.default
       ];

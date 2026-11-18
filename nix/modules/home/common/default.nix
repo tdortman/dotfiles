@@ -27,6 +27,8 @@
   };
 
   config = {
+    agent-sandbox.tern-oauth.enable = true;
+
     custom = {
       onepassword.enable = true;
 
