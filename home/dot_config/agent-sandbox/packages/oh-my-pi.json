@@ -32,6 +32,7 @@
       { "path": "./references.cuddl", "access": "read", "comment": "global_package" },
       { "path": "~/.cache/omp-tmp", "access": "write", "comment": "global_package" },
       { "path": "~/.cache/tern", "access": "write", "comment": "global_package" },
+      { "path": "~/.config/antigravity/credential-user-scope", "access": "read", "comment": "global_package" },
       { "path": "~/.config/orca/agent-hooks", "access": "read", "comment": "global_package" },
       { "path": "~/.local/state/tern", "access": "write", "comment": "global_package" },
       { "path": "~/.omp/antigravity-cli/bin/*/agy", "access": "execute", "comment": "global_package" },
