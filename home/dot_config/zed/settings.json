@@ -68,6 +68,7 @@
         "basher": true,
         "env": true,
         "java": true,
+        "luau": true
     },
     "active_pane_modifiers": {},
     "agent_ui_font_size": 20.0,
@@ -444,12 +445,11 @@
     "code_actions_on_format": {
         "source.fixAll": true,
         "source.fixAll.biome": true,
-        "quickfix.biome": true,
         "source.sortImports": true,
         "source.addMissingImports.ts": true,
         "source.removeUnusedImports": true,
         "source.organizeImports.biome": true,
-        "source.addMissingImports": true,
+        "source.addMissingImports": true
     },
     "file_types": {
         "ini": ["wrap", "Doxyfile"],
