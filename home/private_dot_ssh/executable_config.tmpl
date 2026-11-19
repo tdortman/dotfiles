@@ -86,3 +86,7 @@ Host elwetritsch
     IdentityFile ~/.ssh/elwetritsch.pub
     IdentitiesOnly yes
     SetEnv TERM=xterm-256color
+
+Host *
+    ServerAliveInterval 30
+    ServerAliveCountMax 6
