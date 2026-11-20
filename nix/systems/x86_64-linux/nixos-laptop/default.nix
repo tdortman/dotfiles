@@ -49,8 +49,11 @@
       [
         {
           package = agents.antigravity-cli;
-          launchArgs.unsandboxed = [ "--dangerously-skip-permissions" ];
-          readwriteDirs = [ "~/.gemini" ];
+          launchArgs.sandboxed = [ "--dangerously-skip-permissions" ];
+          readwriteDirs = [
+            "~/.gemini"
+            "~/.config/antigravity"
+          ];
         }
         {
           package = agents.codex;
