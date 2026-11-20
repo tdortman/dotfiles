@@ -8,6 +8,7 @@
     },
     "http": {
       "allow": [
+        { "methods": ["GET"], "url": "https://antigravity-cli-auto-updater-*.us-central1.run.app/manifests/linux_amd64.json", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://api.copilot.nsight.ngc.nvidia.com/token", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://catalog.stencil.so/models.json.zstd", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://huggingface.co/HuggingFaceTB/SmolLM2-135M/resolve/93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "port": 443, "comment": "global_package" },
@@ -17,6 +18,7 @@
         { "methods": ["GET"], "url": "https://huggingface.co/api/resolve-cache/models/HuggingFaceTB/SmolLM2-135M/93efa2f097d58c2a74874c7e644dbc9b0cee75a2", "port": 443, "comment": "word prediction" },
         { "methods": ["GET"], "url": "https://huggingface.co/api/resolve-cache/models/Qdrant/bge-base-en-v1.5-onnx-Q", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://my.omp.sh/r", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://storage.googleapis.com/antigravity-public/antigravity-cli/*/linux-x64/cli_linux_x64.tar.gz", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://www.openwall.com/", "port": 443, "comment": "global_package" }
       ],
       "deny": []
@@ -47,6 +49,7 @@
       { "kind": "unix_socket", "path": "/run/user/*/at-spi/bus_0", "access": "connect", "comment": "computer use" },
       { "kind": "unix_socket", "path": "/run/user/1000/at-spi2-*/socket", "access": "connect", "comment": "computer use" },
       { "kind": "unix_socket", "path": "/run/user/1000/wayland-0", "access": "connect", "comment": "global_package" },
+      { "kind": "unix_socket", "path": "@abstract:omp-file-lock-*", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.local/state/omp", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/broker.sock", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/text-predict-*.sock", "access": "connect", "comment": "global_package" },
