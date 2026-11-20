@@ -43,6 +43,7 @@
   "lenses_disabled": [
     "docs.help"
   ],
+  "agents_tray": false,
   "native_prompt": false,
   "auto_update": false,
   "desktop_integration": false,
@@ -69,10 +70,33 @@
   },
   "agents": {
     "auto_acp": true,
+    "custom": [
+      {
+        "id": "agy",
+        "name": "Antigravity",
+        "command": "agy",
+        "args": [
+          "acp"
+        ],
+        "env": {}
+      },
+      {
+        "id": "unsafe-agy",
+        "name": "Antigravity (unsafe)",
+        "command": "unsafe-agy",
+        "args": [
+          "acp",
+          "--dangerously-skip-permissions"
+        ],
+        "env": {}
+      }
+    ],
     "own_tools": [
       "codex",
       "claude",
-      "copilot"
+      "copilot",
+      "agy",
+      "unsafe-agy"
     ]
   },
   "keybinds": {
