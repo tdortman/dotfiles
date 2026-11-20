@@ -1,0 +1,16 @@
+#!/bin/sh
+# Zed mojo extension always passes --skip-docstring-checks, which Mojo >= 1.2 rejects.
+# Strip it, then run the nearest project-local mojo-lsp-server (walking up from $PWD),
+# falling back to the one on PATH.
+for a; do shift; [ "$a" = --skip-docstring-checks ] || set -- "$@" "$a"; done
+
+dir=$PWD
+while :; do
+  for c in .venv/bin .pixi/envs/default/bin; do
+    [ -x "$dir/$c/mojo-lsp-server" ] && exec "$dir/$c/mojo-lsp-server" "$@"
+  done
+  [ "$dir" = / ] && break
+  dir=$(dirname "$dir")
+done
+
+exec mojo-lsp-server "$@"

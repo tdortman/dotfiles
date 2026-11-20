@@ -8,30 +8,26 @@
             "args": [],
             "projects": [
                 {
-                    "paths": [
-                        "/home/tim/dotfiles"
-                    ]
-                }
+                    "paths": ["/home/tim/dotfiles"],
+                },
             ],
-            "nickname": "dev vm"
+            "nickname": "dev vm",
         },
         {
             "host": "gracehopper",
             "args": [],
             "projects": [
                 {
-                    "paths": [
-                        "/home/tdortman/dynamic-demi-log"
-                    ]
-                }
-            ]
-        }
+                    "paths": ["/home/tdortman/dynamic-demi-log"],
+                },
+            ],
+        },
     ],
     "language_models": {
         "opencode": {
             "show_go_models": false,
-            "show_zen_models": false
-        }
+            "show_zen_models": false,
+        },
     },
     "git_panel": {
         "dock": "left",
@@ -68,13 +64,13 @@
         "basher": true,
         "env": true,
         "java": true,
-        "luau": true
+        "luau": true,
+        "mojo": true,
     },
     "active_pane_modifiers": {},
     "agent_ui_font_size": 20.0,
     "agent_buffer_font_size": 18.0,
-    "agent_servers": {
-        },
+    "agent_servers": {},
     "file_finder": {
         "file_icons": true,
     },
@@ -180,7 +176,7 @@
     },
     "agent": {
         "threads_sidebar": {
-            "position": "right"
+            "position": "right",
         },
         "dock": "right",
         "inline_assistant_model": {
@@ -192,39 +188,39 @@
             {
                 "provider": "copilot_chat",
                 "model": "claude-opus-4.6",
-                "enable_thinking": true
+                "enable_thinking": true,
             },
             {
                 "provider": "copilot_chat",
                 "model": "gemini-3.1-pro-preview",
-                "enable_thinking": true
+                "enable_thinking": true,
             },
             {
                 "provider": "copilot_chat",
                 "model": "claude-sonnet-4.6",
-                "enable_thinking": true
+                "enable_thinking": true,
             },
             {
                 "provider": "copilot_chat",
                 "model": "gpt-5.4",
-                "enable_thinking": true
+                "enable_thinking": true,
             },
             {
                 "provider": "copilot_chat",
                 "model": "gpt-5-mini",
-                "enable_thinking": false
+                "enable_thinking": false,
             },
             {
                 "provider": "copilot_chat",
                 "model": "gpt-5.3-codex",
-                "enable_thinking": false
+                "enable_thinking": false,
             },
             {
                 "provider": "zed.dev",
                 "model": "gpt-5.5",
                 "enable_thinking": true,
-                "effort": "medium"
-            }
+                "effort": "medium",
+            },
         ],
         "default_profile": "write",
         "default_model": {
@@ -313,14 +309,19 @@
         },
         "YAML": {
             "tab_size": 2,
-            "hard_tabs": false
+            "hard_tabs": false,
         },
         "LaTeX": {
             "format_on_save": "off",
-            "formatter": "none"
-        }
+            "formatter": "none",
+        },
     },
     "lsp": {
+        "mojo-lsp-server": {
+            "binary": {
+                "path": "/home/tim/.local/bin/mojo-lsp-server-zed",
+            },
+        },
         "texlab": {
             "settings": {
                 "texlab": {
@@ -449,7 +450,7 @@
         "source.addMissingImports.ts": true,
         "source.removeUnusedImports": true,
         "source.organizeImports.biome": true,
-        "source.addMissingImports": true
+        "source.addMissingImports": true,
     },
     "file_types": {
         "ini": ["wrap", "Doxyfile"],
