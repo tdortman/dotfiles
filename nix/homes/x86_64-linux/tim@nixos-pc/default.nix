@@ -118,7 +118,7 @@
           runAlways = true;
 
           text = ''
-            setsid teams-for-linux --wayland --minimized &
+            setsid teams-for-linux --wayland --window.minimized &
           '';
         };
       };

@@ -116,7 +116,7 @@
       runAlways = true;
 
       text = ''
-        setsid teams-for-linux --wayland --minimized --enableIncomingCallToast &
+        setsid teams-for-linux --wayland --window.minimized --incomingCalls.toast &
       '';
     };
 
