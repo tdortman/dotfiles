@@ -60,11 +60,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1795177966,
-        "narHash": "sha256-sRE3N7Wl1M3kQ2v9UX+skYbG3GK+fQ9JANn9MjJV5ZQ=",
+        "lastModified": 1795417174,
+        "narHash": "sha256-YZhRJqsSuwA/Xh5RSELzVh1j7q9d+gwCc4iQs6cd4J0=",
         "ref": "refs/heads/main",
-        "rev": "958cfa1b54451a7481f315de76bcf5a4400e2793",
-        "revCount": 150,
+        "rev": "0e7acf85f85084b30c681658a4b8fc1c3a90b0a3",
+        "revCount": 152,
         "type": "git",
         "url": "https://codeberg.org/wvhulle/bootvine"
       },
@@ -141,11 +141,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795267228,
-        "narHash": "sha256-iiZIjUZpoNcoPc4XsE1ZtBbtUrFsllJ3MvGi/6ySIhs=",
+        "lastModified": 1795446970,
+        "narHash": "sha256-K3gJ7LnNQiNhEDBRaPxEQdIRCzMiSBYHL3kVDOvaRD4=",
         "owner": "ilysenko",
         "repo": "codex-desktop-linux",
-        "rev": "2fd3d3d43584765aead76c46ed2b10f3c28cdc91",
+        "rev": "1727b00a30201cfa6b4ae673178506ccb39b1d4a",
         "type": "github"
       },
       "original": {
@@ -524,11 +524,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795395764,
-        "narHash": "sha256-OR+ahE/QRMHSS3mPB/XjbXfvaIN8IgqGfD+Jsnh4n3Q=",
+        "lastModified": 1795416666,
+        "narHash": "sha256-b1GmfrMPoZ2ANkR0we9Q9KQN6n1e+vNyDqt1p4CNEAY=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "6a434b94efa2b508f04f5cd3c2327a8a571b553b",
+        "rev": "5330ee115c06d2b43f49e902130125eab579b22f",
         "type": "github"
       },
       "original": {
@@ -699,11 +699,11 @@
     },
     "nixpkgs-master": {
       "locked": {
-        "lastModified": 1795399227,
-        "narHash": "sha256-1TGjv1nMv2PNj6G1Bin/q8NsWRrwweFOI1wVwJwm7Jw=",
+        "lastModified": 1795463524,
+        "narHash": "sha256-rouYS0rwbfQ6y5GE522qOxQak9Q02TqdPqtt30LgoVo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "31df617ce67f77dee16674b313cb4579ae91d2e6",
+        "rev": "ade95f0157abb350a9400dd992767694b02b0bc9",
         "type": "github"
       },
       "original": {
@@ -785,11 +785,11 @@
         "rust-overlay": "rust-overlay_4"
       },
       "locked": {
-        "lastModified": 1795376255,
-        "narHash": "sha256-/OaACX3N8ZavZADFhZAFcQgdwWA02Dz2sZFXIgmUJyk=",
+        "lastModified": 1795450961,
+        "narHash": "sha256-5UMhlUY4KZifdgtr3dxs3RCso4D18UNTwAisPylv/Sk=",
         "owner": "bjin",
         "repo": "oh-my-pi.nix",
-        "rev": "31f7150384dd2141297cc43a0fef1b5db1020b4b",
+        "rev": "f679f6afbb0dad34ae984d6939f6d27ac30f2df5",
         "type": "github"
       },
       "original": {
