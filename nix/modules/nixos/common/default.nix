@@ -213,7 +213,7 @@
 
       nh = {
         enable = true;
-        # nh with tern-nom as its nom; in Tern the card shows nh's package diff.
+        # nh whose build and package diff tern-nom draws as a card in Tern.
         package = inputs.tern-plugins.packages.${system}.nh;
       };
 
