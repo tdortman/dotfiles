@@ -1,5 +1,10 @@
 {
   "build": {
+    "aioquic": {
+      "version": "1.2.0",
+      "url": "https://files.pythonhosted.org/packages/source/a/aioquic/aioquic-1.2.0.tar.gz",
+      "hash": "sha256-+RJjuz9xlIxciRW01Q7jcABPIKQW9n+rPcyQVWx+cZk="
+    },
     "ghidra": {
       "version": "12.2",
       "url": "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.2_build/ghidra_12.2_PUBLIC_20261016.zip",

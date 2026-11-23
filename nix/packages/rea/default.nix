@@ -97,13 +97,25 @@ let
   });
   lockHash = "sha256-8b265dpdv8CGeGfBgHUkUpYl9gYaBNY7goV5UkpmH34=";
   # REA admits these only at the exact release it audited.
-  mitmproxy = python3.pkgs.toPythonApplication (
-    python3.pkgs.mitmproxy.overridePythonAttrs (old: {
+  mitmproxy = mitmproxyPythonPackages.toPythonApplication (
+    mitmproxyPythonPackages.mitmproxy.overridePythonAttrs (old: {
       inherit (pins.build.mitmproxy) version;
       src = fetchPin pins.build.mitmproxy;
+      # The nixpkgs patches target the release it ships.
+      patches = [ ];
       # 12.3 replaced zstandard with backports-zstd, which nixpkgs follows.
-      dependencies = old.dependencies ++ [ python3.pkgs.zstandard ];
+      dependencies = old.dependencies ++ [ mitmproxyPythonPackages.zstandard ];
     })
+  );
+  # mitmproxy accepts a single aioquic release, and nixpkgs marks it broken
+  # against the newer one it ships.
+  mitmproxyPythonPackages = python3.pkgs.overrideScope (
+    _: prev: {
+      aioquic = prev.aioquic.overridePythonAttrs {
+        inherit (pins.build.aioquic) version;
+        src = fetchPin pins.build.aioquic;
+      };
+    }
   );
   # REA accepts these from nixpkgs within a release line, matched by pins.nixpkgs.
   nixpkgsTools = {

@@ -133,6 +133,13 @@ ghidra_url="$(curl -fsSL "https://api.github.com/repos/NationalSecurityAgency/gh
   jq -r '[.assets[].browser_download_url | select(test("/ghidra_[^/]*_PUBLIC_[0-9]+\\.zip$"))] | if length == 1 then .[0] else error("expected one PUBLIC zip, got \(length)") end')"
 wakaru_version="$(jq -r .wakaru "$work/requirements.json")"
 mitmproxy_version="$(jq -r .mitmproxy "$work/requirements.json")"
+# mitmproxy pins the one aioquic release it works with.
+aioquic_version="$(curl -fsSL "https://raw.githubusercontent.com/mitmproxy/mitmproxy/v$mitmproxy_version/pyproject.toml" |
+  sed -nE 's/^ *"aioquic>=[^"]*<=([0-9.]+)",$/\1/p')"
+[[ -n "$aioquic_version" ]] || {
+  echo "error: could not find the aioquic version mitmproxy $mitmproxy_version pins" >&2
+  exit 1
+}
 
 jadx_pin="$(pin jadx-headless-mcp "$jadx_version" "$jadx_url")"
 # REA identifies the jar by digest, so a re-uploaded asset must not slip in.
@@ -143,6 +150,7 @@ jadx_expected="$(nix hash convert --hash-algo sha256 --to sri "$(jq -r .jadx.sha
 }
 
 jq -n \
+  --argjson aioquic "$(pin aioquic "$aioquic_version" "https://files.pythonhosted.org/packages/source/a/aioquic/aioquic-$aioquic_version.tar.gz")" \
   --argjson ghidra "$(pin ghidra "$ghidra_version" "$ghidra_url")" \
   --argjson jadx "$jadx_pin" \
   --argjson mitmproxy "$(pin mitmproxy "$mitmproxy_version" "https://github.com/mitmproxy/mitmproxy/archive/refs/tags/v$mitmproxy_version.tar.gz")" \
@@ -151,10 +159,10 @@ jq -n \
   --argjson wakaru "$(pin wakaru "$wakaru_version" "https://registry.npmjs.org/@wakaru/cli-linux-x64/-/cli-linux-x64-$wakaru_version.tgz")" \
   --slurpfile requirements "$work/requirements.json" \
   '{
-    build: { ghidra: $ghidra, "jadx-headless-mcp": $jadx, mitmproxy: $mitmproxy, "sigrok-cli": $sigrok, wabt: $wabt, wakaru: $wakaru },
+    build: { aioquic: $aioquic, ghidra: $ghidra, "jadx-headless-mcp": $jadx, mitmproxy: $mitmproxy, "sigrok-cli": $sigrok, wabt: $wabt, wakaru: $wakaru },
     nixpkgs: $requirements[0].nixpkgs
   }' >"$work/pins.json"
 mv "$work/pins.json" "$pins_path"
 
 nix build .#rea --no-link
-echo "rea $(sed -nE 's/^  version = "([^"]+)";$/\1/p' "$path") pins: ghidra $ghidra_version, jadx-headless-mcp $jadx_version, mitmproxy $mitmproxy_version, sigrok-cli $sigrok_version, wabt $wabt_version, wakaru $wakaru_version"
+echo "rea $(sed -nE 's/^  version = "([^"]+)";$/\1/p' "$path") pins: aioquic $aioquic_version, ghidra $ghidra_version, jadx-headless-mcp $jadx_version, mitmproxy $mitmproxy_version, sigrok-cli $sigrok_version, wabt $wabt_version, wakaru $wakaru_version"
