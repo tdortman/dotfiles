@@ -118,7 +118,6 @@
       zsh
     ]
     ++ (with inputs.llm-agents.packages.${system}; [
-      codegraph
       git-surgeon
       hunk
     ]);
