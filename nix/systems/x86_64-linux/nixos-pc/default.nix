@@ -60,6 +60,7 @@
         {
           package = agents.antigravity-cli;
           launchArgs.sandboxed = [ "--dangerously-skip-permissions" ];
+
           readwriteDirs = [
             "~/.gemini"
             "~/.config/antigravity"
