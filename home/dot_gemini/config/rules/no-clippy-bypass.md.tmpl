@@ -1,0 +1,7 @@
+---
+trigger: glob
+globs: "*.rs"
+description: "Fix Rust compiler and Clippy warnings instead of suppressing them."
+---
+
+{{ regexReplaceAll "(?s)\\A---\\n.*?\\n---\\n+" (include "dot_omp/private_agent/rules/no-clippy-bypass.md") "" -}}

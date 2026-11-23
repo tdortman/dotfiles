@@ -1,0 +1,7 @@
+---
+trigger: glob
+globs: "*.rs"
+description: "Use named structs instead of Rust tuple types."
+---
+
+{{ regexReplaceAll "(?s)\\A---\\n.*?\\n---\\n+" (include "dot_omp/private_agent/rules/rust-no-tuples.md") "" -}}

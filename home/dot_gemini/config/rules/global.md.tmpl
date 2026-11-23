@@ -1,0 +1,6 @@
+---
+trigger: always_on
+description: "Global working rules: prose skills, commits, Nix flake refs, existing work, repo hygiene, comments."
+---
+
+{{ include "dot_omp/private_agent/RULES.md" | replace "`skill://" "the skill `" | replace " via a single tool call when in code mode" "" -}}

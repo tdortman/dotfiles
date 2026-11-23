@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "nvidia-cuda-docs": {
+      "disabled": false,
+      "serverUrl": "https://api.copilot.nsight.ngc.nvidia.com/mcp/cuda-docs"
+    },
+    "rea": {
+      "args": [
+        "mcp"
+      ],
+      "command": "rea",
+      "disabled": true
+    }
+  }
+}

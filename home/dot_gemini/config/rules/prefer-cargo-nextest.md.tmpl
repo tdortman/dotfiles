@@ -1,0 +1,6 @@
+---
+trigger: model_decision
+description: "Apply when running or validating Rust tests."
+---
+
+{{ regexReplaceAll "(?s)\\A---\\n.*?\\n---\\n+" (include "dot_omp/private_agent/rules/prefer-cargo-nextest.md") "" -}}

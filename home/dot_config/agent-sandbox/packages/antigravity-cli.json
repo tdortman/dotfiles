@@ -37,7 +37,8 @@
       { "path": "/run/user/1000/libpod/tmp/pause.pid", "access": "read_write", "comment": "global_package" },
       { "path": "~/.cache/antigravity", "access": "all", "comment": "global_package" },
       { "path": "~/.config/antigravity", "access": "read", "comment": "global_package" },
-      { "path": "~/.local/share/containers/storage/db.sql", "access": "read_write", "comment": "global_package" }
+      { "path": "~/.local/share/containers/storage/db.sql", "access": "read_write", "comment": "global_package" },
+      { "path": "~/dotfiles/home/dot_gemini", "access": "read", "comment": "global_package" }
     ],
     "deny": []
   },

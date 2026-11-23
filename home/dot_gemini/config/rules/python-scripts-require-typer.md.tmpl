@@ -1,0 +1,7 @@
+---
+trigger: glob
+globs: "*.py"
+description: "Standalone Python scripts use Typer, not argparse."
+---
+
+{{ regexReplaceAll "(?s)\\A---\\n.*?\\n---\\n+" (include "dot_omp/private_agent/rules/python-scripts-require-typer.md") "" -}}
