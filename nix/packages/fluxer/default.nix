@@ -7,16 +7,16 @@
   artifacts ? {
     aarch64-linux = {
       url = "https://pkgs.fluxer.com/desktop/stable/linux/arm64/Fluxer-${version}-linux-arm64.AppImage";
-      hash = "sha256-xChHnYZj7AJrioRqsAhykdZy7WZRAEXj8byIc+oGPk8=";
+      hash = "sha256-RXHlw0I4cCkH26UPGKcanfdRSS1zRMDp3YyjaLDzq3w=";
     };
 
     x86_64-linux = {
       url = "https://pkgs.fluxer.com/desktop/stable/linux/x64/Fluxer-${version}-linux-x86_64.AppImage";
-      hash = "sha256-z5jaOxANMWEMY37sjVW6mEdOQNNdRfOctZ2252ia66o=";
+      hash = "sha256-SE/3fd9RWGVD2ZED0S69YOWinjGWFTunH6gYbM6AjLY=";
     };
   },
   middleClickScroll ? true,
-  version ? "2026.1120.30521",
+  version ? "2026.1120.163638",
 }:
 
 let
