@@ -11,6 +11,7 @@
         { "methods": ["GET"], "url": "https://*.oaiusercontent.com/files/*/raw", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://ab.chatgpt.com/v1/initialize", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://ab.chatgpt.com/v1/rgstr", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://auth.openai.com/api/accounts/deviceauth/token", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://auth.openai.com/oauth/revoke", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/accounts/verified_access", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/alpha/history/v2", "port": 443, "comment": "global_package" },
