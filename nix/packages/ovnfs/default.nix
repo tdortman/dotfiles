@@ -9,13 +9,13 @@
 
 buildGo127Module (finalAttrs: {
   pname = "ovnfs";
-  version = "0.9.0";
+  version = "0.10.0";
 
   src = fetchFromGitHub {
     owner = "stencil-hq";
     repo = "ovnfs";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-/WSI5LxCsZn3c5YY/r3Dn//2nyp/d5DkT9zkqobdplI=";
+    hash = "sha256-5Iu273T354ErXTJGB3XLcxwI9fgnEOCFaN4kMqoEBQ0=";
   };
 
   # Go only stamps the module version into builds made by `go install pkg@version`, so a
@@ -51,7 +51,7 @@ buildGo127Module (finalAttrs: {
     installShellFiles
   ];
 
-  vendorHash = "sha256-BBC1CkTN/7WDqMX0+L9GuSNIogKxKamBSuY3TQwIC9Q=";
+  vendorHash = "sha256-ShqWmuWZ1jdiLCox+HRxc/VC8FuG3xNRN+HumC9PIUw=";
   env.CGO_ENABLED = 0;
 
   postInstall = lib.optionalString (stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
@@ -66,8 +66,6 @@ buildGo127Module (finalAttrs: {
     "-w"
   ];
 
-  # nix-update prefetches goModules with outputHash = "", which defeats the hook's FOD guard.
-  overrideModAttrs = _: { dontInstallAgentSkills = true; };
   subPackages = [ "." ];
 
   meta = {
