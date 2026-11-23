@@ -230,19 +230,6 @@
       },
       {
         "target": {
-          "bus": "session",
-          "destination": "org.freedesktop.secrets",
-          "object_path": "/org/freedesktop/secrets/collection/kdewallet/8",
-          "interface": "org.freedesktop.Secret.Item",
-          "member": "GetSecret",
-          "message_kind": "method_call",
-          "signature": "o",
-          "fd_metadata": []
-        },
-        "comment": "gh cli token"
-      },
-      {
-        "target": {
           "bus": "system",
           "destination": "org.freedesktop.login1",
           "object_path": "/org/freedesktop/login1",
@@ -252,6 +239,21 @@
           "signature": "(ssss)",
           "fd_metadata": []
         },
+        "comment": "global_package"
+      }
+    ],
+    "deny": []
+  },
+  "secrets": {
+    "allow": [
+      {
+        "partition": "host",
+        "collection": "default",
+        "attributes": {
+          "service": "gh:github.com",
+          "username": "tdortman"
+        },
+        "access": "read",
         "comment": "global_package"
       }
     ],

@@ -42,20 +42,23 @@
     "allow": [],
     "deny": []
   },
-  "dbus": {
+  "secrets": {
     "allow": [
       {
-        "target": {
-          "bus": "session",
-          "destination": "org.freedesktop.secrets",
-          "object_path": "/org/freedesktop/secrets/collection/kdewallet/7",
-          "interface": "org.freedesktop.Secret.Item",
-          "member": "GetSecret",
-          "message_kind": "method_call",
-          "signature": "o",
-          "fd_metadata": []
+        "partition": "own_package",
+        "collection": "default",
+        "access": "all",
+        "comment": "global_package"
+      },
+      {
+        "partition": "host",
+        "collection": "default",
+        "attributes": {
+          "service": "gemini",
+          "username": "antigravity"
         },
-        "comment": "agy credentials"
+        "access": "read",
+        "comment": "global_package"
       }
     ],
     "deny": []
