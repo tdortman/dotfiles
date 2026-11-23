@@ -11,6 +11,7 @@
         { "methods": ["GET"], "url": "https://*.oaiusercontent.com/files/*/raw", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://ab.chatgpt.com/v1/initialize", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://ab.chatgpt.com/v1/rgstr", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://auth.openai.com/oauth/revoke", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/accounts/verified_access", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/alpha/history/v2", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/codex/alpha/notes/v2", "port": 443, "comment": "global_package" },
@@ -21,6 +22,7 @@
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/remote/control/server", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/wham/remote/control/server/enroll", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://chatgpt.com/backend-api/wham/remote/control/server/refresh", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/security-setup", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://chatgpt.com/backend-api/wham/settings/user", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://github.com/DietrichGebert/ponytail.git", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://github.com/DietrichGebert/ponytail.git/git-upload-pack", "port": 443, "comment": "global_package" },
@@ -56,6 +58,7 @@
       { "kind": "unix_socket", "path": "/run/user/1000/wayland-0", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "/run/ydotoold/socket", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "/tmp/codex-browser-use", "access": "connect", "comment": "global_package" },
+      { "kind": "unix_socket", "path": "/tmp/codex-daemon-1000", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.codex/app-server-control/app-server-control.sock", "access": "connect", "comment": "global_package" },
       { "kind": "device", "path": "/dev/uinput", "access": "open_read_write", "comment": "global_package" }
     ],

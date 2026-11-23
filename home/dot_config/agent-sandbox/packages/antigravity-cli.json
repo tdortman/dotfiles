@@ -7,9 +7,11 @@
     "http": {
       "allow": [
         { "methods": ["GET"], "url": "https://aicode.googleapis.com/v1alpha:fetchConfig", "port": 443, "comment": "global_package" },
+        { "methods": ["GET"], "url": "https://aicode.googleapis.com/v1alpha:fetchLicenses", "port": 443, "comment": "global_package" },
         { "methods": ["GET"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal/cascadeNuxes", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:fetchAdminControls", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:fetchUserInfo", "port": 443, "comment": "global_package" },
+        { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:generateContent", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:listExperiments", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:loadCodeAssist", "port": 443, "comment": "global_package" },
         { "methods": ["POST"], "url": "https://daily-cloudcode-pa.googleapis.com/v1internal:writeTrajectoryAcls", "port": 443, "comment": "global_package" },
@@ -33,6 +35,7 @@
       { "path": "/run/user/1000/libpod/tmp/alive", "access": "read", "comment": "global_package" },
       { "path": "/run/user/1000/libpod/tmp/alive.lck", "access": "read_write", "comment": "global_package" },
       { "path": "/run/user/1000/libpod/tmp/pause.pid", "access": "read_write", "comment": "global_package" },
+      { "path": "~/.cache/antigravity", "access": "all", "comment": "global_package" },
       { "path": "~/.config/antigravity", "access": "read", "comment": "global_package" },
       { "path": "~/.local/share/containers/storage/db.sql", "access": "read_write", "comment": "global_package" }
     ],

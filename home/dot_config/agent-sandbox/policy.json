@@ -59,6 +59,7 @@
         { "methods": ["GET"], "url": "https://api.copilot.nsight.ngc.nvidia.com/mcp/.well-known/oauth-protected-resource", "port": 443, "comment": "global" },
         { "methods": ["GET", "POST"], "url": "https://api.copilot.nsight.ngc.nvidia.com/mcp/cuda-docs", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://api.copilot.nsight.ngc.nvidia.com/register", "port": 443, "comment": "global" },
+        { "methods": ["POST"], "url": "https://api.copilot.nsight.ngc.nvidia.com/token", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.crossref.org/", "port": 443, "comment": "global" },
         { "methods": ["POST"], "url": "https://api.deepseek.com/chat/completions", "port": 443, "comment": "global" },
         { "methods": ["GET"], "url": "https://api.deepseek.com/models", "port": 443, "comment": "global" },
