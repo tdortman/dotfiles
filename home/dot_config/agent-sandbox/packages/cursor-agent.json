@@ -19,7 +19,9 @@
     "deny": []
   },
   "filesystem": {
-    "allow": [],
+    "allow": [
+      { "path": "~/.cache/cursor-compile-cache", "access": "read_write", "comment": "global_package" }
+    ],
     "deny": []
   },
   "resources": {
