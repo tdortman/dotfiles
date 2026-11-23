@@ -68,10 +68,24 @@
         }
         {
           package = agents.codex;
+
+          # Config overrides, because every subcommand accepts them.
+          launchArgs.sandboxed = [
+            "-c"
+            ''approval_policy="never"''
+            "-c"
+            ''sandbox_mode="danger-full-access"''
+          ];
+
           readwriteDirs = [ "~/.codex" ];
         }
         {
           package = agents.cursor-agent;
+
+          launchArgs.sandboxed = [
+            "--force"
+            "--approve-mcps"
+          ];
 
           readwriteDirs = [
             "~/.cursor"
@@ -89,6 +103,12 @@
         }
         {
           package = agents.opencode2;
+
+          # An allow-all rule after the user's config. The root `--auto` flag
+          # would do it too, but makes every subcommand fail.
+          launchHook.sandboxed = ''
+            export OPENCODE_CONFIG_CONTENT='{"permission":"allow"}'
+          '';
 
           readonlyFiles = [
             "~/.config/cursor/auth.json" # For opencode-cursor
