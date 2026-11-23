@@ -1,5 +1,5 @@
 modelRoles:
-  default: anthropic/claude-opus-5-5:medium
+  default: anthropic/claude-fable-5-2:high
   commit: anthropic/claude-sonnet-5-5:medium
   plan: openai-codex/gpt-6-astra:high
   smol: anthropic/claude-haiku-5-5:high
@@ -80,6 +80,8 @@ task:
   steps: true
   maxConcurrency: 0
   workerThreads: 4
+  autoParallel: "on"
+  eager: preferred
 secrets:
   enabled: true
 contextPromotion:
@@ -184,7 +186,7 @@ retry:
     web:
       - openai-codex/gpt-6-luna
       - anthropic/claude-haiku-5-5
-      - openai-codex/gpt-6-terra
+      - openai-codex/gpt-6.1-terra
       - web/perplexity
       - google/gemini-3.8-flash
       - xai/grok-4.5
