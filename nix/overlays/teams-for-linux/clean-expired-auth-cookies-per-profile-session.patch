@@ -1,0 +1,71 @@
+--- a/app/index.js
++++ b/app/index.js
+@@ -811,7 +811,8 @@
+           mainAppWindow.bindDisplayMediaHandler,
+           mainAppWindow.bindWindowOpenHandler,
+           mainAppWindow.injectScreenSharingLogic,
+-          mainAppWindow.setTitleOverride
++          mainAppWindow.setTitleOverride,
++          mainAppWindow.cleanExpiredAuthCookies
+         );
+         profileViewManager.initialize();
+         const {
+--- a/app/mainAppWindow/index.js
++++ b/app/mainAppWindow/index.js
+@@ -882,6 +882,7 @@
+ };
+ 
+ exports.bindDisplayMediaHandler = bindDisplayMediaHandler;
++exports.cleanExpiredAuthCookies = cleanExpiredAuthCookies;
+ exports.bindWindowOpenHandler = bindWindowOpenHandler;
+ exports.injectScreenSharingLogic = injectScreenSharingLogic;
+ exports.setTitleOverride = setTitleOverride;
+--- a/app/mainAppWindow/profileViewManager.js
++++ b/app/mainAppWindow/profileViewManager.js
+@@ -88,6 +88,7 @@
+   #bindWindowOpenHandler;
+   #onViewDidFinishLoad;
+   #setTitleOverride;
++  #cleanExpiredAuthCookies;
+   #views = new Map();
+   // Phase 2 foundation: webContents → profile attribution for main-process
+   // IPC handlers (tray/badge/notification aggregation consumes this next).
+@@ -140,6 +141,10 @@
+    *   Sets the window title from the active profile view's page title, or
+    *   hands it back to the root window (Profile 0) with null. Electron only
+    *   mirrors the root webContents' title onto the window (#3068).
++   * @param {(session: Electron.Session) => Promise<object>} [cleanExpiredAuthCookies]
++   *   Removes expired auth cookies from a session. The cleanup at startup
++   *   only covers Profile 0, so each profile view's partition session needs
++   *   its own call to avoid the stale "sign in again" banner (#2296).
+    */
+   constructor(
+     window,
+@@ -148,7 +153,8 @@
+     bindDisplayMediaHandler,
+     bindWindowOpenHandler = () => {},
+     onViewDidFinishLoad = () => {},
+-    setTitleOverride = () => {}
++    setTitleOverride = () => {},
++    cleanExpiredAuthCookies = () => {}
+   ) {
+     this.#window = window;
+     this.#profilesManager = profilesManager;
+@@ -157,6 +163,7 @@
+     this.#bindWindowOpenHandler = bindWindowOpenHandler;
+     this.#onViewDidFinishLoad = onViewDidFinishLoad;
+     this.#setTitleOverride = setTitleOverride;
++    this.#cleanExpiredAuthCookies = cleanExpiredAuthCookies;
+     this.#registry = new SenderProfileMap(profilesManager);
+   }
+ 
+@@ -535,6 +542,9 @@
+     // msal.cache.encryption must stay persistent on every profile session or
+     // the account signs in again after each restart (#3183).
+     keepMsalEncryptionCookiePersistent(view.webContents.session, this.#config);
++    // Expired auth cookies are per session too, and the startup cleanup
++    // only reaches Profile 0 (#2296).
++    this.#cleanExpiredAuthCookies(view.webContents.session);
+     this.#bindWindowOpenHandler(view.webContents, view.webContents, () =>
+       this.#activate(profileId)
+     );
