@@ -188,7 +188,7 @@ ncu --csv --metrics sm__throughput.avg.pct_of_peak_sustained_elapsed ./app_v2 > 
 ## Related Skills
 
 - `cuda-sass-analysis` — inspect native code and resource usage to test a profiled optimization hypothesis
-- `cccl-algorithms` — choose and compose Thrust, CUB, and libcu++ algorithms before writing kernels
+- `cccl` — choose and compose Thrust, CUB, and libcu++ algorithms before writing kernels
 - `nvidia-cccl-runtime` — explicit devices, streams, typed storage, and resource lifetime
 - `skills/gpu/cuda` — kernel writing, occupancy tuning, nvcc flags
 - `skills/gpu/gpu-memory-model` — coalescing, bank conflicts, SIMT model
