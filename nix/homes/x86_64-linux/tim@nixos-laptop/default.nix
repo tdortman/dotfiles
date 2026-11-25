@@ -116,7 +116,7 @@
       runAlways = true;
 
       text = ''
-        setsid teams-for-linux --wayland --window.minimized --incomingCalls.toast &
+        setsid teams-for-linux --wayland --window.minimized &
       '';
     };
 
@@ -163,6 +163,36 @@
       Description = "Autohide Plasma panels in tablet mode";
       PartOf = [ "plasma-plasmashell.service" ];
     };
+  };
+
+  xdg.configFile."teams-for-linux/config.json".text = builtins.toJSON {
+    auth = {
+      # Clicking Teams' stale "sign in again" banner recovers in-app, keeping
+      # ESTSAUTHPERSISTENT so it is a one-click re-login from the account picker
+      # (the overlay drops the automatic reload, so the banner can be ignored).
+      reauthRecovery.enabled = true;
+      # Electron/Chromium on Linux has no native FIDO2 backend
+      # (electron/electron#24573), so teams-for-linux ships an opt-in
+      # monkey-patch that shells out to the fido2-tools binaries.
+      webauthn.enabled = true;
+    };
+
+    # Taskbar + KDE JobView progress bars and a completion notification.
+    download.enabled = true;
+    # Replaces the --enableIncomingCallToast CLI flag.
+    incomingCalls.toast = true;
+
+    # ADR-020 single-window profile switcher: one tray icon, warm sessions.
+    # Mutually exclusive with auth.intune.enabled (which is off here).
+    multiAccount.enabled = true;
+
+    # [name, value] pairs; a bare string is a valueless switch.
+    performance.electronCLIFlags = [
+      [
+        "enable-blink-features"
+        "MiddleClickAutoscroll"
+      ]
+    ];
   };
 
 }

@@ -226,6 +226,7 @@
       gvfs
       inputs.agenix.packages."${system}".default
       kdePackages.xdg-desktop-portal-kde
+      libfido2 # fido2-token/-cred/-assert, used by teams-for-linux WebAuthn
       libnotify
       libreoffice-qt6
       librewolf
