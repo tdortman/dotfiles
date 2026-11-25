@@ -39,6 +39,7 @@
       { "path": "~/.local/state/tern", "access": "write", "comment": "global_package" },
       { "path": "~/.omp/antigravity-cli/bin/*/agy", "access": "execute", "comment": "global_package" },
       { "path": "~/.pi/agent/ayu/checkpoints/sessions", "access": "write", "comment": "global_package" },
+      { "path": "~/.pki/nssdb/key4.db", "access": "read_write", "comment": "global_package" },
       { "path": "~/checkouts", "access": "write", "comment": "global_package" },
       { "path": "~/dotfiles/home/dot_omp", "access": "read_write", "comment": "global_package" }
     ],
@@ -49,6 +50,7 @@
       { "kind": "unix_socket", "path": "/run/user/*/at-spi/bus_0", "access": "connect", "comment": "computer use" },
       { "kind": "unix_socket", "path": "/run/user/1000/at-spi2-*/socket", "access": "connect", "comment": "computer use" },
       { "kind": "unix_socket", "path": "/run/user/1000/wayland-0", "access": "connect", "comment": "global_package" },
+      { "kind": "unix_socket", "path": "/tmp/com.google.Chrome.*/SingletonSocket", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "@abstract:omp-file-lock-*", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.local/state/omp", "access": "connect", "comment": "global_package" },
       { "kind": "unix_socket", "path": "~/.omp/run/daemons/global/text-predict/broker.sock", "access": "connect", "comment": "global_package" },
